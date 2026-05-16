@@ -29,6 +29,7 @@
   var isOpen       = false;
   var businessName = "Atlyz";
   var greeting     = "Hi! How can I help you today?";
+  var primaryColor = "#7c3aed";
   var leadMode     = false;
   var thinkingTimer = null;
   var thinkingIdx   = 0;
@@ -67,13 +68,32 @@
   }
 
   // ── CSS ──────────────────────────────────────────────────────────────────────
+  function applyColor(color) {
+    primaryColor = color || "#7c3aed";
+    var root = document.getElementById("atz-color-vars");
+    if (!root) {
+      root = document.createElement("style");
+      root.id = "atz-color-vars";
+      document.head.appendChild(root);
+    }
+    root.textContent = ":root{--atz-c:" + primaryColor + ";--atz-c2:" + shiftColor(primaryColor) + ";}";
+  }
+
+  function shiftColor(hex) {
+    // Produce a second gradient stop by darkening toward blue
+    // Simple: for purple use blue companion, otherwise darken
+    var companions = { "#7c3aed":"#2563eb","#6d28d9":"#1d4ed8","#8b5cf6":"#3b82f6","#a855f7":"#7c3aed","#ec4899":"#8b5cf6","#ef4444":"#dc2626","#10b981":"#059669","#f59e0b":"#d97706","#3b82f6":"#1d4ed8" };
+    return companions[hex.toLowerCase()] || hex;
+  }
+
   function injectCSS() {
+    applyColor(primaryColor);
     var side = POSITION.includes("right") ? "right:24px;" : "left:24px;";
     var css = [
       "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');",
 
       "#atz-btn{position:fixed;" + side + "bottom:24px;width:54px;height:54px;",
-      "border-radius:14px;background:linear-gradient(135deg,#7c3aed,#2563eb);",
+      "border-radius:14px;background:linear-gradient(135deg,var(--atz-c),var(--atz-c2));",
       "border:none;cursor:pointer;z-index:999998;",
       "box-shadow:0 0 0 1px rgba(124,58,237,.3),0 8px 32px rgba(124,58,237,.35);",
       "display:flex;align-items:center;justify-content:center;",
@@ -100,7 +120,7 @@
       "border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;",
       "background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(37,99,235,.08));}",
       "#atz-logo{width:34px;height:34px;border-radius:9px;flex-shrink:0;",
-      "background:linear-gradient(135deg,#7c3aed,#2563eb);",
+      "background:linear-gradient(135deg,var(--atz-c),var(--atz-c2));",
       "display:flex;align-items:center;justify-content:center;}",
       "#atz-head-info{flex:1;min-width:0;}",
       "#atz-head-name{font-size:14px;font-weight:600;color:#f4f4f5;letter-spacing:-.2px;}",
@@ -130,7 +150,7 @@
       "@keyframes atz-msg{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}",
       ".atz-bot{background:#18181b;color:#d4d4d8;border-radius:4px 12px 12px 12px;",
       "align-self:flex-start;border:1px solid rgba(255,255,255,.06);}",
-      ".atz-user{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;",
+      ".atz-user{background:linear-gradient(135deg,var(--atz-c),var(--atz-c2));color:#fff;",
       "border-radius:12px 4px 12px 12px;align-self:flex-end;}",
 
       /* thinking bubble */
@@ -140,7 +160,7 @@
       "animation:atz-msg .18s ease;max-width:84%;}",
       ".atz-th-dots{display:flex;gap:3px;flex-shrink:0;}",
       ".atz-th-dots span{width:5px;height:5px;border-radius:50%;",
-      "background:#7c3aed;animation:atz-dot 1.2s infinite;}",
+      "background:var(--atz-c);animation:atz-dot 1.2s infinite;}",
       ".atz-th-dots span:nth-child(2){animation-delay:.2s;}",
       ".atz-th-dots span:nth-child(3){animation-delay:.4s;}",
       "@keyframes atz-dot{0%,60%,100%{transform:translateY(0);opacity:.4}",
@@ -157,7 +177,7 @@
       "#atz-input::placeholder{color:#52525b;}",
       "#atz-input:focus{border-color:rgba(124,58,237,.5);}",
       "#atz-send{width:36px;height:36px;border-radius:9px;flex-shrink:0;",
-      "background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;",
+      "background:linear-gradient(135deg,var(--atz-c),var(--atz-c2));border:none;",
       "cursor:pointer;display:flex;align-items:center;justify-content:center;",
       "transition:opacity .15s,transform .15s;}",
       "#atz-send:hover{opacity:.9;transform:translateY(-1px);}",
@@ -172,15 +192,15 @@
       "box-sizing:border-box;}",
       ".atz-lead-input::placeholder{color:#52525b;}",
       ".atz-lead-input:focus{border-color:rgba(124,58,237,.5);}",
-      ".atz-lead-btn{padding:10px;background:linear-gradient(135deg,#7c3aed,#2563eb);",
+      ".atz-lead-btn{padding:10px;background:linear-gradient(135deg,var(--atz-c),var(--atz-c2));",
       "color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:500;",
       "cursor:pointer;font-family:inherit;transition:opacity .2s;}",
       ".atz-lead-btn:hover{opacity:.9;}",
 
       "#atz-foot{text-align:center;font-size:10.5px;color:#3f3f46;",
       "padding:6px 0 8px;background:#0f0f11;border-top:1px solid rgba(255,255,255,.04);}",
-      "#atz-foot a{color:#6d28d9;text-decoration:none;}",
-      "#atz-foot a:hover{color:#a78bfa;}"
+      "#atz-foot a{color:var(--atz-c);text-decoration:none;}",
+      "#atz-foot a:hover{opacity:.8;}"
     ].join("");
 
     var el = document.createElement("style");
@@ -334,60 +354,48 @@
   function initSession() {
     var saved = loadSession();
 
-    if (saved && saved.sessionId) {
-      // Restore previous session
-      sessionId = saved.sessionId;
-      if (saved.msgs && saved.msgs.length) {
-        saved.msgs.forEach(function (m) {
-          var msgs = document.getElementById("atz-msgs");
-          var el = document.createElement("div");
-          el.className = "atz-msg " + (m.fromUser ? "atz-user" : "atz-bot");
-          el.textContent = m.text;
-          msgs.appendChild(el);
-        });
+    // Always start a fresh server session — server sessions are in-memory and lost on restart.
+    // We display saved messages from localStorage for continuity but always get a new session_id.
+    var savedMsgs = (saved && saved.msgs) ? saved.msgs : [];
+
+    if (savedMsgs.length) {
+      savedMsgs.forEach(function (m) {
         var msgs = document.getElementById("atz-msgs");
-        msgs.scrollTop = msgs.scrollHeight;
+        var el = document.createElement("div");
+        el.className = "atz-msg " + (m.fromUser ? "atz-user" : "atz-bot");
+        el.textContent = m.text;
+        msgs.appendChild(el);
+      });
+      document.getElementById("atz-msgs").scrollTop = 99999;
+    }
+
+    fetch(SERVER_URL + "/chat/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ business_id: BUSINESS_ID })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      sessionId = d.session_id;
+      if (d.business_name) {
+        businessName = d.business_name;
+        var n = document.getElementById("atz-head-name");
+        if (n) n.textContent = businessName;
       }
-      // Validate session is still alive on server
-      fetch(SERVER_URL + "/chat/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ business_id: BUSINESS_ID, session_id: sessionId })
-      })
-      .then(function (r) { return r.json(); })
-      .then(function (d) {
-        if (d.business_name) {
-          businessName = d.business_name;
-          var n = document.getElementById("atz-head-name");
-          if (n) n.textContent = businessName;
-        }
-      })
-      .catch(function () {});
-    } else {
-      // Fresh session
-      fetch(SERVER_URL + "/chat/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ business_id: BUSINESS_ID })
-      })
-      .then(function (r) { return r.json(); })
-      .then(function (d) {
-        sessionId = d.session_id;
-        if (d.business_name) {
-          businessName = d.business_name;
-          var n = document.getElementById("atz-head-name");
-          if (n) n.textContent = businessName;
-        }
+      if (d.config && d.config.primary_color) {
+        applyColor(d.config.primary_color);
+      }
+      if (!savedMsgs.length) {
         if (d.greeting) greeting = d.greeting;
         setTimeout(function () {
           addMsg(greeting, false);
           if (!isOpen) showDot();
         }, 350);
-      })
-      .catch(function (e) {
-        console.error("[Atlyz] Session start failed:", e);
-      });
-    }
+      }
+    })
+    .catch(function (e) {
+      console.error("[Atlyz] Session start failed:", e);
+    });
   }
 
   // ── Send ──────────────────────────────────────────────────────────────────────
