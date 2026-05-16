@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Atlyz</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--surface:#111113;--surface2:#18181b;--border:rgba(255,255,255,0.06);--border-hover:rgba(255,255,255,0.12);--text:#fafafa;--muted:#71717a;--purple:#8b5cf6;--blue:#3b82f6;--cyan:#06b6d4}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(9,9,11,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-word{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;color:#f0f0f4}
+.logo-word{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f4}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:.2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{background:var(--text);color:var(--bg);padding:8px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:400;transition:.2s}
+.nav-cta:hover{background:#e4e4e7}
+.page-hero{position:relative;z-index:1;padding:140px 24px 80px;text-align:center}
+.page-hero-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(139,92,246,0.1),transparent 70%);pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:100px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.08);font-size:13px;color:#a78bfa;font-family:'JetBrains Mono',monospace;margin-bottom:24px}
+h1{font-family:'Inter',sans-serif;font-size:clamp(40px,6vw,72px);letter-spacing:-2px;margin-bottom:20px;line-height:1.05}
+.hero-sub{font-size:18px;color:var(--muted);max-width:520px;margin:0 auto}
+.content{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px 100px}
+.section{margin-bottom:80px}
+.section-label{font-size:12px;color:var(--purple);letter-spacing:2px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:12px}
+.section-title{font-family:'Inter',sans-serif;font-size:clamp(28px,4vw,42px);letter-spacing:-1px;margin-bottom:20px}
+.section-body{font-size:16px;color:var(--muted);line-height:1.8;max-width:620px}
+.section-body p{margin-bottom:16px}
+.divider{height:1px;background:var(--border);margin:60px 0}
+.values-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:40px}
+.value-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;transition:.3s}
+.value-card:hover{border-color:var(--border-hover);transform:translateY(-2px)}
+.value-icon-svg{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:9px;margin-bottom:14px;padding:6px}
+.value-card h3{font-size:17px;font-weight:400;margin-bottom:8px}
+.value-card p{font-size:14px;color:var(--muted);line-height:1.6}
+.team-note{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px;margin-top:40px}
+.team-note h3{font-family:'Inter',sans-serif;font-size:24px;margin-bottom:12px}
+.team-note p{font-size:15px;color:var(--muted);line-height:1.7}
+.stat-row{display:flex;gap:48px;flex-wrap:wrap;margin-top:48px}
+.stat h2{font-family:'Inter',sans-serif;font-size:48px;letter-spacing:-2px;background:linear-gradient(135deg,#fff,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat p{font-size:14px;color:var(--muted);margin-top:4px}
+footer{position:relative;z-index:1;padding:40px 24px;border-top:1px solid var(--border);max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+footer p{font-size:13px;color:var(--muted)}
+footer a{color:var(--muted);text-decoration:none;font-size:13px}
+footer a:hover{color:var(--text)}
+.footer-links{display:flex;gap:24px}
+.reveal{opacity:0;transform:translateY(20px);transition:.7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){nav{padding:14px 20px}.nav-links{display:none}}
+
+/* ── HAMBURGER MENU ── */
+.hamburger{display:none;background:none;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:4px;line-height:1}
+@media(max-width:768px){
+  .hamburger{display:block}
+  .nav-links.open{display:flex !important;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(9,9,11,0.97);padding:20px 24px;gap:20px;border-bottom:1px solid rgba(255,255,255,0.06);z-index:99}
+}
+/* ── MOTION ── */
+#scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;background:linear-gradient(90deg,#7c3aed,#60a5fa,#34d399);box-shadow:0 0 10px rgba(124,58,237,.8);pointer-events:none}
+.amb-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orb-drift 24s ease-in-out infinite alternate}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(124,58,237,.2),transparent 65%);top:-280px;left:-200px;animation-duration:30s}
+.orb2{width:600px;height:600px;background:radial-gradient(circle,rgba(37,99,235,.16),transparent 65%);top:30%;right:-220px;animation-duration:36s;animation-direction:alternate-reverse;animation-delay:-14s}
+.orb3{width:500px;height:500px;background:radial-gradient(circle,rgba(8,145,178,.12),transparent 65%);bottom:0;left:0;animation-duration:26s;animation-delay:-8s}
+@keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(70px,-50px) scale(1.08)}}
+#particles-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s}
+#particles-canvas.ready{opacity:1}
+.section-label{background:linear-gradient(90deg,#7c6af7,#a78bfa,#60a5fa,#7c6af7);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lbl-flow 5s linear infinite}
+@keyframes lbl-flow{to{background-position:-200% center}}
+.value-card::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(108deg,transparent 28%,rgba(255,255,255,.055) 50%,transparent 72%);transform:translateX(-140%);transition:transform .9s ease;pointer-events:none;border-radius:inherit}
+.value-card{position:relative;overflow:hidden}
+.value-card:hover::after{transform:translateX(140%)}
+</style>
+</head>
+<body>
+<div id="scroll-prog"></div>
+<canvas id="particles-canvas"></canvas>
+<div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+<nav>
+  <a href="index.html" class="nav-logo">
+  <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="atlyz-g" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0%" stop-color="#0ea5e9"/>
+        <stop offset="100%" stop-color="#67e8f9"/>
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="44" stroke="url(#atlyz-g)" stroke-width="3"/>
+    <line x1="50" y1="73" x2="19" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="19" cy="31" r="5" fill="url(#atlyz-g)"/>
+    <circle cx="34" cy="52" r="4" fill="url(#atlyz-g)"/>
+    <line x1="50" y1="73" x2="34" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="34" cy="17" r="5" fill="url(#atlyz-g)"/>
+    <line x1="50" y1="73" x2="50" y2="11" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="50" cy="11" r="5" fill="url(#atlyz-g)"/>
+    <circle cx="50" cy="42" r="4" fill="url(#atlyz-g)"/>
+    <line x1="50" y1="73" x2="66" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="66" cy="17" r="5" fill="url(#atlyz-g)"/>
+    <line x1="50" y1="73" x2="81" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="81" cy="31" r="5" fill="url(#atlyz-g)"/>
+    <circle cx="66" cy="52" r="4" fill="url(#atlyz-g)"/>
+    <circle cx="50" cy="73" r="5.5" fill="url(#atlyz-g)"/>
+  </svg>
+  <span class="logo-word">ATLYZ</span>
+</a>
+  <div class="nav-links">
+    <a href="index.html#features">Features</a>
+    <a href="index.html#products">Products</a>
+    <a href="index.html#pricing">Pricing</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <a href="setup.html" class="nav-cta">Get Started</a>
+
+  <button class="hamburger" onclick="toggleMobileNav()" aria-label="Open menu">&#9776;</button>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-glow"></div>
+  <div class="badge">Our story</div>
+  <h1>Built to give every<br>business an AI edge</h1>
+  <p class="hero-sub">Atlyz started with a simple question — why do only big companies get great AI? We're changing that.</p>
+</div>
+
+<div class="content">
+
+  <div class="section reveal">
+    <div class="section-label">Origin</div>
+    <div class="section-title">Why we built Atlyz</div>
+    <div class="section-body">
+      <p>Small businesses lose customers every day — not because they don't care, but because they can't be everywhere at once. A missed call, an unanswered chat, a question left overnight. Each one is a customer who went elsewhere.</p>
+      <p>We built Atlyz because the tools to fix this existed — AI, automation, natural language — but nobody had put them together in a way that a small business owner could actually use in five minutes without a developer.</p>
+      <p>That's the entire mission. AI that works for real businesses, not just tech companies.</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><h2>50+</h2><p>Languages supported</p></div>
+      <div class="stat"><h2>0.8s</h2><p>Average response time</p></div>
+      <div class="stat"><h2>24/7</h2><p>Always on, never tired</p></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section reveal">
+    <div class="section-label">Values</div>
+    <div class="section-title">What we stand for</div>
+    <div class="values-grid">
+      <div class="value-card">
+        <div class="value-icon-svg" style="background:rgba(124,58,237,.12);color:#a78bfa"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <h3>Simplicity first</h3>
+        <p>If a business owner can't use it in five minutes, it's not done. Complexity is our problem, not yours.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon-svg" style="background:rgba(96,165,250,.12);color:#60a5fa"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+        <h3>Privacy by default</h3>
+        <p>Your customer data belongs to you. We never train on your conversations or sell your data. Ever.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon-svg" style="background:rgba(251,191,36,.10);color:#fbbf24"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <h3>Speed matters</h3>
+        <p>A slow AI is a bad AI. We obsess over latency because your customers are impatient and that's okay.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon-svg" style="background:rgba(52,211,153,.10);color:#34d399"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg></div>
+        <h3>Globally inclusive</h3>
+        <p>Your customers speak many languages. Atlyz speaks all of them — because good service has no language barrier.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section reveal">
+    <div class="section-label">Team</div>
+    <div class="section-title">Small team,<br>big ambitions</div>
+    <div class="team-note">
+      <h3>We're early and proud of it</h3>
+      <p>Atlyz is an early-stage company. We're a small, focused team building something we believe in. We move fast, ship often, and talk directly to every customer. If you're the kind of person who wants to build the future of business AI from the ground up — <a href="careers.html" style="color:#a78bfa;text-decoration:none">we're hiring</a>.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>© 2025 Atlyz. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</footer>
+
+<script>
+
+function toggleMobileNav(){
+  var nl = document.querySelector('.nav-links');
+  if(nl) nl.classList.toggle('open');
+}
+// Close menu when a nav link is clicked
+document.querySelectorAll('.nav-links a').forEach(function(a){
+  a.addEventListener('click', function(){
+    var nl = document.querySelector('.nav-links');
+    if(nl) nl.classList.remove('open');
+  });
+});
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)} });
+},{threshold:0,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+// Safety fallback: reveal all if still hidden after 1.5s
+setTimeout(function(){document.querySelectorAll('.reveal:not(.visible)').forEach(function(el){el.classList.add('visible')})},1500);
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+var _prog=document.getElementById('scroll-prog');
+window.addEventListener('scroll',function(){var s=window.scrollY,t=document.documentElement.scrollHeight-window.innerHeight;_prog.style.width=(t>0?Math.min(s/t*100,100):0)+'%'},{passive:true});
+var _nav=document.querySelector('nav');
+window.addEventListener('scroll',function(){_nav.style.padding=window.scrollY>60?'10px 48px':'16px 48px';},{passive:true});
+(function(){var c=document.getElementById('particles-canvas'),x=c.getContext('2d'),W,H,P=[];function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz,{passive:true});function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.4+.4,col:['rgba(167,139,250,','rgba(96,165,250,','rgba(52,211,153,'][Math.floor(Math.random()*3)],a:Math.random()*.45+.15}}for(var i=0;i<60;i++)P.push(mk());function draw(){x.clearRect(0,0,W,H);for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=p.col+p.a+')';x.fill();for(var j=i+1;j<P.length;j++){var q=P[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.strokeStyle='rgba(167,139,250,'+(0.15*(1-d/130))+')';x.lineWidth=.6;x.stroke()}}}requestAnimationFrame(draw)}draw();setTimeout(function(){c.classList.add('ready')},400)})();
+if(window.gsap){
+  gsap.from('.page-hero h1',{duration:.9,y:44,opacity:0,ease:'power3.out'});
+  gsap.from('.page-hero .badge',{duration:.7,y:20,opacity:0,delay:.1,ease:'power2.out'});
+  gsap.from('.page-hero .hero-sub',{duration:.7,y:24,opacity:0,delay:.2,ease:'power2.out'});
+}
+document.querySelectorAll('.value-card,.team-note').forEach(function(el){
+  el.addEventListener('mousemove',function(e){var r=el.getBoundingClientRect(),rx=((e.clientY-r.top)/r.height-.5)*-7,ry=((e.clientX-r.left)/r.width-.5)*7;el.style.transform='perspective(900px) rotateX('+rx+'deg) rotateY('+ry+'deg) translateY(-2px)'});
+  el.addEventListener('mouseleave',function(){el.style.transform='';});
+});
+</script>
+<!-- Atlyz Chat Widget -->
+<script src="http://localhost:5002/widget.js?id=atlyz_website"></script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Atlyz</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--surface:#111113;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#71717a;--purple:#8b5cf6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(9,9,11,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-word{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;color:#f0f0f4}
+.logo-word{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f4}
+.nav-links{display:flex;gap:32px}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;transition:.2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{background:var(--text);color:var(--bg);padding:8px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:400}
+.page{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:140px 24px 100px}
+.page-label{font-size:12px;color:var(--purple);letter-spacing:2px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:12px}
+h1{font-family:'Inter',sans-serif;font-size:clamp(36px,5vw,52px);letter-spacing:-1.5px;margin-bottom:12px}
+.last-updated{font-size:13px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+.toc{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:48px}
+.toc h4{font-size:13px;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;margin-bottom:14px}
+.toc ol{padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.toc li a{font-size:14px;color:var(--muted);text-decoration:none;transition:.2s}
+.toc li a:hover{color:var(--purple)}
+.legal-section{margin-bottom:48px;scroll-margin-top:100px}
+.legal-section h2{font-family:'Inter',sans-serif;font-size:24px;letter-spacing:-0.5px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.legal-section p{font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:14px}
+.legal-section ul{padding-left:20px;margin-bottom:14px;display:flex;flex-direction:column;gap:8px}
+.legal-section li{font-size:15px;color:var(--muted);line-height:1.7}
+.legal-section li::marker{color:var(--purple)}
+.legal-section strong{color:var(--text);font-weight:400}
+.highlight-box{background:var(--surface);border:1px solid rgba(139,92,246,0.2);border-radius:12px;padding:20px 24px;margin-bottom:32px;border-left:3px solid var(--purple)}
+.highlight-box p{font-size:14px;color:var(--muted);margin:0;line-height:1.7}
+footer{position:relative;z-index:1;padding:40px 24px;border-top:1px solid var(--border);max-width:780px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+footer p{font-size:13px;color:var(--muted)}
+.footer-links{display:flex;gap:24px}
+.footer-links a{color:var(--muted);text-decoration:none;font-size:13px}
+.footer-links a:hover{color:var(--text)}
+@media(max-width:768px){nav{padding:14px 20px}.nav-links{display:none}}
+
+/* ── HAMBURGER MENU ── */
+.hamburger{display:none;background:none;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:4px;line-height:1}
+@media(max-width:768px){
+  .hamburger{display:block}
+  .nav-links.open{display:flex !important;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(9,9,11,0.97);padding:20px 24px;gap:20px;border-bottom:1px solid rgba(255,255,255,0.06);z-index:99}
+}
+/* ── MOTION ── */
+#scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;background:linear-gradient(90deg,#7c3aed,#60a5fa,#34d399);box-shadow:0 0 10px rgba(124,58,237,.8);pointer-events:none}
+.amb-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orb-drift 24s ease-in-out infinite alternate}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.15),transparent 65%);top:-200px;left:-150px;animation-duration:30s}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,.12),transparent 65%);bottom:10%;right:-150px;animation-duration:28s;animation-direction:alternate-reverse;animation-delay:-12s}
+@keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,-40px) scale(1.07)}}
+#particles-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s}
+#particles-canvas.ready{opacity:1}
+</style>
+</head>
+<body>
+<div id="scroll-prog"></div>
+<canvas id="particles-canvas"></canvas>
+<div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+<nav>
+  <a href="index.html" class="nav-logo">
+  <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="atlyz-g" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0%" stop-color="#0ea5e9"/>
+        <stop offset="100%" stop-color="#67e8f9"/>
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="44" stroke="url(#atlyz-g)" stroke-width="3"/>
+    <line x1="50" y1="73" x2="19" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="19" cy="31" r="5" fill="url(#atlyz-g)"/>
+    <circle cx="34" cy="52" r="4" fill="url(#atlyz-g)"/>
+    <line x1="50" y1="73" x2="34" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="34" cy="17" r="5" fill="url(#atlyz-g)"/>
+    <line x1="50" y1="73" x2="50" y2="11" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="50" cy="11" r="5" fill="url(#atlyz-g)"/>
+    <circle cx="50" cy="42" r="4" fill="url(#atlyz-g)"/>
+    <line x1="50" y1="73" x2="66" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="66" cy="17" r="5" fill="url(#atlyz-g)"/>
+    <line x1="50" y1="73" x2="81" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="81" cy="31" r="5" fill="url(#atlyz-g)"/>
+    <circle cx="66" cy="52" r="4" fill="url(#atlyz-g)"/>
+    <circle cx="50" cy="73" r="5.5" fill="url(#atlyz-g)"/>
+  </svg>
+  <span class="logo-word">ATLYZ</span>
+</a>
+  <div class="nav-links">
+    <a href="index.html#features">Features</a>
+    <a href="index.html#products">Products</a>
+    <a href="index.html#pricing">Pricing</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <a href="index.html#pricing" class="nav-cta">Get Started</a>
+
+  <button class="hamburger" onclick="toggleMobileNav()" aria-label="Open menu">&#9776;</button>
+</nav>
+
+<div class="page">
+  <div class="page-label">Legal</div>
+  <h1>Privacy Policy</h1>
+  <div class="last-updated">Last updated: May 2025</div>
+
+  <div class="highlight-box">
+    <p><strong>Plain English:</strong> We collect only what we need to run Atlyz. We never sell your data. We never train AI on your customer conversations. You can delete your data any time.</p>
+  </div>
+
+  <div class="toc">
+    <h4>Contents</h4>
+    <ol>
+      <li><a href="#s1">Information we collect</a></li>
+      <li><a href="#s2">How we use your information</a></li>
+      <li><a href="#s3">Information sharing</a></li>
+      <li><a href="#s4">Data retention</a></li>
+      <li><a href="#s5">Your rights</a></li>
+      <li><a href="#s6">Cookies</a></li>
+      <li><a href="#s7">Security</a></li>
+      <li><a href="#s8">Children's privacy</a></li>
+      <li><a href="#s9">Changes to this policy</a></li>
+      <li><a href="#s10">Contact us</a></li>
+    </ol>
+  </div>
+
+  <div class="legal-section" id="s1">
+    <h2>1. Information we collect</h2>
+    <ul>
+      <li><strong>Account information</strong> — name, email address, and business details when you sign up.</li>
+      <li><strong>Payment information</strong> — processed by our payment provider. We never store card details.</li>
+      <li><strong>Business data</strong> — website URLs you provide, knowledge files you upload, chatbot settings.</li>
+      <li><strong>Customer conversations</strong> — chat messages between your customers and the Atlyz widget.</li>
+      <li><strong>Usage data</strong> — how you use the dashboard, feature usage, and error logs.</li>
+    </ul>
+  </div>
+
+  <div class="legal-section" id="s2">
+    <h2>2. How we use your information</h2>
+    <ul>
+      <li>Provide and maintain the Atlyz service</li>
+      <li>Power AI chatbot responses for your customers</li>
+      <li>Send you notifications about your account and leads</li>
+      <li>Improve and debug the platform</li>
+      <li>Respond to your support requests</li>
+    </ul>
+    <p><strong>We do not use your customer conversation data to train any AI models.</strong></p>
+  </div>
+
+  <div class="legal-section" id="s3">
+    <h2>3. Information sharing</h2>
+    <p>We do not sell, rent, or trade your data. We share only with:</p>
+    <ul>
+      <li><strong>OpenAI</strong> — to power AI responses. OpenAI does not train on API data by default.</li>
+      <li><strong>Infrastructure providers</strong> — Railway for hosting. Access is limited to what is necessary.</li>
+      <li><strong>Legal requirements</strong> — only if required by law.</li>
+    </ul>
+  </div>
+
+  <div class="legal-section" id="s4">
+    <h2>4. Data retention</h2>
+    <p>We retain your data while your account is active. On cancellation:</p>
+    <ul>
+      <li>Account and conversation data deleted within 30 days</li>
+      <li>Backups purged within 90 days</li>
+      <li>Request immediate deletion: <strong>hello@atlyz.com</strong></li>
+    </ul>
+  </div>
+
+  <div class="legal-section" id="s5">
+    <h2>5. Your rights</h2>
+    <ul>
+      <li>Access the personal data we hold about you</li>
+      <li>Correct inaccurate data</li>
+      <li>Request deletion of your data</li>
+      <li>Data portability — receive your data in a machine-readable format</li>
+      <li>Withdraw consent at any time</li>
+    </ul>
+    <p>Contact <strong>hello@atlyz.com</strong> to exercise any right. We respond within 30 days.</p>
+  </div>
+
+  <div class="legal-section" id="s6">
+    <h2>6. Cookies</h2>
+    <p>We use cookies only to keep you logged in and remember preferences. No advertising or tracking cookies. See our <a href="cookies.html" style="color:#a78bfa;text-decoration:none">Cookie Policy</a>.</p>
+  </div>
+
+  <div class="legal-section" id="s7">
+    <h2>7. Security</h2>
+    <p>We use HTTPS encryption for all data in transit, secure password hashing, and strict access controls. Found a vulnerability? Email <strong>hello@atlyz.com</strong>.</p>
+  </div>
+
+  <div class="legal-section" id="s8">
+    <h2>8. Children's privacy</h2>
+    <p>Atlyz is not directed at children under 13. We do not knowingly collect data from children. Contact us to request deletion if applicable.</p>
+  </div>
+
+  <div class="legal-section" id="s9">
+    <h2>9. Changes to this policy</h2>
+    <p>We will notify you of significant changes by email or dashboard notice. Continued use after changes means acceptance.</p>
+  </div>
+
+  <div class="legal-section" id="s10">
+    <h2>10. Contact us</h2>
+    <ul>
+      <li>Email: <strong>hello@atlyz.com</strong></li>
+      <li><a href="contact.html" style="color:#a78bfa;text-decoration:none">Contact form</a></li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 Atlyz. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="terms.html">Terms</a>
+    <a href="cookies.html">Cookies</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</footer>
+<script>
+function toggleMobileNav(){
+  var nl = document.querySelector('.nav-links');
+  if(nl) nl.classList.toggle('open');
+}
+// Close menu when a nav link is clicked
+document.querySelectorAll('.nav-links a').forEach(function(a){
+  a.addEventListener('click', function(){
+    var nl = document.querySelector('.nav-links');
+    if(nl) nl.classList.remove('open');
+  });
+});
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+var _prog=document.getElementById('scroll-prog');
+window.addEventListener('scroll',function(){var s=window.scrollY,t=document.documentElement.scrollHeight-window.innerHeight;_prog.style.width=(t>0?Math.min(s/t*100,100):0)+'%'},{passive:true});
+var _nav=document.querySelector('nav');
+window.addEventListener('scroll',function(){_nav.style.padding=window.scrollY>60?'10px 48px':'16px 48px';},{passive:true});
+(function(){var c=document.getElementById('particles-canvas'),x=c.getContext('2d'),W,H,P=[];function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz,{passive:true});function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.2+.4,col:['rgba(167,139,250,','rgba(96,165,250,'][Math.floor(Math.random()*2)],a:Math.random()*.35+.1}}for(var i=0;i<40;i++)P.push(mk());function draw(){x.clearRect(0,0,W,H);for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=p.col+p.a+')';x.fill();for(var j=i+1;j<P.length;j++){var q=P[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.strokeStyle='rgba(167,139,250,'+(0.12*(1-d/120))+')';x.lineWidth=.5;x.stroke()}}}requestAnimationFrame(draw)}draw();setTimeout(function(){c.classList.add('ready')},400)})();
+if(window.gsap){
+  gsap.from('.page h1',{duration:.9,y:36,opacity:0,ease:'power3.out'});
+  gsap.from('.page .last-updated',{duration:.6,y:16,opacity:0,delay:.2,ease:'power2.out'});
+  gsap.from('.legal-section',{duration:.6,y:20,opacity:0,stagger:.07,delay:.3,ease:'power2.out'});
+}
+</script>
+<!-- Atlyz Chat Widget -->
+<script src="http://localhost:5002/widget.js?id=atlyz_website"></script>
+</body>
+</html>

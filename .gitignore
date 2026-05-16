@@ -1,0 +1,27 @@
+# Environment
+.env
+
+# Virtual environments
+venv/
+aria-env/
+atlyz-env/
+__pycache__/
+*.pyc
+*.pyo
+
+# Client data (contains personal info and API secrets)
+clients/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Other
+*.zip

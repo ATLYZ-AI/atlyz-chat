@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why We Built an AI That Reads Your Website in 60 Seconds — Atlyz Blog</title>
+<meta name="description" content="Most AI chatbots require hours of manual setup. We thought there had to be a better way. Here's how Atlyz auto-learns from any website automatically.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--surface:#111113;--surface2:#18181b;--border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.12);--text:#fafafa;--muted:#71717a;--purple:#8b5cf6;--blue:#3b82f6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.05) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(9,9,11,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:padding .3s}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-word{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f4}
+.nav-links{display:flex;gap:32px}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;transition:.2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{background:var(--text);color:var(--bg);padding:8px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:400}
+.hamburger{display:none;background:none;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:4px;line-height:1}
+@media(max-width:768px){nav{padding:14px 20px}.hamburger{display:block}.nav-links{display:none}.nav-links.open{display:flex !important;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(9,9,11,0.97);padding:20px 24px;gap:20px;border-bottom:1px solid var(--border);z-index:99}}
+.article-hero{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:130px 24px 60px;text-align:center}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);text-decoration:none;font-family:'JetBrains Mono',monospace;margin-bottom:32px;transition:.2s}
+.back-link:hover{color:var(--text)}
+.article-tag{display:inline-block;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:#60a5fa;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);padding:3px 12px;border-radius:100px;margin-bottom:20px}
+.article-hero h1{font-size:clamp(32px,5vw,52px);font-weight:500;letter-spacing:-2px;line-height:1.1;margin-bottom:20px}
+.article-lead{font-size:18px;color:var(--muted);line-height:1.75;margin-bottom:36px;max-width:600px;margin-left:auto;margin-right:auto}
+.article-meta{display:flex;align-items:center;justify-content:center;gap:16px;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:40px}
+.meta-dot{width:3px;height:3px;border-radius:50%;background:var(--muted)}
+.author{display:flex;align-items:center;gap:12px;justify-content:center}
+.author-avatar{width:40px;height:40px;border-radius:50%;background:rgba(59,130,246,.2);border:1px solid rgba(59,130,246,.3);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;color:#60a5fa;flex-shrink:0}
+.author-name{font-size:14px;font-weight:500}
+.author-loc{font-size:12px;color:var(--muted)}
+.article-divider{height:1px;background:var(--border);max-width:760px;margin:0 auto 64px}
+.article-body{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 24px 100px}
+.article-body h2{font-size:24px;font-weight:500;letter-spacing:-.5px;margin:52px 0 16px;color:var(--text)}
+.article-body h3{font-size:18px;font-weight:500;margin:36px 0 12px;color:var(--text)}
+.article-body p{font-size:16px;color:var(--muted);line-height:1.85;margin-bottom:20px}
+.article-body strong{color:var(--text);font-weight:500}
+.article-body ul,.article-body ol{padding-left:22px;margin-bottom:20px;display:flex;flex-direction:column;gap:10px}
+.article-body li{font-size:16px;color:var(--muted);line-height:1.75}
+.article-body li::marker{color:#60a5fa}
+.pull-quote{border-left:3px solid rgba(59,130,246,.5);padding:16px 24px;margin:36px 0;background:rgba(59,130,246,.04);border-radius:0 10px 10px 0}
+.pull-quote p{font-size:17px;color:var(--text);line-height:1.7;margin:0;font-style:italic}
+.code-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:20px 24px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#a78bfa;margin:24px 0;line-height:1.8}
+.step-list{display:flex;flex-direction:column;gap:16px;margin:24px 0}
+.step-row{display:flex;gap:16px;align-items:flex-start}
+.step-n{width:28px;height:28px;border-radius:50%;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#60a5fa;font-family:'JetBrains Mono',monospace;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-content p{font-size:15px;color:var(--muted);margin:0;line-height:1.7}
+.step-content strong{color:var(--text)}
+.highlight-box{background:var(--surface);border:1px solid rgba(59,130,246,.2);border-left:3px solid var(--blue);border-radius:0 12px 12px 0;padding:18px 24px;margin:28px 0}
+.highlight-box p{font-size:15px;color:var(--muted);margin:0;line-height:1.7}
+.article-cta{background:var(--surface);border:1px solid var(--border-h);border-radius:20px;padding:40px;text-align:center;margin:64px 0}
+.article-cta h3{font-size:26px;font-weight:500;letter-spacing:-.5px;margin-bottom:10px}
+.article-cta p{font-size:15px;color:var(--muted);margin-bottom:24px}
+.btn-primary{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:400;transition:.2s;display:inline-block}
+.btn-primary:hover{transform:translateY(-2px);opacity:.9}
+.related{margin-top:64px}
+.related h4{font-size:13px;font-family:'JetBrains Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+.related-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.related-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-decoration:none;color:inherit;transition:.2s;display:block}
+.related-card:hover{border-color:var(--border-h);transform:translateY(-2px)}
+.related-card .rc-tag{font-size:11px;font-family:'JetBrains Mono',monospace;color:#60a5fa;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.related-card h5{font-size:14px;font-weight:400;line-height:1.4;color:var(--text)}
+@media(max-width:600px){.related-grid{grid-template-columns:1fr}}
+footer{position:relative;z-index:1;padding:40px 24px;border-top:1px solid var(--border);max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+footer p{font-size:13px;color:var(--muted)}
+.footer-links{display:flex;gap:24px}
+.footer-links a{color:var(--muted);text-decoration:none;font-size:13px}
+.footer-links a:hover{color:var(--text)}
+#scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;background:linear-gradient(90deg,#7c3aed,#60a5fa,#34d399);box-shadow:0 0 10px rgba(124,58,237,.8);pointer-events:none}
+.amb-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orb-drift 28s ease-in-out infinite alternate}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(37,99,235,.16),transparent 65%);top:-200px;right:-150px;animation-duration:30s}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(124,58,237,.12),transparent 65%);bottom:10%;left:-150px;animation-direction:alternate-reverse;animation-delay:-14s}
+@keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,-40px) scale(1.07)}}
+#particles-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s}
+#particles-canvas.ready{opacity:1}
+</style>
+</head>
+<body>
+<div id="scroll-prog"></div>
+<canvas id="particles-canvas"></canvas>
+<div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg width="28" height="28" viewBox="0 0 100 100" fill="none"><defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#0ea5e9"/><stop offset="100%" stop-color="#67e8f9"/></linearGradient></defs><circle cx="50" cy="50" r="44" stroke="url(#g)" stroke-width="3"/><line x1="50" y1="73" x2="19" y2="31" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="19" cy="31" r="5" fill="url(#g)"/><circle cx="34" cy="52" r="4" fill="url(#g)"/><line x1="50" y1="73" x2="34" y2="17" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="34" cy="17" r="5" fill="url(#g)"/><line x1="50" y1="73" x2="50" y2="11" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="50" cy="11" r="5" fill="url(#g)"/><circle cx="50" cy="42" r="4" fill="url(#g)"/><line x1="50" y1="73" x2="66" y2="17" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="66" cy="17" r="5" fill="url(#g)"/><line x1="50" y1="73" x2="81" y2="31" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="81" cy="31" r="5" fill="url(#g)"/><circle cx="66" cy="52" r="4" fill="url(#g)"/><circle cx="50" cy="73" r="5.5" fill="url(#g)"/></svg>
+    <span class="logo-word">ATLYZ</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html#features">Features</a>
+    <a href="index.html#products">Products</a>
+    <a href="index.html#pricing">Pricing</a>
+    <a href="blog.html">Blog</a>
+  </div>
+  <a href="contact.html" class="nav-cta">Get Started</a>
+  <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">&#9776;</button>
+</nav>
+
+<div class="article-hero">
+  <a href="blog.html" class="back-link">← Back to blog</a>
+  <div class="article-tag">Product</div>
+  <h1>Why We Built an AI That Reads Your Website in 60 Seconds</h1>
+  <p class="article-lead">Most AI chatbots require hours of manual setup. We watched three people give up in ten minutes. So we built something that requires no setup at all.</p>
+  <div class="article-meta">
+    <span>May 2025</span>
+    <span class="meta-dot"></span>
+    <span>5 min read</span>
+  </div>
+  <div class="author">
+    <div class="author-avatar">S</div>
+    <div>
+      <div class="author-name">Syed — Founder, Atlyz</div>
+      <div class="author-loc">Peshawar, Pakistan</div>
+    </div>
+  </div>
+</div>
+
+<div class="article-divider"></div>
+
+<div class="article-body">
+
+  <p>The first version of Atlyz's setup flow was embarrassing. We made business owners manually copy-paste their service descriptions. Fill out a form. Upload a FAQ document. Review training data line by line. The whole process took about 40 minutes.</p>
+
+  <p>Nobody finished it.</p>
+
+  <p>We watched three test users during early beta. All three gave up in the first ten minutes. Not because they didn't want an AI chatbot — they were motivated enough to sign up for a beta. But because the setup felt like work, and small business owners already have more work than hours in the day.</p>
+
+  <p>That failure led to the insight that shaped everything about how Atlyz works today.</p>
+
+  <h2>The Insight: The Website Is Already the Knowledge Base</h2>
+
+  <p>Every business owner has spent hours getting their website right. Their prices are there. Their services are described. Their hours, location, policies, team bios — all of it is sitting in HTML files, already written, already accurate.</p>
+
+  <div class="pull-quote">
+    <p>The problem isn't that the information doesn't exist. It's that it's trapped in static web pages instead of living inside your AI assistant.</p>
+  </div>
+
+  <p>So we asked a different question: instead of making business owners train an AI from scratch, what if we just taught the AI to read their website?</p>
+
+  <h2>How It Works</h2>
+
+  <p>When a business owner enters their URL, here's what happens under the hood:</p>
+
+  <div class="step-list">
+    <div class="step-row">
+      <div class="step-n">01</div>
+      <div class="step-content"><p><strong>We fetch the homepage</strong> and extract all internal links — service pages, about, FAQ, contact, product pages. We filter out external links, social profiles, and anything that looks like a category or pagination page.</p></div>
+    </div>
+    <div class="step-row">
+      <div class="step-n">02</div>
+      <div class="step-content"><p><strong>We crawl up to 15 pages</strong>, stripping navigation, footers, cookie banners, and repeated boilerplate that appears on every page. What's left is the actual content — the stuff a customer would actually read.</p></div>
+    </div>
+    <div class="step-row">
+      <div class="step-n">03</div>
+      <div class="step-content"><p><strong>We send the combined text to GPT</strong> with a prompt that asks it to extract and structure the key business information: what they do, what they charge, how to contact them, what their policies are, what questions customers commonly ask.</p></div>
+    </div>
+    <div class="step-row">
+      <div class="step-n">04</div>
+      <div class="step-content"><p><strong>The output becomes the knowledge base.</strong> Every time a customer asks a question, the AI retrieves from this structured summary — not from raw HTML, which would be slow and unreliable.</p></div>
+    </div>
+  </div>
+
+  <p>Total time from URL to ready AI: about 60 seconds for a typical 10-page business website.</p>
+
+  <h2>The Engineering Problems We Had to Solve</h2>
+
+  <p>Reading websites sounds simple. In practice, the web is a mess.</p>
+
+  <p><strong>JavaScript-rendered pages.</strong> Many modern sites built with Shopify themes, React storefronts, or Webflow deliver near-empty HTML to web scrapers. The actual content only appears after JavaScript runs. We handle this with a rendering layer that executes JavaScript before we read the page, though it adds a few seconds to the crawl.</p>
+
+  <p><strong>Duplicate content everywhere.</strong> A navigation menu with twelve links appears on every single page. So does the footer. So does a cookie consent banner. If we naively concatenated all pages, about 40% of the text sent to GPT would be identical boilerplate. We deduplicate aggressively before extraction.</p>
+
+  <p><strong>Image-only content.</strong> Some businesses — especially restaurants and salons — put their entire menu or service list in a PDF or image file. There's no text for us to read. When we detect this, we flag it and prompt the owner to add a simple text FAQ page. Businesses with a well-written FAQ page produce measurably better AI responses than businesses without one.</p>
+
+  <div class="highlight-box">
+    <p><strong>What we learned:</strong> Businesses with clear, text-heavy service pages and an FAQ section train AI that's about 40% more accurate than businesses with vague marketing copy. "We're passionate about delivering excellence" tells the AI nothing. "Haircuts from $35, balayage from $120, open Tuesday–Saturday 9am–7pm" tells it everything.</p>
+  </div>
+
+  <h2>What Good Looks Like</h2>
+
+  <p>After the scrape, you can send the AI a message that tests it against your own knowledge:</p>
+
+  <div class="code-block">
+    You: "Do you offer same-day appointments?"<br><br>
+    Atlyz: "Yes! We keep slots open each day for same-day bookings. You can call us at [number] or I can take your details and have someone reach out to confirm availability."
+  </div>
+
+  <p>That answer came entirely from reading the website. No manual input. No training. The owner spent zero minutes on setup.</p>
+
+  <h2>What's Next</h2>
+
+  <p>The scraper is good, but we want it to be great. On our roadmap:</p>
+
+  <ul>
+    <li><strong>Scheduled re-scraping</strong> — automatically detect when a page has changed and update the knowledge base without the owner doing anything</li>
+    <li><strong>PDF and menu support</strong> — ingest uploaded files for businesses whose key info isn't on the web</li>
+    <li><strong>Change detection</strong> — only re-ingest updated sections rather than re-reading the whole site each time</li>
+    <li><strong>Manual knowledge additions</strong> — let owners add custom Q&A pairs for questions the website doesn't cover</li>
+  </ul>
+
+  <p>The goal is an AI that knows your business as well as you do — without you ever having to train it. Your website already contains that knowledge. We just need to keep reading it.</p>
+
+  <div class="article-cta">
+    <h3>See it read your website</h3>
+    <p>Enter your URL and watch Atlyz build a complete knowledge base in under 60 seconds. No card required.</p>
+    <a href="contact.html" class="btn-primary">Try it free →</a>
+  </div>
+
+  <div class="related">
+    <h4>Related posts</h4>
+    <div class="related-grid">
+      <a href="blog-missed-messages.html" class="related-card">
+        <div class="rc-tag">Insights</div>
+        <h5>The hidden cost of a missed customer message</h5>
+      </a>
+      <a href="blog-48-hours.html" class="related-card">
+        <div class="rc-tag">Product</div>
+        <h5>From idea to working chatbot in 48 hours</h5>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>© 2025 Atlyz. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="blog.html">Blog</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+var _prog=document.getElementById('scroll-prog');
+window.addEventListener('scroll',function(){var s=window.scrollY,t=document.documentElement.scrollHeight-window.innerHeight;_prog.style.width=(t>0?Math.min(s/t*100,100):0)+'%'},{passive:true});
+var _nav=document.querySelector('nav');
+window.addEventListener('scroll',function(){_nav.style.padding=window.scrollY>60?'10px 48px':'16px 48px';},{passive:true});
+(function(){var c=document.getElementById('particles-canvas'),x=c.getContext('2d'),W,H,P=[];function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz,{passive:true});function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,r:Math.random()*1.2+.4,col:['rgba(96,165,250,','rgba(167,139,250,'][Math.floor(Math.random()*2)],a:Math.random()*.4+.1}}for(var i=0;i<45;i++)P.push(mk());function draw(){x.clearRect(0,0,W,H);for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=p.col+p.a+')';x.fill();for(var j=i+1;j<P.length;j++){var q=P[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.strokeStyle='rgba(96,165,250,'+(0.12*(1-d/120))+')';x.lineWidth=.5;x.stroke()}}}requestAnimationFrame(draw)}draw();setTimeout(function(){c.classList.add('ready')},400)})();
+if(window.gsap){
+  gsap.from('.article-hero h1',{duration:.9,y:40,opacity:0,ease:'power3.out'});
+  gsap.from('.article-lead',{duration:.7,y:24,opacity:0,delay:.15,ease:'power2.out'});
+  gsap.from('.author',{duration:.6,y:16,opacity:0,delay:.3,ease:'power2.out'});
+}
+</script>
+<script src="http://localhost:5002/widget.js?id=atlyz_website"></script>
+</body>
+</html>

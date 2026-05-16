@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Set Up Your Chatbot — Atlyz</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#09090b;--surface:#111113;--surface2:#18181b;
+  --border:rgba(255,255,255,0.07);--border-h:rgba(255,255,255,0.14);
+  --text:#fafafa;--muted:#71717a;--muted2:#52525b;
+  --purple:#8b5cf6;--blue:#3b82f6;--green:#22c55e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.05) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+
+/* ── Orbs ── */
+.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;animation:orb-drift 28s ease-in-out infinite alternate}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.18),transparent 65%);top:-200px;left:-150px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,.14),transparent 65%);bottom:-100px;right:-200px;animation-direction:alternate-reverse;animation-delay:-12s}
+@keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,-40px) scale(1.08)}}
+
+/* ── Nav ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(9,9,11,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-word{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f4}
+.nav-back{color:var(--muted);text-decoration:none;font-size:14px;display:flex;align-items:center;gap:6px;transition:.2s}
+.nav-back:hover{color:var(--text)}
+@media(max-width:768px){nav{padding:14px 20px}}
+
+/* ── Progress bar ── */
+.prog-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,#7c3aed,#2563eb);z-index:200;transition:width .4s ease;pointer-events:none}
+
+/* ── Page wrapper ── */
+.wrapper{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:100px 24px 80px}
+
+/* ── Step indicator ── */
+.step-indicator{display:flex;align-items:center;gap:0;margin-bottom:48px}
+.si-item{display:flex;align-items:center;gap:8px;font-size:13px}
+.si-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;transition:.3s}
+.si-dot.done{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff}
+.si-dot.active{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;box-shadow:0 0 16px rgba(124,58,237,.4)}
+.si-dot.pending{background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+.si-label{color:var(--muted);transition:.3s}
+.si-label.active{color:var(--text)}
+.si-line{width:40px;height:1px;background:var(--border);margin:0 8px;transition:.3s}
+.si-line.done{background:rgba(124,58,237,.4)}
+@media(max-width:600px){.si-label{display:none}.si-line{width:20px}}
+
+/* ── Steps ── */
+.step{width:100%;max-width:680px;animation:step-in .35s ease}
+.step.hidden{display:none}
+@keyframes step-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Step header ── */
+.step-head{text-align:center;margin-bottom:40px}
+.step-tag{display:inline-block;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:#a78bfa;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);padding:3px 12px;border-radius:100px;margin-bottom:16px}
+.step-head h1{font-size:clamp(28px,4vw,40px);font-weight:500;letter-spacing:-1.5px;margin-bottom:10px}
+.step-head p{font-size:15px;color:var(--muted);line-height:1.65;max-width:480px;margin:0 auto}
+
+/* ── Card ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px}
+@media(max-width:600px){.card{padding:24px}}
+
+/* ── Fields ── */
+.field{margin-bottom:20px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:7px;font-weight:400}
+.field input,.field textarea,.field select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--text);font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted2)}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(124,58,237,.5)}
+.field select{cursor:pointer}
+.field select option{background:#18181b}
+.field-hint{font-size:12px;color:var(--muted2);margin-top:6px;line-height:1.5}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:500px){.field-row{grid-template-columns:1fr}}
+
+/* ── Buttons ── */
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:13px 28px;border-radius:10px;font-size:15px;font-weight:500;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s;width:100%;justify-content:center}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);padding:11px 24px;border-radius:10px;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s}
+.btn-ghost:hover{color:var(--text);border-color:var(--border-h)}
+
+/* ── Error ── */
+.error-msg{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:12px 16px;font-size:13px;color:#f87171;margin-bottom:16px;display:none}
+
+/* ── Scraping progress ── */
+#scraping-view{text-align:center}
+.scraping-title{font-size:20px;font-weight:500;letter-spacing:-.5px;margin-bottom:8px}
+.scraping-sub{font-size:14px;color:var(--muted);margin-bottom:40px}
+.scrape-steps{display:flex;flex-direction:column;gap:12px;max-width:400px;margin:0 auto 32px;text-align:left}
+.scrape-step{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted2)}
+.scrape-step.done{color:var(--text)}
+.scrape-step.active{color:var(--text)}
+.ss-icon{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px}
+.ss-icon.pending{background:var(--surface2);border:1px solid var(--border)}
+.ss-icon.active{background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3)}
+.ss-icon.done{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25)}
+.ss-spin{width:12px;height:12px;border:2px solid rgba(124,58,237,.3);border-top-color:#8b5cf6;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ss-check{color:#22c55e;font-size:13px}
+.ss-dot{width:6px;height:6px;background:var(--muted2);border-radius:50%}
+
+/* ── Step 2 layout ── */
+.customize-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+@media(max-width:640px){.customize-layout{grid-template-columns:1fr}}
+
+/* ── Color picker row ── */
+.color-row{display:flex;align-items:center;gap:10px}
+.color-swatch{width:36px;height:36px;border-radius:8px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;overflow:hidden;position:relative}
+.color-swatch input[type=color]{position:absolute;inset:-4px;width:calc(100%+8px);height:calc(100%+8px);border:none;cursor:pointer;opacity:0}
+.color-hex{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;width:100px}
+
+/* ── Position toggle ── */
+.pos-toggle{display:flex;gap:8px}
+.pos-btn{flex:1;padding:9px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s;text-align:center}
+.pos-btn.active{background:rgba(124,58,237,.12);border-color:rgba(124,58,237,.4);color:var(--text)}
+
+/* ── Mini widget preview ── */
+.preview-wrap{position:sticky;top:110px}
+.preview-label{font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.widget-preview{background:#0f0f11;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;font-family:'Inter',sans-serif;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.wp-head{padding:12px 14px;display:flex;align-items:center;gap:10px;background:rgba(124,58,237,.1);border-bottom:1px solid rgba(255,255,255,.06)}
+.wp-logo{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wp-name{font-size:13px;font-weight:600;color:#f4f4f5}
+.wp-status{font-size:10px;color:#4ade80;margin-top:1px}
+.wp-msgs{padding:12px;background:#09090b;min-height:120px;display:flex;flex-direction:column;gap:8px}
+.wp-bot{background:#18181b;border:1px solid rgba(255,255,255,.06);color:#d4d4d8;padding:8px 11px;border-radius:3px 10px 10px 10px;font-size:12px;line-height:1.5;max-width:85%;align-self:flex-start}
+.wp-user{padding:8px 11px;border-radius:10px 3px 10px 10px;font-size:12px;color:#fff;max-width:75%;align-self:flex-end}
+.wp-input{padding:10px 12px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;background:#0f0f11}
+.wp-inp-fake{flex:1;background:#18181b;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;font-size:11px;color:var(--muted)}
+.wp-send{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wp-btn-fake{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin:12px 12px 12px auto;box-shadow:0 4px 16px rgba(124,58,237,.4)}
+
+/* ── Step 3 ── */
+.success-hero{text-align:center;margin-bottom:36px}
+.success-icon{width:64px;height:64px;border-radius:18px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px}
+.success-hero h2{font-size:28px;font-weight:500;letter-spacing:-.8px;margin-bottom:8px}
+.success-hero p{font-size:15px;color:var(--muted)}
+
+.code-block{background:#09090b;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px}
+.code-block-head{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.code-block-head span{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.copy-btn{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);color:#a78bfa;font-size:12px;padding:4px 12px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s}
+.copy-btn:hover{background:rgba(124,58,237,.2)}
+.copy-btn.copied{color:#4ade80;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+.code-content{padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#a78bfa;line-height:1.6;word-break:break-all}
+
+.install-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+.install-step{display:flex;gap:14px;align-items:flex-start}
+.is-num{width:24px;height:24px;border-radius:50%;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);color:#a78bfa;font-size:12px;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.is-text{font-size:14px;color:var(--muted);line-height:1.6}
+.is-text strong{color:var(--text);font-weight:500}
+
+.action-row{display:flex;gap:12px}
+.action-row .btn-primary{flex:1}
+
+.stat-strip{display:flex;gap:16px;margin-bottom:32px}
+.stat-item{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.stat-num{font-size:24px;font-weight:500;letter-spacing:-1px;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-lab{font-size:12px;color:var(--muted);margin-top:2px}
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<!-- Top progress bar -->
+<div class="prog-bar" id="prog-bar" style="width:0%"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg width="28" height="28" viewBox="0 0 100 100" fill="none"><defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#0ea5e9"/><stop offset="100%" stop-color="#67e8f9"/></linearGradient></defs><circle cx="50" cy="50" r="44" stroke="url(#g)" stroke-width="3"/><line x1="50" y1="73" x2="19" y2="31" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="19" cy="31" r="5" fill="url(#g)"/><circle cx="34" cy="52" r="4" fill="url(#g)"/><line x1="50" y1="73" x2="34" y2="17" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="34" cy="17" r="5" fill="url(#g)"/><line x1="50" y1="73" x2="50" y2="11" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="50" cy="11" r="5" fill="url(#g)"/><circle cx="50" cy="42" r="4" fill="url(#g)"/><line x1="50" y1="73" x2="66" y2="17" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="66" cy="17" r="5" fill="url(#g)"/><line x1="50" y1="73" x2="81" y2="31" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="81" cy="31" r="5" fill="url(#g)"/><circle cx="66" cy="52" r="4" fill="url(#g)"/><circle cx="50" cy="73" r="5.5" fill="url(#g)"/></svg>
+    <span class="logo-word">ATLYZ</span>
+  </a>
+  <a href="index.html" class="nav-back">← Back to home</a>
+</nav>
+
+<div class="wrapper">
+
+  <!-- Step indicator -->
+  <div class="step-indicator">
+    <div class="si-item">
+      <div class="si-dot active" id="si1">1</div>
+      <span class="si-label active" id="sl1">Your business</span>
+    </div>
+    <div class="si-line" id="sline1"></div>
+    <div class="si-item">
+      <div class="si-dot pending" id="si2">2</div>
+      <span class="si-label" id="sl2">Customize</span>
+    </div>
+    <div class="si-line" id="sline2"></div>
+    <div class="si-item">
+      <div class="si-dot pending" id="si3">3</div>
+      <span class="si-label" id="sl3">Go live</span>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 1 ═══ -->
+  <div class="step" id="step-1">
+    <div class="step-head">
+      <div class="step-tag">Get started free</div>
+      <h1>Set up your AI chatbot</h1>
+      <p>Enter your business name and website URL. Atlyz reads your site in under 60 seconds and builds a fully trained chatbot — automatically.</p>
+    </div>
+
+    <div class="card">
+      <div class="error-msg" id="err-1"></div>
+
+      <div class="field">
+        <label>Business name</label>
+        <input type="text" id="biz-name" placeholder="e.g. Smith Plumbing, Aria Salon...">
+      </div>
+
+      <div class="field">
+        <label>Website URL</label>
+        <input type="url" id="biz-url" placeholder="https://yourbusiness.com">
+        <div class="field-hint">We'll read up to 15 pages from your site and build your chatbot's knowledge base automatically. No setup required from you.</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Your email</label>
+          <input type="email" id="biz-email" placeholder="you@yourbusiness.com">
+        </div>
+        <div class="field">
+          <label>Plan</label>
+          <select id="biz-plan">
+            <option value="starter">Starter — $49/mo</option>
+            <option value="growth">Growth — $99/mo</option>
+            <option value="pro">Pro — $149/mo</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-analyze" onclick="startAnalysis()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Analyze my website
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ SCRAPING ═══ -->
+  <div class="step hidden" id="step-scraping">
+    <div id="scraping-view">
+      <div class="step-head">
+        <div class="step-tag">Reading your website</div>
+        <h1 class="scraping-title">Building your knowledge base</h1>
+        <p class="scraping-sub">Atlyz is reading your website right now. This takes 30–60 seconds.<br>Grab a coffee — your chatbot will be ready when you're back.</p>
+      </div>
+
+      <div class="scrape-steps" id="scrape-steps">
+        <div class="scrape-step" id="ss-0">
+          <div class="ss-icon pending" id="ss-icon-0"><div class="ss-dot"></div></div>
+          <span>Connecting to your website</span>
+        </div>
+        <div class="scrape-step" id="ss-1">
+          <div class="ss-icon pending" id="ss-icon-1"><div class="ss-dot"></div></div>
+          <span>Reading your homepage</span>
+        </div>
+        <div class="scrape-step" id="ss-2">
+          <div class="ss-icon pending" id="ss-icon-2"><div class="ss-dot"></div></div>
+          <span>Scanning services &amp; pricing pages</span>
+        </div>
+        <div class="scrape-step" id="ss-3">
+          <div class="ss-icon pending" id="ss-icon-3"><div class="ss-dot"></div></div>
+          <span>Reading FAQ &amp; about pages</span>
+        </div>
+        <div class="scrape-step" id="ss-4">
+          <div class="ss-icon pending" id="ss-icon-4"><div class="ss-dot"></div></div>
+          <span>Building your knowledge base with AI</span>
+        </div>
+        <div class="scrape-step" id="ss-5">
+          <div class="ss-icon pending" id="ss-icon-5"><div class="ss-dot"></div></div>
+          <span>Setting up your chatbot</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 2 ═══ -->
+  <div class="step hidden" id="step-2">
+    <div class="step-head">
+      <div class="step-tag">Customize</div>
+      <h1>Make it yours</h1>
+      <p>Set your greeting message, brand color, and where the widget sits on your site. Preview updates in real time.</p>
+    </div>
+
+    <div class="customize-layout">
+      <!-- Settings -->
+      <div class="card">
+        <div class="field">
+          <label>Greeting message</label>
+          <textarea id="cust-greeting" rows="3" style="resize:vertical" oninput="updatePreview()" placeholder="Hi! I'm the virtual assistant for..."></textarea>
+          <div class="field-hint">This is the first message customers see when they open the chat.</div>
+        </div>
+
+        <div class="field">
+          <label>Brand color</label>
+          <div class="color-row">
+            <div class="color-swatch" id="swatch-bg" style="background:#7c3aed">
+              <input type="color" id="color-picker" value="#7c3aed" oninput="onColorChange(this.value)">
+            </div>
+            <input class="color-hex" id="color-hex" type="text" value="#7c3aed" maxlength="7" oninput="onHexInput(this.value)" spellcheck="false">
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <div onclick="pickColor('#7c3aed')" style="width:22px;height:22px;border-radius:50%;background:#7c3aed;cursor:pointer;border:2px solid transparent" title="Purple"></div>
+              <div onclick="pickColor('#2563eb')" style="width:22px;height:22px;border-radius:50%;background:#2563eb;cursor:pointer;border:2px solid transparent" title="Blue"></div>
+              <div onclick="pickColor('#059669')" style="width:22px;height:22px;border-radius:50%;background:#059669;cursor:pointer;border:2px solid transparent" title="Green"></div>
+              <div onclick="pickColor('#dc2626')" style="width:22px;height:22px;border-radius:50%;background:#dc2626;cursor:pointer;border:2px solid transparent" title="Red"></div>
+              <div onclick="pickColor('#d97706')" style="width:22px;height:22px;border-radius:50%;background:#d97706;cursor:pointer;border:2px solid transparent" title="Amber"></div>
+              <div onclick="pickColor('#0891b2')" style="width:22px;height:22px;border-radius:50%;background:#0891b2;cursor:pointer;border:2px solid transparent" title="Cyan"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Widget position</label>
+          <div class="pos-toggle">
+            <button class="pos-btn active" id="pos-right" onclick="setPos('bottom-right')">Bottom right</button>
+            <button class="pos-btn" id="pos-left" onclick="setPos('bottom-left')">Bottom left</button>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="createChatbot()">
+          Create my chatbot →
+        </button>
+      </div>
+
+      <!-- Live preview -->
+      <div class="preview-wrap">
+        <div class="preview-label">Live preview</div>
+        <div class="widget-preview">
+          <div class="wp-head" id="prev-head" style="background:rgba(124,58,237,.1)">
+            <div class="wp-logo" id="prev-logo" style="background:linear-gradient(135deg,#7c3aed,#2563eb)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </div>
+            <div>
+              <div class="wp-name" id="prev-name">Your Business</div>
+              <div class="wp-status">Online now</div>
+            </div>
+          </div>
+          <div class="wp-msgs">
+            <div class="wp-bot" id="prev-greeting">Hi! I'm the virtual assistant. How can I help you today?</div>
+            <div class="wp-user" id="prev-usermsg" style="background:linear-gradient(135deg,#7c3aed,#2563eb)">What are your opening hours?</div>
+            <div class="wp-bot">We're open Monday to Saturday, 9am – 6pm. How else can I help?</div>
+          </div>
+          <div class="wp-input">
+            <div class="wp-inp-fake">Type a message...</div>
+            <div class="wp-send" id="prev-send" style="background:linear-gradient(135deg,#7c3aed,#2563eb)">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <div class="wp-btn-fake" id="prev-fab" style="background:linear-gradient(135deg,#7c3aed,#2563eb)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 3 ═══ -->
+  <div class="step hidden" id="step-3">
+    <div class="success-hero">
+      <div class="success-icon">✓</div>
+      <h2>Your chatbot is live!</h2>
+      <p>Paste one line of code into your website and you're done. No developer needed.</p>
+    </div>
+
+    <div class="stat-strip" id="stat-strip">
+      <div class="stat-item">
+        <div class="stat-num" id="stat-pages">0</div>
+        <div class="stat-lab">pages read</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="stat-id">—</div>
+        <div class="stat-lab">your chatbot ID</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">24/7</div>
+        <div class="stat-lab">always on</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px">
+      <div style="font-size:14px;font-weight:500;margin-bottom:16px">Your embed code</div>
+      <div class="code-block">
+        <div class="code-block-head">
+          <span>HTML — paste before &lt;/body&gt;</span>
+          <button class="copy-btn" id="copy-btn" onclick="copyCode()">Copy</button>
+        </div>
+        <div class="code-content" id="embed-code-display"></div>
+      </div>
+
+      <div class="install-steps">
+        <div class="install-step">
+          <div class="is-num">1</div>
+          <div class="is-text">Open your website editor (WordPress, Wix, Webflow, Squarespace, or any HTML file)</div>
+        </div>
+        <div class="install-step">
+          <div class="is-num">2</div>
+          <div class="is-text">Find the <strong>&lt;/body&gt;</strong> tag — usually at the very bottom of your page template</div>
+        </div>
+        <div class="install-step">
+          <div class="is-num">3</div>
+          <div class="is-text">Paste the code just before <strong>&lt;/body&gt;</strong> and save. The chat button appears instantly.</div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <a id="test-link" href="#" target="_blank" class="btn-primary" style="text-decoration:none">
+          Test your chatbot →
+        </a>
+        <button class="btn-ghost" onclick="startOver()">Set up another</button>
+      </div>
+    </div>
+
+    <div style="text-align:center;font-size:13px;color:var(--muted)">
+      Need help? Email us at <a href="mailto:hello@atlyz.com" style="color:#a78bfa;text-decoration:none">hello@atlyz.com</a>
+    </div>
+  </div>
+
+</div><!-- end .wrapper -->
+
+<script>
+var SERVER = window.location.origin.includes('file://')
+  ? 'http://localhost:5002'
+  : window.location.origin;
+
+// Read ?plan from URL
+var urlP = new URLSearchParams(window.location.search);
+var planParam = urlP.get('plan');
+if(planParam){
+  var sel = document.getElementById('biz-plan');
+  for(var i=0;i<sel.options.length;i++){
+    if(sel.options[i].value===planParam) sel.selectedIndex=i;
+  }
+}
+var emailParam = urlP.get('email');
+if(emailParam){
+  var emailField = document.getElementById('biz-email');
+  if(emailField) emailField.value = decodeURIComponent(emailParam);
+}
+
+var bizName = '';
+var bizId   = '';
+var chosenColor = '#7c3aed';
+var chosenPos   = 'bottom-right';
+var embedCode   = '';
+
+// ── Step navigation ──────────────────────────────────────────────────────────
+function showStep(id){
+  ['step-1','step-scraping','step-2','step-3'].forEach(function(s){
+    document.getElementById(s).classList.add('hidden');
+  });
+  document.getElementById(id).classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function setProgress(pct){
+  document.getElementById('prog-bar').style.width = pct + '%';
+}
+
+function updateIndicator(active){
+  [1,2,3].forEach(function(i){
+    var dot = document.getElementById('si'+i);
+    var lbl = document.getElementById('sl'+i);
+    dot.className = 'si-dot ' + (i < active ? 'done' : i === active ? 'active' : 'pending');
+    lbl.className = 'si-label' + (i === active ? ' active' : '');
+    if(i < active) dot.innerHTML = '✓';
+    else dot.textContent = i;
+  });
+  document.getElementById('sline1').className = 'si-line' + (active > 1 ? ' done' : '');
+  document.getElementById('sline2').className = 'si-line' + (active > 2 ? ' done' : '');
+}
+
+// ── Step 1: Analyze ──────────────────────────────────────────────────────────
+function startAnalysis(){
+  var name  = document.getElementById('biz-name').value.trim();
+  var url   = document.getElementById('biz-url').value.trim();
+  var email = document.getElementById('biz-email').value.trim();
+  var err   = document.getElementById('err-1');
+
+  if(!name){ showErr(err,'Please enter your business name.'); return; }
+  if(!url){  showErr(err,'Please enter your website URL.'); return; }
+  if(!url.startsWith('http')) url = 'https://' + url;
+
+  err.style.display = 'none';
+  bizName = name;
+
+  // Pre-fill greeting
+  document.getElementById('cust-greeting').value =
+    'Hi! I\'m the virtual assistant for ' + name + '. How can I help you today?';
+  document.getElementById('prev-name').textContent = name;
+  document.getElementById('prev-greeting').textContent =
+    'Hi! I\'m the virtual assistant for ' + name + '. How can I help you today?';
+
+  updateIndicator(1);
+  setProgress(15);
+  showStep('step-scraping');
+  runScrapeAnimation();
+
+  // Fire the real request
+  fetch(SERVER + '/setup/create', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      business_name: name,
+      website_url: url,
+      primary_color: chosenColor,
+      greeting: document.getElementById('cust-greeting').value,
+      widget_position: chosenPos,
+      plan: document.getElementById('biz-plan').value,
+      owner_email: email
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if(d.success){
+      bizId = d.business_id;
+      embedCode = '<script src="' + SERVER + '/widget.js?id=' + bizId + '"><\/script>';
+      finishScraping(d.pages_scraped);
+    } else {
+      scrapeError(d.error || 'Something went wrong. Please check the URL and try again.');
+    }
+  })
+  .catch(function(e){
+    scrapeError('Could not connect to the Atlyz server. Is it running?');
+  });
+}
+
+// ── Scraping animation ────────────────────────────────────────────────────────
+var scrapeInterval = null;
+var currentSS = 0;
+
+function setSSIcon(idx, state){
+  var icon = document.getElementById('ss-icon-'+idx);
+  var step = document.getElementById('ss-'+idx);
+  if(!icon) return;
+  if(state === 'active'){
+    icon.className = 'ss-icon active';
+    icon.innerHTML = '<div class="ss-spin"></div>';
+    step.className = 'scrape-step active';
+  } else if(state === 'done'){
+    icon.className = 'ss-icon done';
+    icon.innerHTML = '<span class="ss-check">✓</span>';
+    step.className = 'scrape-step done';
+  } else {
+    icon.className = 'ss-icon pending';
+    icon.innerHTML = '<div class="ss-dot"></div>';
+    step.className = 'scrape-step';
+  }
+}
+
+function runScrapeAnimation(){
+  currentSS = 0;
+  setSSIcon(0,'active');
+  var delays = [0, 3000, 8000, 14000, 22000, 34000];
+  for(var i=0;i<delays.length;i++){
+    (function(idx){
+      setTimeout(function(){
+        if(idx > 0) setSSIcon(idx-1,'done');
+        if(idx < 6) setSSIcon(idx,'active');
+        setProgress(15 + idx * 12);
+      }, delays[idx]);
+    })(i);
+  }
+}
+
+function finishScraping(pages){
+  clearInterval(scrapeInterval);
+  for(var i=0;i<6;i++) setSSIcon(i,'done');
+  setProgress(65);
+  setTimeout(function(){
+    updateIndicator(2);
+    setProgress(70);
+    showStep('step-2');
+    updatePreview();
+  }, 800);
+}
+
+function scrapeError(msg){
+  clearInterval(scrapeInterval);
+  showStep('step-1');
+  var err = document.getElementById('err-1');
+  showErr(err, msg);
+  setProgress(0);
+  updateIndicator(1);
+}
+
+// ── Step 2: Customize ─────────────────────────────────────────────────────────
+function onColorChange(val){
+  chosenColor = val;
+  document.getElementById('color-hex').value = val;
+  document.getElementById('swatch-bg').style.background = val;
+  updatePreview();
+}
+
+function onHexInput(val){
+  if(/^#[0-9a-fA-F]{6}$/.test(val)){
+    chosenColor = val;
+    document.getElementById('color-picker').value = val;
+    document.getElementById('swatch-bg').style.background = val;
+    updatePreview();
+  }
+}
+
+function pickColor(hex){
+  chosenColor = hex;
+  document.getElementById('color-picker').value = hex;
+  document.getElementById('color-hex').value = hex;
+  document.getElementById('swatch-bg').style.background = hex;
+  updatePreview();
+}
+
+function setPos(pos){
+  chosenPos = pos;
+  document.getElementById('pos-right').className = 'pos-btn' + (pos==='bottom-right'?' active':'');
+  document.getElementById('pos-left').className  = 'pos-btn' + (pos==='bottom-left'?' active':'');
+}
+
+function updatePreview(){
+  var greeting = document.getElementById('cust-greeting').value ||
+    'Hi! How can I help you today?';
+  var grad = 'linear-gradient(135deg,' + chosenColor + ',' + shiftColor(chosenColor) + ')';
+  document.getElementById('prev-logo').style.background = grad;
+  document.getElementById('prev-send').style.background = grad;
+  document.getElementById('prev-fab').style.background  = grad;
+  document.getElementById('prev-usermsg').style.background = grad;
+  document.getElementById('prev-greeting').textContent = greeting;
+}
+
+function shiftColor(hex){
+  // Darken slightly for gradient end
+  try {
+    var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    r=Math.max(0,r-40);g=Math.max(0,g-20);b=Math.min(255,b+30);
+    return '#'+[r,g,b].map(function(v){return v.toString(16).padStart(2,'0')}).join('');
+  } catch(e){ return hex; }
+}
+
+function createChatbot(){
+  // Update config on server with final customization
+  var greeting = document.getElementById('cust-greeting').value;
+  fetch(SERVER + '/chatbot/config/' + bizId, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      primary_color: chosenColor,
+      greeting: greeting,
+      widget_position: chosenPos,
+      business_name: bizName
+    })
+  }).catch(function(){});
+
+  // Show step 3
+  document.getElementById('embed-code-display').textContent = embedCode;
+  document.getElementById('stat-pages').textContent = window._pagesScraped || '—';
+  document.getElementById('stat-id').textContent = bizId;
+  document.getElementById('test-link').href = SERVER + '/chat/test/' + bizId;
+  updateIndicator(3);
+  setProgress(100);
+  showStep('step-3');
+}
+
+// ── Step 3 ────────────────────────────────────────────────────────────────────
+function copyCode(){
+  navigator.clipboard.writeText(embedCode).then(function(){
+    var btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    btn.className = 'copy-btn copied';
+    setTimeout(function(){ btn.textContent = 'Copy'; btn.className = 'copy-btn'; }, 2000);
+  }).catch(function(){
+    // fallback
+    var ta = document.createElement('textarea');
+    ta.value = embedCode;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+
+function startOver(){
+  bizId = ''; bizName = ''; embedCode = '';
+  document.getElementById('biz-name').value = '';
+  document.getElementById('biz-url').value  = '';
+  document.getElementById('biz-email').value= '';
+  setProgress(0);
+  updateIndicator(1);
+  showStep('step-1');
+}
+
+function showErr(el, msg){
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// Enter key on step 1 inputs
+document.getElementById('biz-url').addEventListener('keydown', function(e){
+  if(e.key==='Enter') startAnalysis();
+});
+document.getElementById('biz-name').addEventListener('keydown', function(e){
+  if(e.key==='Enter') document.getElementById('biz-url').focus();
+});
+</script>
+</body>
+</html>

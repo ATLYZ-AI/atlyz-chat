@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Page Not Found | Atlyz</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--surface:#111113;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#71717a;--purple:#8b5cf6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+.container{position:relative;z-index:1;max-width:480px}
+.code{font-family:'JetBrains Mono',monospace;font-size:96px;font-weight:500;background:linear-gradient(135deg,rgba(139,92,246,0.4),rgba(59,130,246,0.4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:24px}
+h1{font-family:'Inter',sans-serif;font-size:32px;letter-spacing:-1px;margin-bottom:12px}
+p{font-size:16px;color:var(--muted);line-height:1.6;margin-bottom:40px}
+.btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:400;transition:.2s}
+.btn-primary:hover{transform:translateY(-2px);opacity:.9}
+.btn-ghost{background:transparent;color:var(--muted);padding:12px 24px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:500;border:1px solid var(--border);transition:.2s}
+.btn-ghost:hover{color:var(--text)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-word{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;color:#f0f0f4}
+.logo-word{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f4}
+/* ── MOTION ── */
+.amb-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orb-drift 24s ease-in-out infinite alternate}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.18),transparent 65%);top:-200px;left:-150px;animation-duration:28s}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,.14),transparent 65%);bottom:-100px;right:-150px;animation-duration:32s;animation-direction:alternate-reverse;animation-delay:-10s}
+@keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,-50px) scale(1.1)}}
+#particles-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s}
+#particles-canvas.ready{opacity:1}
+.code{animation:float-404 4s ease-in-out infinite}
+@keyframes float-404{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3) drop-shadow(0 0 40px rgba(139,92,246,.5))}}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+<a href="index.html" class="nav-logo">
+  <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="atlyz-g" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0%" stop-color="#0ea5e9"/>
+        <stop offset="100%" stop-color="#67e8f9"/>
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="44" stroke="url(#atlyz-g)" stroke-width="3"/>
+    <line x1="50" y1="73" x2="19" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="19" cy="31" r="5" fill="url(#atlyz-g)"/>
+    <circle cx="34" cy="52" r="4" fill="url(#atlyz-g)"/>
+    <line x1="50" y1="73" x2="34" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="34" cy="17" r="5" fill="url(#atlyz-g)"/>
+    <line x1="50" y1="73" x2="50" y2="11" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="50" cy="11" r="5" fill="url(#atlyz-g)"/>
+    <circle cx="50" cy="42" r="4" fill="url(#atlyz-g)"/>
+    <line x1="50" y1="73" x2="66" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="66" cy="17" r="5" fill="url(#atlyz-g)"/>
+    <line x1="50" y1="73" x2="81" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="81" cy="31" r="5" fill="url(#atlyz-g)"/>
+    <circle cx="66" cy="52" r="4" fill="url(#atlyz-g)"/>
+    <circle cx="50" cy="73" r="5.5" fill="url(#atlyz-g)"/>
+  </svg>
+  <span class="logo-word">ATLYZ</span>
+</a>
+<div class="container">
+  <div class="code">404</div>
+  <h1>Page not found</h1>
+  <p>The page you're looking for doesn't exist or has been moved. Let's get you back on track.</p>
+  <div class="btns">
+    <a href="index.html" class="btn-primary">Go home →</a>
+    <a href="contact.html" class="btn-ghost">Contact us</a>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function(){var c=document.getElementById('particles-canvas'),x=c.getContext('2d'),W,H,P=[];function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz,{passive:true});function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.2+.4,col:['rgba(167,139,250,','rgba(96,165,250,'][Math.floor(Math.random()*2)],a:Math.random()*.4+.1}}for(var i=0;i<50;i++)P.push(mk());function draw(){x.clearRect(0,0,W,H);for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=p.col+p.a+')';x.fill();for(var j=i+1;j<P.length;j++){var q=P[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.strokeStyle='rgba(167,139,250,'+(0.13*(1-d/130))+')';x.lineWidth=.5;x.stroke()}}}requestAnimationFrame(draw)}draw();setTimeout(function(){c.classList.add('ready')},300)})();
+if(window.gsap){
+  gsap.from('.code',{duration:1,scale:.7,opacity:0,ease:'back.out(1.7)'});
+  gsap.from('h1',{duration:.7,y:24,opacity:0,delay:.2,ease:'power2.out'});
+  gsap.from('p',{duration:.6,y:16,opacity:0,delay:.35,ease:'power2.out'});
+  gsap.from('.btns',{duration:.6,y:16,opacity:0,delay:.5,ease:'power2.out'});
+}
+</script>
+<!-- Atlyz Chat Widget -->
+<script src="http://localhost:5002/widget.js?id=atlyz_website"></script>
+</body>
+</html>

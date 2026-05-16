@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Idea to Working Chatbot in 48 Hours — Atlyz Blog</title>
+<meta name="description" content="I'm 16, from Peshawar, Pakistan, and I built a working AI chatbot in a weekend. Here's exactly how it happened, hour by hour.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--surface:#111113;--surface2:#18181b;--border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.12);--text:#fafafa;--muted:#71717a;--purple:#8b5cf6;--blue:#3b82f6;--amber:#fbbf24;--red:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.05) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(9,9,11,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:padding .3s}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-word{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f4}
+.nav-links{display:flex;gap:32px}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;transition:.2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{background:var(--text);color:var(--bg);padding:8px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:400}
+.hamburger{display:none;background:none;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:4px;line-height:1}
+@media(max-width:768px){
+  nav{padding:14px 20px}
+  .hamburger{display:block}
+  .nav-links{display:none}
+  .nav-links.open{display:flex !important;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(9,9,11,0.97);padding:20px 24px;gap:20px;border-bottom:1px solid var(--border);z-index:99}
+}
+
+/* article layout */
+.article-hero{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:130px 24px 60px;text-align:center}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);text-decoration:none;font-family:'JetBrains Mono',monospace;margin-bottom:32px;transition:.2s}
+.back-link:hover{color:var(--text)}
+.article-tag{display:inline-block;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:#fbbf24;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);padding:3px 12px;border-radius:100px;margin-bottom:20px}
+.article-hero h1{font-size:clamp(32px,5vw,52px);font-weight:500;letter-spacing:-2px;line-height:1.1;margin-bottom:20px}
+.article-lead{font-size:18px;color:var(--muted);line-height:1.75;margin-bottom:36px;max-width:600px;margin-left:auto;margin-right:auto}
+.article-meta{display:flex;align-items:center;justify-content:center;gap:16px;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:40px}
+.meta-dot{width:3px;height:3px;border-radius:50%;background:var(--muted)}
+.author{display:flex;align-items:center;gap:12px;justify-content:center}
+.author-avatar{width:40px;height:40px;border-radius:50%;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;color:#fbbf24;flex-shrink:0}
+.author-name{font-size:14px;font-weight:500}
+.author-loc{font-size:12px;color:var(--muted)}
+
+.article-divider{height:1px;background:var(--border);max-width:760px;margin:0 auto 64px}
+.article-body{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 24px 100px}
+.article-body h2{font-size:24px;font-weight:500;letter-spacing:-.5px;margin:52px 0 16px;color:var(--text)}
+.article-body h3{font-size:18px;font-weight:500;margin:36px 0 12px;color:var(--text)}
+.article-body p{font-size:16px;color:var(--muted);line-height:1.85;margin-bottom:20px}
+.article-body strong{color:var(--text);font-weight:500}
+.article-body ul,.article-body ol{padding-left:22px;margin-bottom:20px;display:flex;flex-direction:column;gap:10px}
+.article-body li{font-size:16px;color:var(--muted);line-height:1.75}
+.article-body li::marker{color:var(--amber)}
+
+.pull-quote{border-left:3px solid rgba(251,191,36,.5);padding:16px 24px;margin:36px 0;background:rgba(251,191,36,.04);border-radius:0 10px 10px 0}
+.pull-quote p{font-size:17px;color:var(--text);line-height:1.7;margin:0;font-style:italic}
+
+.stat-callout{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 32px;margin:36px 0;text-align:center}
+.stat-callout .sc-num{font-size:48px;font-weight:500;letter-spacing:-2px;background:linear-gradient(135deg,#fbbf24,#f87171);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:6px}
+.stat-callout .sc-label{font-size:14px;color:var(--muted);max-width:400px;margin:0 auto}
+
+.highlight-box{background:var(--surface);border:1px solid rgba(251,191,36,.2);border-left:3px solid var(--amber);border-radius:0 12px 12px 0;padding:18px 24px;margin:28px 0}
+.highlight-box p{font-size:15px;color:var(--muted);margin:0;line-height:1.7}
+
+/* timeline */
+.timeline{margin:36px 0;display:flex;flex-direction:column;gap:0}
+.tl-item{display:grid;grid-template-columns:80px 1fr;gap:0 24px;position:relative}
+.tl-item:not(:last-child)::before{content:'';position:absolute;left:38px;top:28px;bottom:-4px;width:1px;background:rgba(251,191,36,.2)}
+.tl-time{font-family:'JetBrains Mono',monospace;font-size:12px;color:#fbbf24;padding-top:6px;text-align:right;white-space:nowrap}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:#fbbf24;margin-top:8px;flex-shrink:0;box-shadow:0 0 8px rgba(251,191,36,.4)}
+.tl-content{padding:0 0 32px 0}
+.tl-content h4{font-size:14px;font-weight:500;color:var(--text);margin-bottom:6px}
+.tl-content p{font-size:14px;color:var(--muted);line-height:1.7;margin:0}
+.tl-inner{display:flex;gap:16px;align-items:flex-start}
+
+.code-block{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:24px 0;font-family:'JetBrains Mono',monospace;font-size:13px;color:#a78bfa;line-height:1.7;overflow-x:auto}
+.code-block .comment{color:var(--muted)}
+
+.article-cta{background:var(--surface);border:1px solid var(--border-h);border-radius:20px;padding:40px;text-align:center;margin:64px 0}
+.article-cta h3{font-size:26px;font-weight:500;letter-spacing:-.5px;margin-bottom:10px}
+.article-cta p{font-size:15px;color:var(--muted);margin-bottom:24px}
+.btn-primary{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:400;transition:.2s;display:inline-block}
+.btn-primary:hover{transform:translateY(-2px);opacity:.9}
+
+.related{margin-top:64px}
+.related h4{font-size:13px;font-family:'JetBrains Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+.related-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.related-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-decoration:none;color:inherit;transition:.2s;display:block}
+.related-card:hover{border-color:var(--border-h);transform:translateY(-2px)}
+.related-card .rc-tag{font-size:11px;font-family:'JetBrains Mono',monospace;color:#a78bfa;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.related-card h5{font-size:14px;font-weight:400;line-height:1.4;color:var(--text)}
+@media(max-width:600px){.related-grid{grid-template-columns:1fr}}
+
+footer{position:relative;z-index:1;padding:40px 24px;border-top:1px solid var(--border);max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+footer p{font-size:13px;color:var(--muted)}
+.footer-links{display:flex;gap:24px}
+.footer-links a{color:var(--muted);text-decoration:none;font-size:13px}
+.footer-links a:hover{color:var(--text)}
+
+/* motion */
+#scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;background:linear-gradient(90deg,#d97706,#fbbf24,#f87171);box-shadow:0 0 10px rgba(251,191,36,.7);pointer-events:none}
+.amb-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orb-drift 28s ease-in-out infinite alternate}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(251,191,36,.12),transparent 65%);top:-200px;left:-150px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(239,68,68,.1),transparent 65%);bottom:10%;right:-150px;animation-direction:alternate-reverse;animation-delay:-14s}
+@keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,-40px) scale(1.07)}}
+#particles-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s}
+#particles-canvas.ready{opacity:1}
+</style>
+</head>
+<body>
+<div id="scroll-prog"></div>
+<canvas id="particles-canvas"></canvas>
+<div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg width="28" height="28" viewBox="0 0 100 100" fill="none"><defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#0ea5e9"/><stop offset="100%" stop-color="#67e8f9"/></linearGradient></defs><circle cx="50" cy="50" r="44" stroke="url(#g)" stroke-width="3"/><line x1="50" y1="73" x2="19" y2="31" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="19" cy="31" r="5" fill="url(#g)"/><circle cx="34" cy="52" r="4" fill="url(#g)"/><line x1="50" y1="73" x2="34" y2="17" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="34" cy="17" r="5" fill="url(#g)"/><line x1="50" y1="73" x2="50" y2="11" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="50" cy="11" r="5" fill="url(#g)"/><circle cx="50" cy="42" r="4" fill="url(#g)"/><line x1="50" y1="73" x2="66" y2="17" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="66" cy="17" r="5" fill="url(#g)"/><line x1="50" y1="73" x2="81" y2="31" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="81" cy="31" r="5" fill="url(#g)"/><circle cx="66" cy="52" r="4" fill="url(#g)"/><circle cx="50" cy="73" r="5.5" fill="url(#g)"/></svg>
+    <span class="logo-word">ATLYZ</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html#features">Features</a>
+    <a href="index.html#products">Products</a>
+    <a href="index.html#pricing">Pricing</a>
+    <a href="blog.html">Blog</a>
+  </div>
+  <a href="contact.html" class="nav-cta">Get Started</a>
+  <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">&#9776;</button>
+</nav>
+
+<div class="article-hero">
+  <a href="blog.html" class="back-link">← Back to blog</a>
+  <div class="article-tag">Product</div>
+  <h1>From Idea to Working Chatbot in 48 Hours</h1>
+  <p class="article-lead">I'm 16, from Peshawar, Pakistan. I built the first version of Atlyz Chat over a single weekend. Here's exactly how it happened — and why I think that matters for anyone building something.</p>
+  <div class="article-meta">
+    <span>March 2025</span>
+    <span class="meta-dot"></span>
+    <span>6 min read</span>
+  </div>
+  <div class="author">
+    <div class="author-avatar">S</div>
+    <div>
+      <div class="author-name">Syed — Founder, Atlyz</div>
+      <div class="author-loc">Peshawar, Pakistan</div>
+    </div>
+  </div>
+</div>
+
+<div class="article-divider"></div>
+
+<div class="article-body">
+
+  <p>Six months ago I didn't know what Flask was. I knew Python — loops, functions, the basics — but I'd never built anything that ran on a server or talked to an API. I was a 16-year-old doing homework in Peshawar and thinking about starting a company.</p>
+
+  <p>This is the story of the weekend that changed that.</p>
+
+  <h2>The Problem That Made This Real</h2>
+
+  <p>A family friend runs a clothing store. Small, well-established, good reputation. He'd been getting messages on WhatsApp, Instagram, his website — customers asking about prices, availability, exchange policies. The same ten questions, over and over, sent at all hours.</p>
+
+  <p>He answered them manually. During business hours, fine. But in the evenings — when he was with his family, when his kids were asleep — the messages just sat there. By the time he replied the next morning, half the customers had either figured it out themselves, given up, or gone somewhere else.</p>
+
+  <p>I asked him how many he thought he was losing. He didn't know. Nobody tracks the customers who leave silently.</p>
+
+  <div class="pull-quote">
+    <p>Nobody tracks the customers who leave silently. That's exactly the problem.</p>
+  </div>
+
+  <p>I told him I could build something. I had no idea how. But I'd seen the OpenAI API docs and thought: you give it context, you ask it a question, it answers. How hard could it be?</p>
+
+  <h2>Hour Zero: The Only Plan That Mattered</h2>
+
+  <p>Before I wrote a single line of code, I wrote down the one thing the product needed to do:</p>
+
+  <div class="highlight-box">
+    <p>A customer visits a website, asks a question, gets an accurate answer immediately — even if it's 2am and the owner is asleep.</p>
+  </div>
+
+  <p>Everything else was optional. I didn't think about user accounts, dashboards, analytics, or pricing. I thought about that one sentence. If I could make that true, I had something.</p>
+
+  <h2>The 48-Hour Build</h2>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-time">Hour 0–3</div>
+      <div class="tl-inner">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <h4>Core chat working</h4>
+          <p>Set up Flask, wired the OpenAI API, got a basic POST /chat endpoint returning a response. The "AI" was just GPT with a hardcoded system prompt containing a paragraph about the clothing store. It worked. That was the proof of concept.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Hour 3–7</div>
+      <div class="tl-inner">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <h4>The knowledge problem</h4>
+          <p>I hardcoded the store info as a string. That worked for one business. For Atlyz to be a real product, it needed to work for any business. I needed a way to automatically build that knowledge string. So I started building the scraper — Python's requests library, BeautifulSoup, pull all the text off a website's pages. First attempt scraped 50 pages and crashed. Had to add limits, deduplication, content filtering.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Hour 7–12</div>
+      <div class="tl-inner">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <h4>GPT as the summarizer</h4>
+          <p>Raw scraped text is messy — navigation links, footer text, cookie notices, legal boilerplate. I built a second GPT call that takes the raw scrape and compresses it into clean, structured knowledge. "Here is scraped website content. Summarize the key business information a customer would need." That cleaned output became the knowledge base.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Hour 12–18</div>
+      <div class="tl-inner">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <h4>The widget</h4>
+          <p>A server that responds to POST requests is not a product. I needed something a business owner could put on their website with zero technical knowledge. Enter widget.js — a single JavaScript file that creates a floating chat button, manages the UI, and talks to the server. The hardest part wasn't the code, it was making it self-contained: no dependencies, no CSS conflicts, works on any website.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Hour 18–24</div>
+      <div class="tl-inner">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <h4>Lead capture</h4>
+          <p>The AI can answer most questions. But sometimes the customer asks something the website doesn't cover — custom orders, specific availability, bulk pricing. Instead of making something up, the AI recognizes when it's stuck and switches to lead capture mode: collects the customer's name, phone, and email, sends the owner a notification. Sleep, but not missed.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Hour 24–36</div>
+      <div class="tl-inner">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <h4>Testing and breaking things</h4>
+          <p>I tested with every question I could think of. The AI hallucinated a few times early on — made up prices that weren't on the website. Fixed that with stricter prompting: "Only answer from the knowledge base. If you don't know, collect their details." I also added conversation history (last 6 exchanges) so follow-up questions worked naturally.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Hour 36–48</div>
+      <div class="tl-inner">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <h4>Polish and the first real test</h4>
+          <p>Added language detection — if a customer writes in Urdu or Arabic, the AI replies in the same language. Added widget customization: colors, icon, greeting message. Then I embedded it on my family friend's website via ngrok and watched him test it. He asked his own questions — his own prices, his own policies. It answered correctly every time. That was the moment I knew this was real.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>What the Code Actually Looks Like</h2>
+
+  <p>The core of the whole system is surprisingly short. The GPT call that powers each chat response is essentially:</p>
+
+  <div class="code-block">
+<span class="comment"># Build the system prompt from cached knowledge</span>
+system = f"""You are the AI assistant for {business_name}.
+Answer customer questions using ONLY the information below.
+If you cannot answer from this information, collect their contact details.
+
+KNOWLEDGE BASE:
+{knowledge_text}"""
+
+<span class="comment"># Send message + history to GPT</span>
+response = client.chat.completions.create(
+    model="gpt-4.1-nano",
+    messages=[{"role":"system","content":system}] + history,
+    max_completion_tokens=300
+)
+  </div>
+
+  <p>The complexity is in the surrounding system: the scraper that builds <code>knowledge_text</code>, the widget that delivers the conversation, the lead capture when things fall outside the knowledge base. But the core AI interaction is clean.</p>
+
+  <div class="stat-callout">
+    <div class="sc-num">48 hrs</div>
+    <div class="sc-label">From "I have no idea how to do this" to a working product on a real business's website</div>
+  </div>
+
+  <h2>What I Got Wrong</h2>
+
+  <p>A few things I had to fix after the initial build:</p>
+
+  <ul>
+    <li><strong>JSON parsing was fragile.</strong> GPT sometimes wraps responses in markdown code blocks. Had to add three layers of parsing: direct JSON parse, strip the markdown, then regex extract.</li>
+    <li><strong>The scraper was too greedy.</strong> First version tried to scrape every page including sitemaps and PDF files. Added a 15-page limit and content type filtering.</li>
+    <li><strong>Temperature on gpt-4.1-nano doesn't work the same way.</strong> Setting temperature=0 caused errors. Had to remove it and rely on the prompt to constrain the output.</li>
+    <li><strong>Sessions were lost on server restart.</strong> Still a known limitation — will fix with proper session storage before production deployment.</li>
+  </ul>
+
+  <h2>The Insight That Changed Everything</h2>
+
+  <p>The thing I didn't expect: <strong>the website IS the knowledge base.</strong> Every business already has their information written down — services, pricing, FAQ, policies. It's sitting there on their website. We just taught AI to read it.</p>
+
+  <p>That realization changed the whole product direction. We don't need businesses to fill out forms or write training data. We just need the URL. Sixty seconds later, the AI knows as much about their business as a new employee who just read the whole website.</p>
+
+  <p>That's the idea that became Atlyz.</p>
+
+  <h2>What's Next</h2>
+
+  <p>Atlyz Chat is working and tested. The next two products are already in progress:</p>
+
+  <ul>
+    <li><strong>Atlyz Voice</strong> — an AI phone receptionist. Same idea, but for phone calls. The full conversation engine is built; the blocker is telephony access (age and payment restrictions — working on it).</li>
+    <li><strong>Atlyz Agent</strong> — full workflow automation. Not just answering questions but taking actions: booking appointments, sending follow-ups, updating CRMs.</li>
+  </ul>
+
+  <p>The first milestone is simpler than all of that: get one paying client. Deploy to Railway, point atlyz.com, get someone's business running on this. Everything else follows from there.</p>
+
+  <h2>If You're Building Something</h2>
+
+  <p>The version of me from six months ago would have spent weeks planning the perfect system before writing any code. I would have thought about scalability, edge cases, the onboarding flow, the pricing page. None of it would have helped.</p>
+
+  <div class="pull-quote">
+    <p>Build the ugly version first. Get it working. Then make it good. The ugly version taught me more than any amount of planning would have.</p>
+  </div>
+
+  <p>Start with the one sentence that describes what it needs to do. Write that sentence before you write any code. If you can't say what it needs to do in one sentence, you don't know what you're building yet.</p>
+
+  <p>I'm 16, I'm from Peshawar, and I built a working AI product in a weekend. That isn't special. What's special is that I just started. You can do the same thing. The tools exist. The APIs are accessible. The only question is whether you write the first function tonight or keep planning.</p>
+
+  <div class="article-cta">
+    <h3>See what 48 hours produced</h3>
+    <p>Atlyz Chat reads your website and answers customer questions 24/7. One script tag, five minutes to set up.</p>
+    <a href="contact.html" class="btn-primary">Try Atlyz free →</a>
+  </div>
+
+  <div class="related">
+    <h4>Related posts</h4>
+    <div class="related-grid">
+      <a href="blog-ai-reads-website.html" class="related-card">
+        <div class="rc-tag">Product</div>
+        <h5>Why we built an AI that reads your entire website in 60 seconds</h5>
+      </a>
+      <a href="blog-missed-messages.html" class="related-card">
+        <div class="rc-tag">Insights</div>
+        <h5>The hidden cost of a missed customer message</h5>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>© 2025 Atlyz. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="blog.html">Blog</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+var _prog=document.getElementById('scroll-prog');
+window.addEventListener('scroll',function(){var s=window.scrollY,t=document.documentElement.scrollHeight-window.innerHeight;_prog.style.width=(t>0?Math.min(s/t*100,100):0)+'%'},{passive:true});
+var _nav=document.querySelector('nav');
+window.addEventListener('scroll',function(){_nav.style.padding=window.scrollY>60?'10px 48px':'16px 48px';},{passive:true});
+(function(){var c=document.getElementById('particles-canvas'),x=c.getContext('2d'),W,H,P=[];function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz,{passive:true});function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,r:Math.random()*1.2+.4,col:['rgba(251,191,36,','rgba(248,113,113,'][Math.floor(Math.random()*2)],a:Math.random()*.35+.1}}for(var i=0;i<45;i++)P.push(mk());function draw(){x.clearRect(0,0,W,H);for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=p.col+p.a+')';x.fill();for(var j=i+1;j<P.length;j++){var q=P[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.strokeStyle='rgba(251,191,36,'+(0.11*(1-d/120))+')';x.lineWidth=.5;x.stroke()}}}requestAnimationFrame(draw)}draw();setTimeout(function(){c.classList.add('ready')},400)})();
+if(window.gsap){
+  gsap.from('.article-hero h1',{duration:.9,y:40,opacity:0,ease:'power3.out'});
+  gsap.from('.article-lead',{duration:.7,y:24,opacity:0,delay:.15,ease:'power2.out'});
+  gsap.from('.article-meta',{duration:.6,y:16,opacity:0,delay:.25,ease:'power2.out'});
+  gsap.from('.author',{duration:.6,y:16,opacity:0,delay:.35,ease:'power2.out'});
+  gsap.from('.article-body h2',{duration:.6,y:20,opacity:0,stagger:.1,scrollTrigger:{trigger:'.article-body',start:'top 80%'}});
+  gsap.from('.tl-item',{duration:.5,x:-20,opacity:0,stagger:.08,ease:'power2.out',scrollTrigger:{trigger:'.timeline',start:'top 85%'}});
+  gsap.from('.stat-callout',{duration:.7,scale:.96,opacity:0,ease:'power2.out',scrollTrigger:{trigger:'.stat-callout',start:'top 85%'}});
+}
+</script>
+<script src="http://localhost:5002/widget.js?id=atlyz_website"></script>
+</body>
+</html>

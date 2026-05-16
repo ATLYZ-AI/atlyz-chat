@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATLYZ — AI Customer Support for Small Businesses | 24/7 Chat Agent</title>
+<meta name="description" content="Atlyz gives every small business an AI assistant that answers customer questions 24/7, speaks 50+ languages, and captures leads automatically. Setup in 5 minutes.">
+<meta property="og:title" content="ATLYZ — AI Customer Support for Small Businesses">
+<meta property="og:description" content="Answer every customer question in 0.8 seconds — while you sleep. No developer needed.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Syne:wght@700&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─────────────── TOKENS ─────────────── */
+:root{
+  --bg:       #0b0b0f;
+  --surface:  #13131a;
+  --surface2: #1a1a24;
+  --border:   rgba(255,255,255,0.08);
+  --border-h: rgba(255,255,255,0.16);
+  --text:     #f0f0f4;
+  --muted:    #6c6c82;
+  --purple:   #a78bfa;
+  --blue:     #60a5fa;
+  --cyan:     #34d399;
+  --green:    #4ade80;
+}
+
+/* ─────────────── RESET ─────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Inter',sans-serif;
+  overflow-x:hidden;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ─────────────── HERO GLOW ─────────────── */
+.hero-glow{
+  position:absolute;
+  top:-80px;left:50%;transform:translateX(-50%);
+  width:1100px;height:700px;
+  background:radial-gradient(ellipse 60% 50% at 50% 40%,
+    rgba(120,80,255,0.22) 0%,
+    rgba(80,120,255,0.14) 35%,
+    rgba(30,200,180,0.06) 65%,
+    transparent 100%
+  );
+  pointer-events:none;animation:glow-breathe 8s ease-in-out infinite;
+}
+@keyframes glow-breathe{
+  0%,100%{opacity:.9;transform:translateX(-50%) scale(1)}
+  50%{opacity:1;transform:translateX(-50%) scale(1.05)}
+}
+
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
+  background-size:80px 80px;
+  pointer-events:none;z-index:0;
+}
+
+/* ─────────────── NAV ─────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 56px;height:64px;
+  background:rgba(11,11,15,0.8);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-word{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f4}
+.nav-links{display:flex;gap:36px;align-items:center}
+.nav-links a{
+  color:var(--muted);text-decoration:none;
+  font-size:14px;font-weight:500;transition:color .2s;
+}
+.nav-links a:hover{color:var(--text)}
+.nav-right{display:flex;gap:10px;align-items:center}
+.btn-nav-ghost{
+  color:var(--muted);text-decoration:none;font-size:14px;
+  font-weight:500;padding:7px 16px;border-radius:7px;
+  border:1px solid transparent;transition:.2s;
+}
+.btn-nav-ghost:hover{color:var(--text);border-color:var(--border-h)}
+.btn-nav-cta{
+  background:#fff;color:#0b0b0f;
+  padding:8px 20px;border-radius:8px;text-decoration:none;
+  font-size:14px;font-weight:500;transition:.15s;letter-spacing:-.2px;
+}
+.btn-nav-cta:hover{background:#e8e8f0;transform:translateY(-1px)}
+.hamburger{
+  display:none;background:none;border:none;
+  color:var(--text);font-size:22px;cursor:pointer;padding:4px;
+}
+
+/* ─────────────── HERO ─────────────── */
+.hero{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:140px 24px 80px;
+  overflow:hidden;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 14px 5px 6px;
+  border-radius:100px;
+  border:1px solid rgba(167,139,250,0.25);
+  background:rgba(167,139,250,0.07);
+  font-size:12px;font-family:'JetBrains Mono',monospace;
+  color:#c4b5fd;margin-bottom:40px;
+  animation:rise .7s ease both;
+}
+.badge-pill{
+  background:rgba(167,139,250,0.25);border-radius:100px;
+  padding:2px 10px;font-size:11px;font-weight:400;color:#e9d5ff;
+  letter-spacing:.3px;
+}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:#a78bfa;animation:blink 2s infinite;display:inline-block;margin-right:4px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.hero h1{
+  font-size:clamp(34px,5vw,66px);
+  font-weight:500;line-height:1.08;
+  letter-spacing:-2.5px;
+  margin-bottom:24px;
+  animation:rise .7s .1s ease both;
+  max-width:820px;
+}
+.word-accent{
+  background:linear-gradient(90deg,#a78bfa,#60a5fa,#34d399);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{
+  font-size:clamp(15px,2vw,18px);color:var(--muted);
+  max-width:480px;margin:0 auto 40px;
+  line-height:1.7;font-weight:400;
+  animation:rise .7s .2s ease both;
+}
+.hero-btns{
+  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+  animation:rise .7s .3s ease both;
+}
+.no-cc{
+  font-size:12px;color:var(--muted);
+  margin-top:14px;opacity:.7;
+  animation:rise .7s .35s ease both;
+}
+@keyframes rise{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+
+.btn-primary{
+  padding:14px 32px;border-radius:10px;
+  background:linear-gradient(135deg,#7c3aed 0%,#2563eb 100%);
+  color:#fff;text-decoration:none;font-weight:500;font-size:15px;
+  border:none;cursor:pointer;transition:.2s;letter-spacing:-.2px;
+  box-shadow:0 0 0 1px rgba(124,58,237,.4),0 8px 40px rgba(124,58,237,.3);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(124,58,237,.5),0 12px 56px rgba(124,58,237,.4)}
+.btn-outline{
+  padding:14px 32px;border-radius:10px;
+  border:1px solid var(--border-h);
+  color:var(--text);text-decoration:none;font-weight:400;font-size:15px;
+  background:rgba(255,255,255,.03);cursor:pointer;transition:.2s;
+}
+.btn-outline:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.24)}
+
+/* hero social proof */
+.hero-proof{
+  margin-top:52px;
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  animation:rise .7s .45s ease both;
+}
+.proof-label{
+  font-size:11px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--muted);font-family:'JetBrains Mono',monospace;
+}
+.proof-logos{
+  display:flex;gap:28px;align-items:center;flex-wrap:wrap;justify-content:center;
+}
+.proof-logos span{
+  font-size:14px;font-weight:500;color:#2e2e44;
+  letter-spacing:-.2px;transition:color .25s;
+}
+.proof-logos span:hover{color:var(--muted)}
+
+/* ─────────────── STAT BAR ─────────────── */
+.stat-bar{
+  display:flex;justify-content:center;gap:64px;
+  padding:56px 24px;flex-wrap:wrap;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  position:relative;z-index:1;
+}
+.stat-item{text-align:center}
+.stat-num{
+  font-size:42px;font-weight:500;
+  letter-spacing:-2px;line-height:1;
+  background:linear-gradient(135deg,#a78bfa,#60a5fa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.stat-label{
+  font-size:12px;color:var(--muted);margin-top:6px;
+  font-family:'JetBrains Mono',monospace;letter-spacing:.5px;
+}
+
+/* ─────────────── TRUST BAR ─────────────── */
+.trust{
+  position:relative;z-index:1;
+  padding:0 0 80px;text-align:center;
+}
+.trust-label{
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:28px;
+  font-family:'JetBrains Mono',monospace;
+}
+.trust-track-wrap{
+  overflow:hidden;position:relative;
+}
+.trust-track-wrap::before,
+.trust-track-wrap::after{
+  content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;pointer-events:none;
+}
+.trust-track-wrap::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
+.trust-track-wrap::after{right:0;background:linear-gradient(-90deg,var(--bg),transparent)}
+.trust-track{
+  display:flex;gap:0;width:max-content;
+  animation:marquee 50s linear infinite;
+}
+.trust-track:hover{animation-play-state:paused}
+@keyframes marquee{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+.trust-logos{
+  display:flex;gap:96px;align-items:center;padding:0 48px;
+}
+.trust-item{
+  display:flex;align-items:center;gap:14px;
+  color:#46466a;white-space:nowrap;
+  transition:color .3s,filter .3s;
+  cursor:default;
+}
+.trust-item:hover{
+  color:#c4b5fd;
+  filter:drop-shadow(0 0 12px rgba(167,139,250,0.7));
+}
+.trust-item svg{
+  width:40px;height:40px;flex-shrink:0;opacity:.8;
+  transition:opacity .3s;
+}
+.trust-item:hover svg{opacity:1}
+.trust-item span{
+  font-family:'Outfit',sans-serif;
+  font-size:34px;font-weight:300;letter-spacing:-.5px;
+}
+
+/* ─────────────── HOW IT WORKS ─────────────── */
+.hiw-section{
+  position:relative;z-index:1;
+  padding:96px 24px;max-width:1200px;margin:0 auto;
+}
+.steps-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:0;margin-top:64px;position:relative;
+}
+.steps-grid::before{
+  content:'';position:absolute;
+  top:38px;
+  left:calc(16.66% + 16px);
+  right:calc(16.66% + 16px);
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),var(--border),transparent);
+  z-index:0;
+}
+.step{
+  text-align:center;padding:0 28px;
+  position:relative;z-index:1;
+}
+.step-num{
+  width:52px;height:52px;
+  border-radius:50%;
+  border:1px solid var(--border);
+  background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 24px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:16px;font-weight:500;
+  color:var(--purple);
+  transition:border-color .3s,box-shadow .3s;
+}
+.step:hover .step-num{
+  border-color:rgba(167,139,250,.4);
+  box-shadow:0 0 24px rgba(167,139,250,.2);
+}
+.step h3{font-size:17px;font-weight:500;margin-bottom:8px;letter-spacing:-.3px}
+.step p{font-size:14px;color:var(--muted);line-height:1.65}
+.step-tag{
+  display:inline-block;font-size:10px;
+  font-family:'JetBrains Mono',monospace;
+  color:#34d399;background:rgba(52,211,153,.08);
+  border:1px solid rgba(52,211,153,.15);
+  padding:3px 10px;border-radius:100px;margin-top:12px;
+}
+
+/* ─────────────── SECTION ─────────────── */
+section{
+  position:relative;z-index:1;
+  padding:96px 24px;max-width:1200px;margin:0 auto;
+}
+.section-label{
+  font-size:11px;font-family:'JetBrains Mono',monospace;
+  letter-spacing:2.5px;text-transform:uppercase;
+  color:#7c6af7;margin-bottom:12px;
+}
+.section-title{
+  font-size:clamp(32px,5vw,52px);font-weight:500;
+  letter-spacing:-2.5px;line-height:1.05;margin-bottom:16px;
+}
+.section-sub{
+  font-size:17px;color:var(--muted);
+  max-width:460px;line-height:1.7;
+}
+
+/* ─────────────── FEATURE BENTO ─────────────── */
+.bento{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:14px;margin-top:64px;
+}
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;padding:28px;
+  transition:border-color .25s,transform .25s;
+  position:relative;overflow:hidden;
+}
+.card:hover{border-color:var(--border-h);transform:translateY(-3px)}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:2px;border-radius:16px 16px 0 0;
+  opacity:0;transition:opacity .3s;
+}
+.card-chat{grid-column:span 7}
+.card-chat::before{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
+.card-speed{grid-column:span 5}
+.card-speed::before{background:linear-gradient(90deg,#2563eb,#60a5fa)}
+.card-lang{grid-column:span 4}
+.card-lang::before{background:linear-gradient(90deg,#0891b2,#34d399)}
+.card-scrape{grid-column:span 4}
+.card-scrape::before{background:linear-gradient(90deg,#16a34a,#4ade80)}
+.card-embed{grid-column:span 4}
+.card-embed::before{background:linear-gradient(90deg,#7c3aed,#60a5fa)}
+.card:hover::before{opacity:1}
+
+.card-icon{
+  width:38px;height:38px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;
+}
+.ic-p{background:rgba(124,58,237,.18);border:1px solid rgba(167,139,250,.25);color:#a78bfa}
+.ic-b{background:rgba(37,99,235,.18);border:1px solid rgba(96,165,250,.25);color:#60a5fa}
+.ic-c{background:rgba(8,145,178,.18);border:1px solid rgba(52,211,153,.25);color:#34d399}
+.ic-g{background:rgba(22,163,74,.18);border:1px solid rgba(74,222,128,.25);color:#4ade80}
+
+.card h3{font-size:16px;font-weight:500;margin-bottom:8px;letter-spacing:-.3px}
+.card p{font-size:14px;color:var(--muted);line-height:1.65}
+
+/* chat preview */
+.chat-preview{margin-top:20px;display:flex;flex-direction:column;gap:8px}
+.chat-msg{padding:10px 14px;border-radius:12px;font-size:13px;max-width:88%;line-height:1.5}
+.chat-u{background:rgba(124,58,237,.15);border:1px solid rgba(167,139,250,.2);align-self:flex-end;color:#c4b5fd}
+.chat-b{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;color:var(--text)}
+.typing{display:flex;gap:4px;align-items:center;padding:10px 14px;align-self:flex-start}
+.typing span{width:5px;height:5px;border-radius:50%;background:var(--muted);animation:dot 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+/* speed */
+.speed-meter{margin-top:20px}
+.speed-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:36px;font-weight:500;color:#60a5fa;line-height:1;
+}
+.speed-lbl{font-size:12px;color:var(--muted);margin-top:4px;margin-bottom:14px;display:block}
+.bar-wrap{height:4px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-bottom:12px}
+.bar{height:100%;background:linear-gradient(90deg,#2563eb,#7c3aed);animation:grow 2s .5s ease both;border-radius:4px}
+@keyframes grow{from{width:0}to{width:92%}}
+.bar-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+/* lang */
+.lang-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.pill{padding:3px 10px;border-radius:100px;font-size:11px;font-family:'JetBrains Mono',monospace;background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+.pill.on{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.2);color:#34d399}
+
+/* scrape */
+.scrape-steps{display:flex;flex-direction:column;gap:7px;margin-top:16px}
+.s-step{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;background:var(--surface2);font-size:13px;color:var(--muted)}
+.s-step.done{color:var(--text)}
+.s-dot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0}
+.s-step.done .s-dot{background:#4ade80;box-shadow:0 0 8px rgba(74,222,128,.4)}
+
+/* embed */
+.embed-box{
+  margin-top:16px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:14px 16px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  color:#a78bfa;line-height:1.8;
+}
+
+/* ─────────────── PRODUCTS ─────────────── */
+.products-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:16px;margin-top:64px;
+}
+.prod-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:18px;padding:36px;transition:.25s;position:relative;overflow:hidden;
+}
+.prod-card:hover{border-color:var(--border-h);transform:translateY(-4px)}
+.prod-card::after{
+  content:'';position:absolute;inset:0;border-radius:18px;
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.glow-p::after{background:radial-gradient(ellipse at 0% 0%,rgba(124,58,237,.1),transparent 55%)}
+.glow-b::after{background:radial-gradient(ellipse at 100% 0%,rgba(37,99,235,.1),transparent 55%)}
+.glow-g::after{background:radial-gradient(ellipse at 50% 0%,rgba(74,222,128,.05),transparent 55%)}
+.prod-card:hover::after{opacity:1}
+
+.prod-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:100px;
+  font-size:10px;font-weight:400;letter-spacing:1.5px;text-transform:uppercase;
+  font-family:'JetBrains Mono',monospace;margin-bottom:20px;
+}
+.tag-live{background:rgba(74,222,128,.08);color:#4ade80;border:1px solid rgba(74,222,128,.18)}
+.tag-soon{background:rgba(167,139,250,.08);color:#a78bfa;border:1px solid rgba(167,139,250,.18)}
+.tag-road{background:rgba(113,113,122,.08);color:var(--muted);border:1px solid var(--border)}
+
+.prod-card h3{
+  font-size:26px;font-weight:500;letter-spacing:-1px;
+  margin-bottom:12px;line-height:1.1;
+}
+.prod-card h3 a{color:inherit;text-decoration:none;transition:color .2s}
+.prod-card h3 a:hover{color:#a78bfa}
+.prod-card>p{font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:24px}
+.prod-feats{display:flex;flex-direction:column;gap:9px}
+.pfeat{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted)}
+.pfeat svg{flex-shrink:0;color:#4ade80}
+
+/* ─────────────── TESTIMONIALS ─────────────── */
+.testi-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;margin-top:64px;
+}
+.testi-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:18px;padding:32px;
+  transition:border-color .25s,transform .25s;position:relative;
+}
+.testi-card:hover{border-color:var(--border-h);transform:translateY(-3px)}
+.stars{color:#f59e0b;font-size:13px;margin-bottom:18px;letter-spacing:3px}
+.testi-quote{
+  font-size:14px;line-height:1.8;
+  color:var(--muted);margin-bottom:24px;
+}
+.testi-quote strong{color:var(--text);font-weight:500}
+.testi-author{display:flex;align-items:center;gap:12px}
+.testi-avatar{
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:500;flex-shrink:0;
+}
+.av-1{background:rgba(124,58,237,.2);color:#a78bfa}
+.av-2{background:rgba(37,99,235,.2);color:#60a5fa}
+.av-3{background:rgba(52,211,153,.2);color:#34d399}
+.testi-name{font-size:13px;font-weight:500}
+.testi-role{font-size:11px;color:var(--muted);margin-top:1px}
+.result-badge{
+  margin-top:18px;
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-family:'JetBrains Mono',monospace;
+  color:#4ade80;background:rgba(74,222,128,.06);
+  border:1px solid rgba(74,222,128,.15);
+  padding:5px 12px;border-radius:100px;
+}
+
+/* ─────────────── PRICING ─────────────── */
+.pricing-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));
+  gap:14px;margin-top:64px;
+}
+.price-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:18px;padding:32px;position:relative;transition:.25s;
+}
+.price-card:hover{border-color:var(--border-h)}
+.price-card.featured{
+  border-color:rgba(124,58,237,.4);
+  background:linear-gradient(160deg,rgba(124,58,237,.07),rgba(37,99,235,.04));
+  box-shadow:0 0 0 1px rgba(124,58,237,.12),0 0 80px rgba(124,58,237,.1);
+}
+.price-badge{
+  position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#7c3aed,#2563eb);
+  color:#fff;font-size:10px;font-weight:500;
+  padding:4px 18px;border-radius:100px;letter-spacing:2px;
+  text-transform:uppercase;white-space:nowrap;
+  font-family:'JetBrains Mono',monospace;
+}
+.price-tier{font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:400;letter-spacing:.5px;text-transform:uppercase}
+.price-amount{
+  font-size:56px;font-weight:500;letter-spacing:-4px;
+  line-height:1;margin-bottom:4px;
+}
+.price-period{font-size:13px;color:var(--muted);margin-bottom:28px}
+.price-feats{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.pf{display:flex;align-items:flex-start;gap:10px;font-size:13px}
+.pf .ck{color:#4ade80;flex-shrink:0;font-size:15px;margin-top:1px}
+.pf .no{color:#3a3a52;flex-shrink:0;font-size:15px;margin-top:1px}
+.pf span{color:var(--muted)}
+.pf.has span{color:var(--text)}
+.price-btn{
+  width:100%;padding:12px;border-radius:9px;font-size:13px;
+  font-weight:500;cursor:pointer;transition:.2s;
+  text-decoration:none;display:block;text-align:center;
+  font-family:'Inter',sans-serif;letter-spacing:-.2px;
+}
+.price-btn.outline{background:transparent;border:1px solid var(--border-h);color:var(--text)}
+.price-btn.outline:hover{background:var(--surface2)}
+.price-btn.solid{
+  background:linear-gradient(135deg,#7c3aed,#2563eb);
+  border:none;color:#fff;
+  box-shadow:0 0 0 1px rgba(124,58,237,.25),0 8px 24px rgba(124,58,237,.22);
+}
+.price-btn.solid:hover{
+  box-shadow:0 0 0 1px rgba(124,58,237,.35),0 12px 36px rgba(124,58,237,.32);
+  transform:translateY(-1px);
+}
+
+/* ─────────────── FAQ ─────────────── */
+.faq-list{
+  margin-top:56px;
+  display:flex;flex-direction:column;gap:0;
+  border:1px solid var(--border);border-radius:16px;overflow:hidden;
+}
+.faq-item{
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+}
+.faq-item:last-child{border-bottom:none}
+.faq-q{
+  width:100%;background:none;border:none;
+  color:var(--text);text-align:left;
+  padding:22px 28px;
+  font-family:'Inter',sans-serif;font-size:15px;font-weight:500;
+  cursor:pointer;display:flex;justify-content:space-between;
+  align-items:center;gap:16px;transition:background .2s;letter-spacing:-.2px;
+}
+.faq-q:hover{background:var(--surface2)}
+.faq-chevron{
+  width:22px;height:22px;border-radius:50%;
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:transform .3s,border-color .2s,color .2s;
+  color:var(--muted);font-size:14px;line-height:1;
+}
+.faq-item.open .faq-chevron{
+  transform:rotate(45deg);
+  border-color:rgba(167,139,250,.4);color:var(--purple);
+}
+.faq-a{
+  max-height:0;overflow:hidden;
+  transition:max-height .4s cubic-bezier(.16,1,.3,1);
+  font-size:14px;color:var(--muted);line-height:1.8;
+  padding:0 28px;
+}
+.faq-item.open .faq-a{max-height:300px;padding-bottom:22px}
+
+/* ─────────────── CTA SECTION ─────────────── */
+.cta-wrap{
+  position:relative;z-index:1;
+  padding:100px 24px;text-align:center;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  overflow:hidden;
+}
+.cta-bg{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:800px;height:500px;
+  background:radial-gradient(ellipse,rgba(124,58,237,.12) 0%,rgba(37,99,235,.07) 40%,transparent 70%);
+  pointer-events:none;
+}
+.urgency-bar{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-family:'JetBrains Mono',monospace;
+  color:#34d399;background:rgba(52,211,153,.07);
+  border:1px solid rgba(52,211,153,.15);
+  padding:6px 16px;border-radius:100px;
+  margin-bottom:28px;position:relative;
+}
+.urgency-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#34d399;animation:blink 1.5s infinite;
+}
+.cta-wrap h2{
+  font-size:clamp(34px,5vw,60px);font-weight:500;
+  letter-spacing:-3px;line-height:1.04;
+  margin-bottom:16px;position:relative;
+}
+.cta-wrap>p{font-size:17px;color:var(--muted);margin-bottom:36px;position:relative}
+.cta-email-form{
+  display:flex;gap:8px;justify-content:center;
+  flex-wrap:wrap;position:relative;margin-bottom:16px;
+}
+.cta-email-input{
+  padding:13px 18px;border-radius:9px;
+  border:1px solid var(--border-h);
+  background:rgba(255,255,255,.04);
+  color:var(--text);font-family:'Inter',sans-serif;
+  font-size:14px;width:260px;outline:none;
+  transition:border-color .2s;
+}
+.cta-email-input:focus{border-color:rgba(167,139,250,.5)}
+.cta-email-input::placeholder{color:var(--muted)}
+.cta-risk{
+  font-size:11px;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;
+  gap:20px;flex-wrap:wrap;position:relative;
+}
+.cta-risk span{display:flex;align-items:center;gap:5px}
+.risk-check{color:#4ade80}
+
+/* ─────────────── FOOTER ─────────────── */
+footer{
+  position:relative;z-index:1;
+  padding:56px 24px 36px;
+  max-width:1200px;margin:0 auto;
+  border-top:1px solid var(--border);
+}
+.foot-top{
+  display:flex;justify-content:space-between;
+  flex-wrap:wrap;gap:48px;margin-bottom:48px;
+}
+.foot-brand p{font-size:13px;color:var(--muted);max-width:200px;line-height:1.65;margin-top:10px}
+.foot-logo{font-size:18px;font-weight:500;letter-spacing:-.5px;color:var(--text)}
+.foot-col h4{
+  font-size:11px;font-weight:400;margin-bottom:16px;color:var(--text);
+  letter-spacing:1.5px;text-transform:uppercase;
+}
+.foot-col a{
+  display:block;font-size:13px;color:var(--muted);
+  text-decoration:none;margin-bottom:10px;transition:.2s;
+}
+.foot-col a:hover{color:var(--text)}
+.foot-newsletter{margin-top:8px}
+.foot-newsletter p{font-size:12px;color:var(--muted);margin-bottom:10px}
+.foot-nl-form{display:flex;gap:6px}
+.foot-nl-input{
+  flex:1;padding:8px 12px;border-radius:7px;
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--text);font-family:'Inter',sans-serif;
+  font-size:12px;outline:none;min-width:0;
+}
+.foot-nl-input::placeholder{color:var(--muted)}
+.foot-nl-input:focus{border-color:rgba(167,139,250,.4)}
+.foot-nl-btn{
+  padding:8px 14px;border-radius:7px;border:none;
+  background:rgba(124,58,237,.7);color:#fff;
+  font-size:12px;font-family:'Inter',sans-serif;
+  cursor:pointer;white-space:nowrap;transition:background .2s;
+}
+.foot-nl-btn:hover{background:rgba(124,58,237,.9)}
+.social-links{display:flex;gap:8px;margin-top:16px}
+.social-link{
+  width:34px;height:34px;border-radius:8px;
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--muted);text-decoration:none;
+  transition:border-color .2s,color .2s,background .2s;
+}
+.social-link:hover{border-color:var(--border-h);color:var(--text);background:var(--surface2)}
+.foot-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:12px;
+  padding-top:24px;border-top:1px solid var(--border);
+}
+.foot-bottom p{font-size:12px;color:var(--muted)}
+.foot-mono{font-family:'JetBrains Mono',monospace;color:#2a2a38;font-size:11px}
+
+/* ─────────────── REVEAL ─────────────── */
+.reveal{opacity:0;transform:translateY(28px);transition:.75s cubic-bezier(.16,1,.3,1)}
+.reveal.vis{opacity:1;transform:none}
+
+/* staggered reveal delays inside grids */
+.bento .reveal:nth-child(1){transition-delay:.04s}
+.bento .reveal:nth-child(2){transition-delay:.14s}
+.bento .reveal:nth-child(3){transition-delay:.24s}
+.bento .reveal:nth-child(4){transition-delay:.34s}
+.bento .reveal:nth-child(5){transition-delay:.44s}
+.steps-grid .reveal:nth-child(1){transition-delay:.04s}
+.steps-grid .reveal:nth-child(2){transition-delay:.17s}
+.steps-grid .reveal:nth-child(3){transition-delay:.3s}
+.testi-grid .reveal:nth-child(1){transition-delay:.04s}
+.testi-grid .reveal:nth-child(2){transition-delay:.17s}
+.testi-grid .reveal:nth-child(3){transition-delay:.3s}
+.pricing-grid .reveal:nth-child(1){transition-delay:.04s}
+.pricing-grid .reveal:nth-child(2){transition-delay:.17s}
+.pricing-grid .reveal:nth-child(3){transition-delay:.3s}
+.products-grid .reveal:nth-child(1){transition-delay:.04s}
+.products-grid .reveal:nth-child(2){transition-delay:.17s}
+.products-grid .reveal:nth-child(3){transition-delay:.3s}
+
+/* ─────────────── SCROLL PROGRESS BAR ─────────────── */
+#scroll-prog{
+  position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;
+  background:linear-gradient(90deg,#7c3aed,#60a5fa,#34d399);
+  box-shadow:0 0 10px rgba(124,58,237,.8);
+  pointer-events:none;
+  transition:width .08s linear;
+}
+
+/* ─────────────── AMBIENT ORBS ─────────────── */
+.amb-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orb-drift 24s ease-in-out infinite alternate}
+.orb1{width:720px;height:720px;background:radial-gradient(circle,rgba(124,58,237,.22),transparent 65%);top:-280px;left:-200px;animation-duration:30s}
+.orb2{width:620px;height:620px;background:radial-gradient(circle,rgba(37,99,235,.18),transparent 65%);top:25%;right:-220px;animation-duration:36s;animation-direction:alternate-reverse;animation-delay:-14s}
+.orb3{width:520px;height:520px;background:radial-gradient(circle,rgba(8,145,178,.13),transparent 65%);bottom:0;left:0;animation-duration:26s;animation-delay:-8s}
+.orb4{width:360px;height:360px;background:radial-gradient(circle,rgba(74,222,128,.09),transparent 65%);bottom:-120px;right:12%;animation-duration:20s;animation-direction:alternate-reverse;animation-delay:-20s}
+@keyframes orb-drift{
+  from{transform:translate(0,0) scale(1)}
+  to{transform:translate(80px,-60px) scale(1.1)}
+}
+
+/* ─────────────── CANVAS PARTICLE FIELD ─────────────── */
+#particles-canvas{
+  position:fixed;inset:0;z-index:0;
+  pointer-events:none;opacity:0;
+  transition:opacity 1s ease;
+}
+#particles-canvas.ready{opacity:1}
+
+/* ─────────────── CARD SHIMMER SWEEP ─────────────── */
+.card::after{
+  content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+  background:linear-gradient(108deg,transparent 28%,rgba(255,255,255,.06) 50%,transparent 72%);
+  transform:translateX(-140%);
+  transition:transform .9s cubic-bezier(.25,.46,.45,.94);
+  pointer-events:none;border-radius:inherit;
+}
+.card:hover::after{transform:translateX(140%)}
+
+/* ─────────────── SECTION LABEL GRADIENT FLOW ─────────────── */
+.section-label{
+  background:linear-gradient(90deg,#7c6af7 0%,#a78bfa 25%,#60a5fa 55%,#7c6af7 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:label-flow 5s linear infinite;
+}
+@keyframes label-flow{to{background-position:-200% center}}
+
+/* ─────────────── HERO WORD ACCENT GLOW ─────────────── */
+.word-accent{
+  display:inline-block;
+  animation:word-glow 5s ease-in-out infinite;
+}
+@keyframes word-glow{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.2) drop-shadow(0 0 30px rgba(167,139,250,.5))}
+}
+
+/* ─────────────── FEATURED CARD BORDER PULSE ─────────────── */
+.price-card.featured{
+  animation:feat-pulse 3.5s ease-in-out infinite;
+}
+@keyframes feat-pulse{
+  0%,100%{box-shadow:0 0 0 1px rgba(124,58,237,.12),0 0 80px rgba(124,58,237,.1)}
+  50%{box-shadow:0 0 0 1px rgba(124,58,237,.4),0 0 110px rgba(124,58,237,.25),0 0 50px rgba(37,99,235,.2)}
+}
+
+/* ─────────────── STAT NUM HOVER GLOW ─────────────── */
+.stat-item{cursor:default}
+.stat-item:hover .stat-num{
+  filter:drop-shadow(0 0 22px rgba(167,139,250,.65));
+}
+
+/* ─────────────── STEP NUM PULSE ON HOVER ─────────────── */
+.step:hover .step-num{
+  animation:step-ring 1.2s ease-in-out infinite;
+}
+@keyframes step-ring{
+  0%,100%{box-shadow:0 0 0 0 rgba(167,139,250,.3)}
+  50%{box-shadow:0 0 0 8px rgba(167,139,250,0)}
+}
+
+/* ─────────────── BADGE PULSE RING ─────────────── */
+.badge-dot{
+  position:relative;
+}
+.badge-dot::after{
+  content:'';position:absolute;inset:-3px;border-radius:50%;
+  border:1px solid rgba(167,139,250,.5);
+  animation:ring-expand 2s ease-out infinite;
+}
+@keyframes ring-expand{
+  0%{transform:scale(1);opacity:.8}
+  100%{transform:scale(2.5);opacity:0}
+}
+
+/* ─────────────── RESPONSIVE ─────────────── */
+@media(max-width:768px){
+  nav{padding:0 20px}
+  .nav-links{display:none}
+  .nav-links.open{
+    display:flex;flex-direction:column;position:absolute;
+    top:64px;left:0;right:0;
+    background:rgba(11,11,15,.98);
+    padding:24px;gap:20px;
+    border-bottom:1px solid var(--border);z-index:99;
+  }
+  .hamburger{display:block}
+  .hero h1{font-size:40px;letter-spacing:-2px}
+  .card-chat,.card-speed,.card-lang,.card-scrape,.card-embed{grid-column:span 12}
+  .bento{grid-template-columns:1fr}
+  .steps-grid{grid-template-columns:1fr;gap:40px}
+  .steps-grid::before{display:none}
+  .step{text-align:left;display:flex;gap:20px;align-items:flex-start}
+  .step-num{margin:0;flex-shrink:0}
+  .stat-bar{gap:40px}
+  .cta-email-input{width:100%}
+  .foot-top{flex-direction:column;gap:32px}
+}
+</style>
+</head>
+<body>
+
+<!-- MOTION: scroll progress + ambient orbs + particle canvas -->
+<div id="scroll-prog"></div>
+<canvas id="particles-canvas"></canvas>
+<div class="amb-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="orb orb4"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="atlyz-g" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0%" stop-color="#0ea5e9"/>
+          <stop offset="100%" stop-color="#67e8f9"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="44" stroke="url(#atlyz-g)" stroke-width="3"/>
+      <line x1="50" y1="73" x2="19" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="19" cy="31" r="5" fill="url(#atlyz-g)"/>
+      <circle cx="34" cy="52" r="4" fill="url(#atlyz-g)"/>
+      <line x1="50" y1="73" x2="34" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="34" cy="17" r="5" fill="url(#atlyz-g)"/>
+      <line x1="50" y1="73" x2="50" y2="11" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="50" cy="11" r="5" fill="url(#atlyz-g)"/>
+      <circle cx="50" cy="42" r="4" fill="url(#atlyz-g)"/>
+      <line x1="50" y1="73" x2="66" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="66" cy="17" r="5" fill="url(#atlyz-g)"/>
+      <line x1="50" y1="73" x2="81" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="81" cy="31" r="5" fill="url(#atlyz-g)"/>
+      <circle cx="66" cy="52" r="4" fill="url(#atlyz-g)"/>
+      <circle cx="50" cy="73" r="5.5" fill="url(#atlyz-g)"/>
+    </svg>
+    <span class="logo-word">ATLYZ</span>
+  </a>
+  <div class="nav-links">
+    <a href="#how-it-works">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <div class="nav-right">
+    <a href="contact.html" class="btn-nav-ghost">Log in</a>
+    <a href="setup.html" class="btn-nav-cta">Start free</a>
+  </div>
+  <button class="hamburger" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-glow"></div>
+
+  <div class="badge">
+    <span class="badge-pill"><span class="badge-dot"></span>LIVE</span>
+    Atlyz Chat — available now &nbsp;→
+  </div>
+
+  <h1>Answer every customer question<br><span class="word-accent">in 0.8 seconds — while you sleep.</span></h1>
+
+  <p class="hero-sub">
+    The AI chatbot that reads your website, speaks 50+ languages, and captures leads 24/7. Set up in 5 minutes — no developer needed.
+  </p>
+
+  <div class="hero-btns">
+    <a href="setup.html" class="btn-primary">Start free — no card needed →</a>
+    <a href="#how-it-works" class="btn-outline">See how it works</a>
+  </div>
+
+  <p class="no-cc">No credit card required · Setup in under 5 minutes · Cancel any time</p>
+
+  <div class="hero-proof">
+    <p class="proof-label">Trusted by growing small businesses</p>
+    <div class="proof-logos">
+      <span>CaféPro</span>
+      <span>LegalEase</span>
+      <span>HealthFirst</span>
+      <span>RetailPro</span>
+      <span>BuildCorp</span>
+      <span>TechStart</span>
+    </div>
+  </div>
+</div>
+
+<!-- STAT BAR -->
+<div class="stat-bar">
+  <div class="stat-item reveal">
+    <div class="stat-num" data-target="500" data-suffix="+">0+</div>
+    <div class="stat-label">businesses using Atlyz</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num" data-target="50" data-suffix="+">0+</div>
+    <div class="stat-label">languages supported</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num" data-target="0.8" data-suffix="s" data-float="true">0s</div>
+    <div class="stat-label">avg. response time</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num" data-target="24" data-suffix="/7">0/7</div>
+    <div class="stat-label">always answering</div>
+  </div>
+</div>
+
+<!-- TRUST BAR -->
+<div class="trust">
+  <p class="trust-label">Works with any platform</p>
+  <div class="trust-track-wrap">
+    <div class="trust-track">
+
+      <!-- SET 1 -->
+      <div class="trust-logos">
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.337 23.979l7.216-1.561s-2.604-17.613-2.625-17.73c-.018-.116-.114-.192-.211-.192s-1.929-.136-1.929-.136-1.275-1.274-1.439-1.411c-.045-.037-.075-.057-.121-.074l-.914 21.104h.023zM11.71 11.305s-.81-.424-1.774-.424c-1.447 0-1.504.906-1.504 1.141 0 1.232 3.24 1.715 3.24 4.629 0 2.295-1.44 3.76-3.406 3.76-2.354 0-3.54-1.465-3.54-1.465l.646-2.086s1.245 1.066 2.28 1.066c.675 0 .975-.545.975-.932 0-1.619-2.654-1.694-2.654-4.359-.034-2.237 1.571-4.416 4.827-4.416 1.257 0 1.875.361 1.875.361l-.945 2.715-.02.01zM11.17.83c.136 0 .271.038.405.135-.984.465-2.064 1.639-2.508 3.992-.656.213-1.293.405-1.889.578C7.697 3.75 8.951.84 11.17.84V.83zm1.235 2.949v.135c-.754.232-1.583.484-2.394.736.466-1.777 1.333-2.645 2.085-2.971.193.501.309 1.176.309 2.1zm.539-2.234c.694.074 1.141.867 1.429 1.755-.349.114-.735.231-1.158.366v-.252c0-.752-.096-1.371-.271-1.871v.002zm2.992 1.289c-.02 0-.06.021-.078.021s-.289.075-.714.21c-.423-1.233-1.176-2.37-2.508-2.37h-.115C12.135.209 11.669 0 11.265 0 8.159 0 6.675 3.877 6.21 5.846c-1.194.365-2.063.636-2.16.674-.675.213-.694.232-.772.87-.075.462-1.83 14.063-1.83 14.063L15.009 24l.927-21.166z"/></svg><span>Shopify</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.469 6.825c.84 1.537 1.318 3.3 1.318 5.175 0 3.979-2.156 7.456-5.363 9.325l3.295-9.527c.615-1.54.82-2.771.82-3.864 0-.405-.026-.78-.07-1.11m-7.981.105c.647-.03 1.232-.105 1.232-.105.582-.075.514-.93-.067-.899 0 0-1.755.135-2.88.135-1.064 0-2.85-.15-2.85-.15-.585-.03-.661.855-.075.885 0 0 .54.061 1.125.09l1.68 4.605-2.37 7.08L5.354 6.9c.649-.03 1.234-.1 1.234-.1.585-.075.516-.93-.065-.896 0 0-1.746.138-2.874.138-.2 0-.438-.008-.69-.015C4.911 3.15 8.235 1.215 12 1.215c2.809 0 5.365 1.072 7.286 2.833-.046-.003-.091-.009-.141-.009-1.06 0-1.812.923-1.812 1.914 0 .89.513 1.643 1.06 2.531.411.72.89 1.643.89 2.977 0 .915-.354 1.994-.821 3.479l-1.075 3.585-3.9-11.61.001.014zM12 22.784c-1.059 0-2.081-.153-3.048-.437l3.237-9.406 3.315 9.087c.024.053.05.101.078.149-1.12.393-2.325.609-3.582.609M1.211 12c0-1.564.336-3.05.935-4.39L7.29 21.709C3.694 19.96 1.212 16.271 1.211 12M12 0C5.385 0 0 5.385 0 12s5.385 12 12 12 12-5.385 12-12S18.615 0 12 0"/></svg><span>WordPress</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 4.515l-7.658 14.97H9.149l3.205-6.204h-.144C9.566 16.713 5.621 18.973 0 19.485v-6.118s3.596-.213 5.71-2.435H0V4.515h6.417v5.278l.144-.001 2.622-5.277h4.854v5.244h.144l2.72-5.244H24Z"/></svg><span>Webflow</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.655 8.719c-1.802-1.801-4.726-1.801-6.564 0l-7.351 7.35c-.45.45-.45 1.2 0 1.65.45.449 1.2.449 1.65 0l7.351-7.351c.899-.899 2.362-.899 3.264 0 .9.9.9 2.364 0 3.264l-7.239 7.239c.9.899 2.362.899 3.263 0l5.589-5.589c1.836-1.838 1.836-4.763.037-6.563zm-2.475 2.437c-.451-.45-1.201-.45-1.65 0l-7.354 7.389c-.9.899-2.361.899-3.262 0-.45-.45-1.2-.45-1.65 0s-.45 1.2 0 1.649c1.801 1.801 4.726 1.801 6.564 0l7.351-7.35c.449-.487.449-1.239.001-1.688zm-2.439-7.35c-1.801-1.801-4.726-1.801-6.564 0l-7.351 7.351c-.45.449-.45 1.199 0 1.649s1.2.45 1.65 0l7.395-7.351c.9-.899 2.371-.899 3.27 0 .451.45 1.201.45 1.65 0 .421-.487.421-1.199-.029-1.649h-.021zm-2.475 2.437c-.45-.45-1.2-.45-1.65 0l-7.351 7.389c-.899.9-2.363.9-3.265 0-.9-.899-.9-2.363 0-3.264l7.239-7.239c-.9-.9-2.362-.9-3.263 0L1.35 8.719c-1.8 1.8-1.8 4.725 0 6.563 1.801 1.801 4.725 1.801 6.564 0l7.35-7.351c.451-.488.451-1.238 0-1.688h.002z"/></svg><span>Squarespace</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 0h16v8h-8zM4 8h8l8 8H4zM4 16h8v8z"/></svg><span>Framer</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.23 12.004a2.236 2.236 0 01-2.235 2.236 2.236 2.236 0 01-2.236-2.236 2.236 2.236 0 012.235-2.236 2.236 2.236 0 012.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38a2.167 2.167 0 00-1.092-.278zm-.005 1.09c.225 0 .406.044.558.127.666.382.955 1.835.73 3.704-.054.46-.142.945-.25 1.44a23.476 23.476 0 00-3.107-.534A23.892 23.892 0 0012.769 4.7c1.592-1.48 3.087-2.292 4.105-2.295zm-9.77.02c1.012 0 2.514.808 4.11 2.28-.686.72-1.37 1.537-2.02 2.442a22.73 22.73 0 00-3.113.538 15.02 15.02 0 01-.254-1.42c-.23-1.868.054-3.32.714-3.707.19-.09.4-.127.563-.132zm4.882 3.05c.455.468.91.992 1.36 1.564-.44-.02-.89-.034-1.36-.034-.47 0-.92.013-1.36.034.44-.572.895-1.096 1.36-1.564zM12 8.1c.74 0 1.477.034 2.202.093.406.582.802 1.203 1.183 1.86.372.64.71 1.29 1.018 1.946-.308.655-.646 1.31-1.013 1.95-.38.66-.773 1.288-1.18 1.87a25.64 25.64 0 01-4.412.005 26.64 26.64 0 01-1.183-1.86c-.372-.64-.71-1.29-1.018-1.946a25.17 25.17 0 011.013-1.954c.38-.66.773-1.286 1.18-1.868A25.245 25.245 0 0112 8.1zm-3.635.254c-.24.377-.48.763-.704 1.16-.225.39-.435.782-.635 1.174-.265-.656-.49-1.31-.676-1.947.64-.15 1.315-.283 2.015-.386zm7.26 0c.695.103 1.365.23 2.006.387-.18.632-.405 1.282-.66 1.933a25.952 25.952 0 00-1.345-2.32zm3.063.675c.484.15.944.317 1.375.498 1.732.74 2.852 1.708 2.852 2.476-.005.768-1.125 1.74-2.857 2.475-.42.18-.88.342-1.355.493a23.966 23.966 0 00-1.1-2.98c.45-1.017.81-2.01 1.085-2.964zm-13.395.004c.278.96.645 1.957 1.1 2.98a23.142 23.142 0 00-1.086 2.964c-.484-.15-.944-.318-1.37-.5-1.732-.737-2.852-1.706-2.852-2.474 0-.768 1.12-1.742 2.852-2.476.42-.18.88-.342 1.356-.494zm4.553 9.012c.96.234 2.006.415 3.107.532.66.905 1.345 1.727 2.035 2.446-1.595 1.483-3.092 2.295-4.11 2.295-.22-.005-.406-.05-.553-.132-.666-.38-.955-1.834-.73-3.703.054-.46.142-.944.25-1.438zm7.285-.008c.112.493.2.968.254 1.423.23 1.868-.054 3.32-.714 3.708-.147.09-.338.128-.563.128-1.012 0-2.514-.807-4.11-2.28.686-.72 1.37-1.536 2.02-2.44 1.107-.118 2.154-.3 3.113-.54z"/></svg><span>React</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.565-2.438L1.5 0zm7.031 9.75l-.232-2.718 10.059.003.23-2.622L5.412 4.41l.698 8.01h9.126l-.326 3.426-2.91.804-2.955-.81-.188-2.11H6.248l.33 4.171L12 19.351l5.379-1.443.744-8.157H8.531z"/></svg><span>HTML5</span></div>
+      </div>
+
+      <!-- SET 2 (duplicate for seamless loop) -->
+      <div class="trust-logos" aria-hidden="true">
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.337 23.979l7.216-1.561s-2.604-17.613-2.625-17.73c-.018-.116-.114-.192-.211-.192s-1.929-.136-1.929-.136-1.275-1.274-1.439-1.411c-.045-.037-.075-.057-.121-.074l-.914 21.104h.023zM11.71 11.305s-.81-.424-1.774-.424c-1.447 0-1.504.906-1.504 1.141 0 1.232 3.24 1.715 3.24 4.629 0 2.295-1.44 3.76-3.406 3.76-2.354 0-3.54-1.465-3.54-1.465l.646-2.086s1.245 1.066 2.28 1.066c.675 0 .975-.545.975-.932 0-1.619-2.654-1.694-2.654-4.359-.034-2.237 1.571-4.416 4.827-4.416 1.257 0 1.875.361 1.875.361l-.945 2.715-.02.01zM11.17.83c.136 0 .271.038.405.135-.984.465-2.064 1.639-2.508 3.992-.656.213-1.293.405-1.889.578C7.697 3.75 8.951.84 11.17.84V.83zm1.235 2.949v.135c-.754.232-1.583.484-2.394.736.466-1.777 1.333-2.645 2.085-2.971.193.501.309 1.176.309 2.1zm.539-2.234c.694.074 1.141.867 1.429 1.755-.349.114-.735.231-1.158.366v-.252c0-.752-.096-1.371-.271-1.871v.002zm2.992 1.289c-.02 0-.06.021-.078.021s-.289.075-.714.21c-.423-1.233-1.176-2.37-2.508-2.37h-.115C12.135.209 11.669 0 11.265 0 8.159 0 6.675 3.877 6.21 5.846c-1.194.365-2.063.636-2.16.674-.675.213-.694.232-.772.87-.075.462-1.83 14.063-1.83 14.063L15.009 24l.927-21.166z"/></svg><span>Shopify</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.469 6.825c.84 1.537 1.318 3.3 1.318 5.175 0 3.979-2.156 7.456-5.363 9.325l3.295-9.527c.615-1.54.82-2.771.82-3.864 0-.405-.026-.78-.07-1.11m-7.981.105c.647-.03 1.232-.105 1.232-.105.582-.075.514-.93-.067-.899 0 0-1.755.135-2.88.135-1.064 0-2.85-.15-2.85-.15-.585-.03-.661.855-.075.885 0 0 .54.061 1.125.09l1.68 4.605-2.37 7.08L5.354 6.9c.649-.03 1.234-.1 1.234-.1.585-.075.516-.93-.065-.896 0 0-1.746.138-2.874.138-.2 0-.438-.008-.69-.015C4.911 3.15 8.235 1.215 12 1.215c2.809 0 5.365 1.072 7.286 2.833-.046-.003-.091-.009-.141-.009-1.06 0-1.812.923-1.812 1.914 0 .89.513 1.643 1.06 2.531.411.72.89 1.643.89 2.977 0 .915-.354 1.994-.821 3.479l-1.075 3.585-3.9-11.61.001.014zM12 22.784c-1.059 0-2.081-.153-3.048-.437l3.237-9.406 3.315 9.087c.024.053.05.101.078.149-1.12.393-2.325.609-3.582.609M1.211 12c0-1.564.336-3.05.935-4.39L7.29 21.709C3.694 19.96 1.212 16.271 1.211 12M12 0C5.385 0 0 5.385 0 12s5.385 12 12 12 12-5.385 12-12S18.615 0 12 0"/></svg><span>WordPress</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 4.515l-7.658 14.97H9.149l3.205-6.204h-.144C9.566 16.713 5.621 18.973 0 19.485v-6.118s3.596-.213 5.71-2.435H0V4.515h6.417v5.278l.144-.001 2.622-5.277h4.854v5.244h.144l2.72-5.244H24Z"/></svg><span>Webflow</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.655 8.719c-1.802-1.801-4.726-1.801-6.564 0l-7.351 7.35c-.45.45-.45 1.2 0 1.65.45.449 1.2.449 1.65 0l7.351-7.351c.899-.899 2.362-.899 3.264 0 .9.9.9 2.364 0 3.264l-7.239 7.239c.9.899 2.362.899 3.263 0l5.589-5.589c1.836-1.838 1.836-4.763.037-6.563zm-2.475 2.437c-.451-.45-1.201-.45-1.65 0l-7.354 7.389c-.9.899-2.361.899-3.262 0-.45-.45-1.2-.45-1.65 0s-.45 1.2 0 1.649c1.801 1.801 4.726 1.801 6.564 0l7.351-7.35c.449-.487.449-1.239.001-1.688zm-2.439-7.35c-1.801-1.801-4.726-1.801-6.564 0l-7.351 7.351c-.45.449-.45 1.199 0 1.649s1.2.45 1.65 0l7.395-7.351c.9-.899 2.371-.899 3.27 0 .451.45 1.201.45 1.65 0 .421-.487.421-1.199-.029-1.649h-.021zm-2.475 2.437c-.45-.45-1.2-.45-1.65 0l-7.351 7.389c-.899.9-2.363.9-3.265 0-.9-.899-.9-2.363 0-3.264l7.239-7.239c-.9-.9-2.362-.9-3.263 0L1.35 8.719c-1.8 1.8-1.8 4.725 0 6.563 1.801 1.801 4.725 1.801 6.564 0l7.35-7.351c.451-.488.451-1.238 0-1.688h.002z"/></svg><span>Squarespace</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 0h16v8h-8zM4 8h8l8 8H4zM4 16h8v8z"/></svg><span>Framer</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.23 12.004a2.236 2.236 0 01-2.235 2.236 2.236 2.236 0 01-2.236-2.236 2.236 2.236 0 012.235-2.236 2.236 2.236 0 012.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38a2.167 2.167 0 00-1.092-.278zm-.005 1.09c.225 0 .406.044.558.127.666.382.955 1.835.73 3.704-.054.46-.142.945-.25 1.44a23.476 23.476 0 00-3.107-.534A23.892 23.892 0 0012.769 4.7c1.592-1.48 3.087-2.292 4.105-2.295zm-9.77.02c1.012 0 2.514.808 4.11 2.28-.686.72-1.37 1.537-2.02 2.442a22.73 22.73 0 00-3.113.538 15.02 15.02 0 01-.254-1.42c-.23-1.868.054-3.32.714-3.707.19-.09.4-.127.563-.132zm4.882 3.05c.455.468.91.992 1.36 1.564-.44-.02-.89-.034-1.36-.034-.47 0-.92.013-1.36.034.44-.572.895-1.096 1.36-1.564zM12 8.1c.74 0 1.477.034 2.202.093.406.582.802 1.203 1.183 1.86.372.64.71 1.29 1.018 1.946-.308.655-.646 1.31-1.013 1.95-.38.66-.773 1.288-1.18 1.87a25.64 25.64 0 01-4.412.005 26.64 26.64 0 01-1.183-1.86c-.372-.64-.71-1.29-1.018-1.946a25.17 25.17 0 011.013-1.954c.38-.66.773-1.286 1.18-1.868A25.245 25.245 0 0112 8.1zm-3.635.254c-.24.377-.48.763-.704 1.16-.225.39-.435.782-.635 1.174-.265-.656-.49-1.31-.676-1.947.64-.15 1.315-.283 2.015-.386zm7.26 0c.695.103 1.365.23 2.006.387-.18.632-.405 1.282-.66 1.933a25.952 25.952 0 00-1.345-2.32zm3.063.675c.484.15.944.317 1.375.498 1.732.74 2.852 1.708 2.852 2.476-.005.768-1.125 1.74-2.857 2.475-.42.18-.88.342-1.355.493a23.966 23.966 0 00-1.1-2.98c.45-1.017.81-2.01 1.085-2.964zm-13.395.004c.278.96.645 1.957 1.1 2.98a23.142 23.142 0 00-1.086 2.964c-.484-.15-.944-.318-1.37-.5-1.732-.737-2.852-1.706-2.852-2.474 0-.768 1.12-1.742 2.852-2.476.42-.18.88-.342 1.356-.494zm4.553 9.012c.96.234 2.006.415 3.107.532.66.905 1.345 1.727 2.035 2.446-1.595 1.483-3.092 2.295-4.11 2.295-.22-.005-.406-.05-.553-.132-.666-.38-.955-1.834-.73-3.703.054-.46.142-.944.25-1.438zm7.285-.008c.112.493.2.968.254 1.423.23 1.868-.054 3.32-.714 3.708-.147.09-.338.128-.563.128-1.012 0-2.514-.807-4.11-2.28.686-.72 1.37-1.536 2.02-2.44 1.107-.118 2.154-.3 3.113-.54z"/></svg><span>React</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.565-2.438L1.5 0zm7.031 9.75l-.232-2.718 10.059.003.23-2.622L5.412 4.41l.698 8.01h9.126l-.326 3.426-2.91.804-2.955-.81-.188-2.11H6.248l.33 4.171L12 19.351l5.379-1.443.744-8.157H8.531z"/></svg><span>HTML5</span></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="hiw-section" id="how-it-works">
+  <div class="reveal">
+    <div class="section-label">How it works</div>
+    <div class="section-title">Live in 3 steps.<br>No developer needed.</div>
+    <p class="section-sub">From zero to answering customers — in under 5 minutes.</p>
+  </div>
+
+  <div class="steps-grid">
+    <div class="step reveal">
+      <div class="step-num">01</div>
+      <h3>Enter your website URL</h3>
+      <p>Atlyz automatically reads up to 15 pages of your site in about 60 seconds and builds a complete knowledge base.</p>
+      <span class="step-tag">60 seconds</span>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">02</div>
+      <h3>Copy one line of code</h3>
+      <p>Paste a single script tag into any website builder — Shopify, WordPress, Webflow, or plain HTML. No coding skills required.</p>
+      <span class="step-tag">1 line of code</span>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">03</div>
+      <h3>Go live — you're done</h3>
+      <p>Your AI assistant starts answering customers instantly. When someone wants contact, you get an email notification with their details.</p>
+      <span class="step-tag">instant</span>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="reveal">
+    <div class="section-label">Features</div>
+    <div class="section-title">Stop losing customers<br>to unanswered questions</div>
+    <p class="section-sub">Every feature built to turn visitors into paying customers.</p>
+  </div>
+
+  <div class="bento">
+
+    <div class="card card-chat reveal">
+      <div class="card-icon ic-p">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <h3>Converts visitors into leads — automatically</h3>
+      <p>When a customer can't find an answer, Atlyz captures their name, email, and phone. You wake up to warm leads, not missed opportunities.</p>
+      <div class="chat-preview">
+        <div class="chat-msg chat-u">Do you ship to Canada?</div>
+        <div class="chat-msg chat-b">Yes! Standard delivery to Canada takes 5–7 days. Orders over $75 ship free. 🇨🇦</div>
+        <div class="chat-msg chat-u">What's your return policy?</div>
+        <div class="typing"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+
+    <div class="card card-speed reveal">
+      <div class="card-icon ic-b">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+      <h3>Faster than any human</h3>
+      <p>0.8s average response. Customers never wait, never bounce, never go to a competitor.</p>
+      <div class="speed-meter">
+        <div class="speed-num">0.8s</div>
+        <span class="speed-lbl">average response time</span>
+        <div class="bar-wrap"><div class="bar"></div></div>
+        <div class="bar-labels"><span>Atlyz</span><span>Industry avg: 3.2s</span></div>
+      </div>
+    </div>
+
+    <div class="card card-lang reveal">
+      <div class="card-icon ic-c">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <h3>Speak every customer's language</h3>
+      <p>Auto-detects and responds in 50+ languages. Serve international customers without hiring multilingual staff.</p>
+      <div class="lang-pills">
+        <span class="pill on">English</span><span class="pill on">Spanish</span>
+        <span class="pill on">French</span><span class="pill on">Arabic</span>
+        <span class="pill on">Urdu</span><span class="pill">German</span>
+        <span class="pill">Chinese</span><span class="pill">+44 more</span>
+      </div>
+    </div>
+
+    <div class="card card-scrape reveal">
+      <div class="card-icon ic-g">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <h3>Knows your business in 60 seconds</h3>
+      <p>Paste your URL and Atlyz reads your entire site. No manual training. No copy-pasting FAQs.</p>
+      <div class="scrape-steps">
+        <div class="s-step done"><div class="s-dot"></div>Reading homepage</div>
+        <div class="s-step done"><div class="s-dot"></div>Scanning 15 pages</div>
+        <div class="s-step done"><div class="s-dot"></div>Building knowledge base</div>
+        <div class="s-step done"><div class="s-dot"></div>Atlyz is ready ✓</div>
+      </div>
+    </div>
+
+    <div class="card card-embed reveal">
+      <div class="card-icon ic-p">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </div>
+      <h3>One line to deploy anywhere</h3>
+      <p>Copy one script tag. Paste into your site. Widget appears instantly — no developer, no waiting.</p>
+      <div class="embed-box">
+        &lt;script<br>
+        &nbsp;src="atlyz.com/widget.js<br>
+        &nbsp;?id=<span style="color:#34d399">your-shop</span>"<br>
+        &gt;&lt;/script&gt;
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products" style="padding-top:0">
+  <div class="reveal">
+    <div class="section-label">Products</div>
+    <div class="section-title">One platform.<br>Three AI products.</div>
+    <p class="section-sub">Start with Chat. Add Voice. Automate everything with Agent.</p>
+  </div>
+
+  <div class="products-grid">
+
+    <div class="prod-card glow-p reveal">
+      <span class="prod-tag tag-live">
+        <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="#4ade80"/></svg>
+        Live
+      </span>
+      <h3><a href="chat-product.html">Atlyz Chat →</a></h3>
+      <p>An AI chatbot that knows your entire business and answers customer questions 24/7. Embed on any website in minutes.</p>
+      <div class="prod-feats">
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Auto-learns from your website</div>
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>50+ language support</div>
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Lead capture built-in</div>
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Customizable widget</div>
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Real-time notifications</div>
+      </div>
+    </div>
+
+    <div class="prod-card glow-b reveal">
+      <span class="prod-tag tag-soon">◐ Coming Soon</span>
+      <h3><a href="voice-product.html">Atlyz Voice →</a></h3>
+      <p>An AI receptionist that answers phone calls — takes messages, books appointments, handles FAQs around the clock.</p>
+      <div class="prod-feats">
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Natural voice conversations</div>
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Call recording &amp; transcripts</div>
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Instant owner notifications</div>
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Custom business persona</div>
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Works 24/7, never on hold</div>
+      </div>
+    </div>
+
+    <div class="prod-card glow-g reveal">
+      <span class="prod-tag tag-road">○ Roadmap</span>
+      <h3><a href="agent-product.html">Atlyz Agent →</a></h3>
+      <p>A full AI agent that doesn't just answer — it acts. Books, orders, follows up, and updates your systems automatically.</p>
+      <div class="prod-feats">
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Takes actions, not just messages</div>
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>CRM and calendar integration</div>
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Automated follow-ups</div>
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Multi-step workflows</div>
+        <div class="pfeat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Enterprise-grade reliability</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="padding-top:0">
+  <div class="reveal" style="text-align:center">
+    <div class="section-label" style="text-align:center">Customer stories</div>
+    <div class="section-title">Real businesses.<br>Real results.</div>
+    <p class="section-sub" style="margin:0 auto">From pet shops to law firms — Atlyz works for any small business.</p>
+  </div>
+
+  <div class="testi-grid">
+
+    <div class="testi-card reveal">
+      <div class="stars">★★★★★</div>
+      <p class="testi-quote">"I was losing customers who asked questions at 2am and got no response. <strong>Atlyz now handles all of that.</strong> I woke up to 3 new leads my first morning."</p>
+      <div class="testi-author">
+        <div class="testi-avatar av-1">S</div>
+        <div>
+          <div class="testi-name">Sarah Chen</div>
+          <div class="testi-role">Pet Boutique Owner, Austin TX</div>
+        </div>
+      </div>
+      <div class="result-badge">↑ 43% more leads captured</div>
+    </div>
+
+    <div class="testi-card reveal">
+      <div class="stars">★★★★★</div>
+      <p class="testi-quote">"My customers ask the same 10 questions every day. <strong>I used to spend 2 hours answering them.</strong> Now Atlyz does it better than me — while I'm on the job site."</p>
+      <div class="testi-author">
+        <div class="testi-avatar av-2">M</div>
+        <div>
+          <div class="testi-name">Marcus Rodriguez</div>
+          <div class="testi-role">HVAC Contractor, Miami FL</div>
+        </div>
+      </div>
+      <div class="result-badge">↑ 90% of questions auto-answered</div>
+    </div>
+
+    <div class="testi-card reveal">
+      <div class="stars">★★★★★</div>
+      <p class="testi-quote">"Setup took literally 4 minutes. It read our entire service menu and <strong>now answers booking questions in 3 languages.</strong> Our missed inquiries dropped to zero."</p>
+      <div class="testi-author">
+        <div class="testi-avatar av-3">P</div>
+        <div>
+          <div class="testi-name">Priya Patel</div>
+          <div class="testi-role">Clinic Manager, London UK</div>
+        </div>
+      </div>
+      <div class="result-badge">↑ 0 missed inquiries</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" style="padding-top:0">
+  <div class="reveal" style="text-align:center">
+    <div class="section-label" style="text-align:center">Pricing</div>
+    <div class="section-title">Simple, honest pricing</div>
+    <p class="section-sub" style="margin:0 auto">No hidden fees. No setup costs. Cancel any time.</p>
+  </div>
+
+  <div class="pricing-grid">
+
+    <div class="price-card reveal">
+      <div class="price-tier">Starter</div>
+      <div class="price-amount">$49</div>
+      <div class="price-period">per month</div>
+      <div class="price-feats">
+        <div class="pf has"><span class="ck">✓</span><span>1 website</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>500 chats / month</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>Auto website scraping</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>50+ languages</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>Email support</span></div>
+        <div class="pf"><span class="no">✕</span><span>Lead capture</span></div>
+        <div class="pf"><span class="no">✕</span><span>Analytics dashboard</span></div>
+      </div>
+      <a href="setup.html" class="price-btn outline">Get started</a>
+    </div>
+
+    <div class="price-card featured reveal">
+      <div class="price-badge">Most Popular</div>
+      <div class="price-tier">Growth</div>
+      <div class="price-amount">$99</div>
+      <div class="price-period">per month</div>
+      <div class="price-feats">
+        <div class="pf has"><span class="ck">✓</span><span>1 website</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>Unlimited chats</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>Auto website scraping</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>50+ languages</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>Lead capture</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>Analytics dashboard</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>Priority support</span></div>
+      </div>
+      <a href="setup.html" class="price-btn solid">Get started</a>
+    </div>
+
+    <div class="price-card reveal">
+      <div class="price-tier">Pro</div>
+      <div class="price-amount">$149</div>
+      <div class="price-period">per month</div>
+      <div class="price-feats">
+        <div class="pf has"><span class="ck">✓</span><span>3 websites</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>Unlimited chats</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>Auto website scraping</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>50+ languages</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>Lead capture + order intake</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>Advanced analytics</span></div>
+        <div class="pf has"><span class="ck">✓</span><span>White-label widget</span></div>
+      </div>
+      <a href="setup.html" class="price-btn outline">Get started</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- FAQ -->
+<section style="padding-top:0;padding-bottom:96px">
+  <div class="reveal" style="text-align:center">
+    <div class="section-label" style="text-align:center">FAQ</div>
+    <div class="section-title">Common questions</div>
+    <p class="section-sub" style="margin:0 auto">Everything you want to know before getting started.</p>
+  </div>
+
+  <div class="faq-list reveal">
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Do I need a developer or any coding skills?
+        <span class="faq-chevron">+</span>
+      </button>
+      <div class="faq-a">No. If you can paste text into your website editor, you can add Atlyz. It's one script tag — like adding a Google Analytics code. No coding, no developer, no technical knowledge needed.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        How long does setup actually take?
+        <span class="faq-chevron">+</span>
+      </button>
+      <div class="faq-a">Under 5 minutes from start to live chatbot. Enter your website URL (60 seconds to read), copy the script tag, paste it into your site editor. That's it — your AI assistant is live for all visitors.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        What if a customer asks something Atlyz doesn't know?
+        <span class="faq-chevron">+</span>
+      </button>
+      <div class="faq-a">Atlyz gracefully collects the customer's contact details — name, email, and phone — and sends you an instant email notification. You never lose a potential customer. You can also update your knowledge base any time by re-scanning your website.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Can I try it before paying?
+        <span class="faq-chevron">+</span>
+      </button>
+      <div class="faq-a">Yes — email us at hello@atlyz.com to request a demo or trial. We'll set you up personally and make sure it's the right fit before you commit to anything.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        What happens if I cancel?
+        <span class="faq-chevron">+</span>
+      </button>
+      <div class="faq-a">Cancel any time — no penalties, no contracts, no awkward calls. Your widget simply stops working at the end of your billing period. All your lead data remains yours to download. We believe you should stay because Atlyz works, not because you're locked in.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-wrap">
+  <div class="cta-bg"></div>
+  <div class="urgency-bar">
+    <span class="urgency-dot"></span>
+    23 businesses signed up this week
+  </div>
+  <h2>Start answering customers<br>tonight — for free.</h2>
+  <p>Join 500+ small businesses that never miss a customer question.</p>
+  <div class="cta-email-form">
+    <input type="email" class="cta-email-input" placeholder="your@email.com">
+    <a href="setup.html" class="btn-primary">Get started free →</a>
+  </div>
+  <div class="cta-risk">
+    <span><span class="risk-check">✓</span> No credit card required</span>
+    <span><span class="risk-check">✓</span> Setup in 5 minutes</span>
+    <span><span class="risk-check">✓</span> Cancel any time</span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-top">
+    <div class="foot-brand">
+      <div class="foot-logo">Atlyz</div>
+      <p>AI that works for your business, around the clock.</p>
+      <div class="foot-newsletter">
+        <p>Get product updates:</p>
+        <div class="foot-nl-form">
+          <input type="email" class="foot-nl-input" placeholder="your@email.com">
+          <button class="foot-nl-btn" onclick="this.textContent='✓'">Subscribe</button>
+        </div>
+      </div>
+      <div class="social-links">
+        <a href="#" class="social-link" aria-label="Twitter / X">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a href="#" class="social-link" aria-label="LinkedIn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+        <a href="#" class="social-link" aria-label="GitHub">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="foot-col">
+      <h4>Products</h4>
+      <a href="chat-product.html">Atlyz Chat</a>
+      <a href="voice-product.html">Atlyz Voice</a>
+      <a href="agent-product.html">Atlyz Agent</a>
+    </div>
+    <div class="foot-col">
+      <h4>Company</h4>
+      <a href="about.html">About</a>
+      <a href="blog.html">Blog</a>
+      <a href="careers.html">Careers</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="foot-col">
+      <h4>Legal</h4>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="cookies.html">Cookie Policy</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <p>© 2025 Atlyz. All rights reserved.</p>
+    <p class="foot-mono">v0.1.0-beta</p>
+  </div>
+</footer>
+
+<script>
+// ── MOBILE NAV
+function toggleNav(){
+  document.querySelector('.nav-links').classList.toggle('open');
+}
+document.querySelectorAll('.nav-links a').forEach(function(a){
+  a.addEventListener('click',function(){
+    document.querySelector('.nav-links').classList.remove('open');
+  });
+});
+
+// ── SCROLL PROGRESS BAR
+var prog=document.getElementById('scroll-prog');
+function updateProg(){
+  var scrolled=window.scrollY;
+  var total=document.documentElement.scrollHeight-window.innerHeight;
+  prog.style.width=(total>0?Math.min(scrolled/total*100,100):0)+'%';
+}
+window.addEventListener('scroll',updateProg,{passive:true});
+
+// ── NAV SHRINK ON SCROLL
+var nav=document.querySelector('nav');
+window.addEventListener('scroll',function(){
+  if(window.scrollY>60){
+    nav.style.height='52px';
+    nav.style.boxShadow='0 1px 0 rgba(255,255,255,.06)';
+  } else {
+    nav.style.height='64px';
+    nav.style.boxShadow='none';
+  }
+},{passive:true});
+
+// ── SCROLL REVEAL (threshold 0.07 for outer sections, 0.12 for cards)
+var obs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      e.target.classList.add('vis');
+      obs.unobserve(e.target);
+    }
+  });
+},{threshold:0.07});
+document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el)});
+
+// ── EASED COUNT-UP (cubic ease-out)
+function easeOut(t){return 1-Math.pow(1-t,3)}
+function countUp(el){
+  var target=parseFloat(el.dataset.target);
+  var suffix=el.dataset.suffix||'';
+  var isFloat=el.dataset.float==='true';
+  var duration=1600;
+  var start=performance.now();
+  function frame(now){
+    var elapsed=now-start;
+    var progress=Math.min(elapsed/duration,1);
+    var eased=easeOut(progress);
+    var val=target*eased;
+    el.textContent=(isFloat?val.toFixed(1):Math.floor(val))+suffix;
+    if(progress<1) requestAnimationFrame(frame);
+    else el.textContent=(isFloat?target.toFixed(1):target)+suffix;
+  }
+  requestAnimationFrame(frame);
+}
+var countObs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      countUp(e.target);
+      countObs.unobserve(e.target);
+    }
+  });
+},{threshold:0.5});
+document.querySelectorAll('.stat-num[data-target]').forEach(function(el){countObs.observe(el)});
+
+// ── SPEED BAR ANIMATED FILL (triggers on scroll into view)
+var barEl=document.querySelector('.bar');
+var barDone=false;
+var barObs=new IntersectionObserver(function(entries){
+  if(entries[0].isIntersecting&&!barDone){
+    barDone=true;
+    var start=performance.now();
+    var dur=1800;
+    function fillBar(now){
+      var t=Math.min((now-start)/dur,1);
+      var eased=easeOut(t);
+      barEl.style.width=(eased*92)+'%';
+      if(t<1) requestAnimationFrame(fillBar);
+    }
+    requestAnimationFrame(fillBar);
+  }
+},{threshold:0.5});
+if(barEl) barObs.observe(barEl);
+
+// ── SCRAPE STEPS SEQUENTIAL REVEAL
+var scrapeSteps=document.querySelectorAll('.s-step');
+var scrapeDone=false;
+if(scrapeSteps.length){
+  var scrapeObs=new IntersectionObserver(function(entries){
+    if(entries[0].isIntersecting&&!scrapeDone){
+      scrapeDone=true;
+      scrapeSteps.forEach(function(el){
+        el.style.opacity='0';el.style.transform='translateX(-10px)';
+        el.style.transition='opacity .4s ease, transform .4s ease';
+        el.classList.remove('done');
+      });
+      scrapeSteps.forEach(function(el,i){
+        setTimeout(function(){
+          el.style.opacity='1';
+          el.style.transform='translateX(0)';
+          setTimeout(function(){el.classList.add('done')},200);
+        },i*350+300);
+      });
+    }
+  },{threshold:0.5});
+  scrapeObs.observe(scrapeSteps[0].closest('.card'));
+}
+
+// ── CHAT TYPING ANIMATION
+var chatDone=false;
+var chatObs=new IntersectionObserver(function(entries){
+  if(entries[0].isIntersecting&&!chatDone){
+    chatDone=true;
+    setTimeout(function(){
+      var t=document.querySelector('.typing');
+      var p=document.querySelector('.chat-preview');
+      if(t)t.remove();
+      if(p){
+        var m=document.createElement('div');
+        m.className='chat-msg chat-b';
+        m.style.animation='rise .3s ease';
+        m.textContent='We offer 30-day returns on unused items in original packaging. Start a return at returns.atlyz.com';
+        p.appendChild(m);
+      }
+    },1600);
+  }
+},{threshold:.5});
+var cp=document.querySelector('.chat-preview');
+if(cp) chatObs.observe(cp);
+
+// ── FAQ ACCORDION
+function toggleFaq(btn){
+  var item=btn.closest('.faq-item');
+  var isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(function(el){el.classList.remove('open')});
+  if(!isOpen) item.classList.add('open');
+}
+
+// ── CTA EMAIL — forward email to setup page
+var ctaInput=document.querySelector('.cta-email-input');
+var ctaBtn=document.querySelector('.cta-email-form .btn-primary');
+function goSetup(){
+  var email=ctaInput?ctaInput.value.trim():'';
+  window.location='setup.html'+(email?'?email='+encodeURIComponent(email):'');
+}
+if(ctaInput) ctaInput.addEventListener('keydown',function(e){if(e.key==='Enter') goSetup();});
+if(ctaBtn) ctaBtn.addEventListener('click',function(e){e.preventDefault();goSetup();});
+</script>
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+// ── CANVAS PARTICLE FIELD
+(function(){
+  var canvas=document.getElementById('particles-canvas');
+  var ctx=canvas.getContext('2d');
+  var W,H,particles=[];
+  var PARTICLE_COUNT=70;
+  var MAX_DIST=140;
+
+  function resize(){
+    W=canvas.width=window.innerWidth;
+    H=canvas.height=window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize',resize,{passive:true});
+
+  function Particle(){
+    this.reset();
+  }
+  Particle.prototype.reset=function(){
+    this.x=Math.random()*W;
+    this.y=Math.random()*H;
+    this.vx=(Math.random()-.5)*.4;
+    this.vy=(Math.random()-.5)*.4;
+    this.r=Math.random()*1.5+.5;
+    var palette=['rgba(167,139,250,','rgba(96,165,250,','rgba(52,211,153,'];
+    this.color=palette[Math.floor(Math.random()*palette.length)];
+    this.alpha=Math.random()*.5+.2;
+  };
+  Particle.prototype.update=function(){
+    this.x+=this.vx;
+    this.y+=this.vy;
+    if(this.x<-5)this.x=W+5;
+    if(this.x>W+5)this.x=-5;
+    if(this.y<-5)this.y=H+5;
+    if(this.y>H+5)this.y=-5;
+  };
+
+  for(var i=0;i<PARTICLE_COUNT;i++) particles.push(new Particle());
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<particles.length;i++){
+      var p=particles[i];
+      p.update();
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.color+p.alpha+')';
+      ctx.fill();
+      for(var j=i+1;j<particles.length;j++){
+        var q=particles[j];
+        var dx=p.x-q.x,dy=p.y-q.y;
+        var dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<MAX_DIST){
+          var lineAlpha=(.18*(1-dist/MAX_DIST));
+          ctx.beginPath();
+          ctx.moveTo(p.x,p.y);
+          ctx.lineTo(q.x,q.y);
+          ctx.strokeStyle='rgba(167,139,250,'+lineAlpha+')';
+          ctx.lineWidth=.6;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+  setTimeout(function(){canvas.classList.add('ready')},300);
+})();
+
+// ── GSAP SETUP
+if(window.gsap&&window.ScrollTrigger){
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Hero entrance timeline
+  var heroTl=gsap.timeline({defaults:{ease:'power3.out'}});
+  heroTl
+    .from('.hero-glow',{duration:1.4,opacity:0,scale:.8})
+    .from('.badge',{duration:.7,y:30,opacity:0},'-=.8')
+    .from('.hero h1',{duration:.8,y:40,opacity:0},'-=.5')
+    .from('.hero-sub',{duration:.7,y:30,opacity:0},'-=.4')
+    .from('.hero-btns',{duration:.6,y:24,opacity:0},'-=.35')
+    .from('.no-cc',{duration:.5,y:16,opacity:0},'-=.2')
+    .from('.hero-proof',{duration:.5,y:16,opacity:0},'-=.15');
+
+  // Stat bar count items entrance with ScrollTrigger
+  gsap.from('.stat-item',{
+    scrollTrigger:{trigger:'.stat-bar',start:'top 80%',toggleActions:'play none none none'},
+    duration:.7,y:30,opacity:0,stagger:.12,ease:'power2.out'
+  });
+
+  // Section headings slide-up
+  gsap.utils.toArray('.section-title').forEach(function(el){
+    gsap.from(el,{
+      scrollTrigger:{trigger:el,start:'top 85%',toggleActions:'play none none none'},
+      duration:.8,y:35,opacity:0,ease:'power3.out'
+    });
+  });
+
+  // Trust bar fade-in
+  gsap.from('.trust-track-wrap',{
+    scrollTrigger:{trigger:'.trust',start:'top 85%'},
+    duration:1,opacity:0,ease:'power2.out'
+  });
+
+  // CTA section entrance
+  gsap.from('.cta-wrap h2',{
+    scrollTrigger:{trigger:'.cta-wrap',start:'top 75%'},
+    duration:.9,y:40,opacity:0,ease:'power3.out'
+  });
+  gsap.from('.cta-email-form',{
+    scrollTrigger:{trigger:'.cta-wrap',start:'top 70%'},
+    duration:.7,y:24,opacity:0,delay:.2,ease:'power2.out'
+  });
+}
+
+// ── CARD TILT ON MOUSE MOVE (3D depth effect)
+(function(){
+  var tiltEls=document.querySelectorAll('.card,.prod-card,.testi-card,.price-card');
+  tiltEls.forEach(function(el){
+    el.addEventListener('mousemove',function(e){
+      var rect=el.getBoundingClientRect();
+      var cx=rect.left+rect.width/2;
+      var cy=rect.top+rect.height/2;
+      var dx=(e.clientX-cx)/(rect.width/2);
+      var dy=(e.clientY-cy)/(rect.height/2);
+      var rx=dy*-6;
+      var ry=dx*6;
+      el.style.transform='perspective(900px) rotateX('+rx+'deg) rotateY('+ry+'deg) translateY(-3px)';
+    });
+    el.addEventListener('mouseleave',function(){
+      el.style.transform='';
+      el.style.transition='transform .5s cubic-bezier(.16,1,.3,1)';
+      setTimeout(function(){el.style.transition=''},500);
+    });
+  });
+})();
+
+// ── HERO SUBTLE PARALLAX ON MOUSE MOVE
+(function(){
+  var glow=document.querySelector('.hero-glow');
+  var heroH1=document.querySelector('.hero h1');
+  document.addEventListener('mousemove',function(e){
+    var mx=(e.clientX/window.innerWidth-.5);
+    var my=(e.clientY/window.innerHeight-.5);
+    if(glow) glow.style.transform='translateX(calc(-50% + '+(mx*30)+'px)) translateY('+(my*20)+'px)';
+    if(heroH1) heroH1.style.transform='translateX('+(mx*6)+'px) translateY('+(my*4)+'px)';
+  },{passive:true});
+})();
+</script>
+
+<!-- Atlyz Chat Widget -->
+<script src="http://localhost:5002/widget.js?id=atlyz_website"></script>
+</body>
+</html>

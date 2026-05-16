@@ -1,0 +1,1 @@
+cp "/home/syed/Aria Project/receptionist/config.py" "/home/syed/Aria Project/chatbot/config.py"
