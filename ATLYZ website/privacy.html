@@ -211,12 +211,56 @@ footer p{font-size:13px;color:var(--muted)}
   </div>
 </div>
 
-<footer>
-  <p>© 2025 Atlyz. All rights reserved.</p>
-  <div class="footer-links">
-    <a href="terms.html">Terms</a>
-    <a href="cookies.html">Cookies</a>
-    <a href="contact.html">Contact</a>
+<style>
+.site-footer{position:relative;z-index:1;display:block;padding:56px 24px 36px;max-width:1200px;margin:0 auto;border-top:1px solid var(--border)}
+.foot-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:48px;margin-bottom:48px}
+.foot-brand>p{font-size:13px;color:var(--muted);max-width:200px;line-height:1.65;margin-top:10px}
+.foot-logo{font-size:18px;font-weight:500;letter-spacing:-.5px;color:var(--text)}
+.foot-col h4{font-size:11px;font-weight:400;margin-bottom:16px;color:var(--text);letter-spacing:1.5px;text-transform:uppercase}
+.foot-col a{display:block;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:10px;margin-left:0;transition:.2s}
+.foot-col a:hover{color:var(--text)}
+.foot-social{display:flex;gap:8px;margin-top:16px}
+.foot-social-link{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);text-decoration:none;margin-left:0;transition:.2s}
+.foot-social-link:hover{border-color:rgba(255,255,255,.12);color:var(--text)}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding-top:24px;border-top:1px solid var(--border)}
+.foot-bottom p{font-size:12px;color:var(--muted)}
+.foot-mono{font-family:'JetBrains Mono',monospace;color:#2a2a38;font-size:11px}
+@media(max-width:768px){.foot-top{flex-direction:column;gap:32px}}
+</style>
+<footer class="site-footer">
+  <div class="foot-top">
+    <div class="foot-brand">
+      <div class="foot-logo">Atlyz</div>
+      <p>AI that works for your business, around the clock.</p>
+      <div class="foot-social">
+        <a href="https://twitter.com/atlyzai" class="foot-social-link" aria-label="Twitter / X">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="foot-col">
+      <h4>Products</h4>
+      <a href="chat-product.html">Atlyz Chat</a>
+      <a href="voice-product.html">Atlyz Voice</a>
+      <a href="agent-product.html">Atlyz Agent</a>
+    </div>
+    <div class="foot-col">
+      <h4>Company</h4>
+      <a href="about.html">About</a>
+      <a href="blog.html">Blog</a>
+      <a href="careers.html">Careers</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="foot-col">
+      <h4>Legal</h4>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="cookies.html">Cookie Policy</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <p>© 2025 Atlyz. All rights reserved.</p>
+    <p class="foot-mono">v0.1.0-beta</p>
   </div>
 </footer>
 <script>

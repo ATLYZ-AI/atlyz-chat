@@ -251,30 +251,6 @@ def save_lead(business_id: str, lead: dict):
         print(f"[LEAD SAVE ERROR] {e}")
 
 
-def notify_lead(business_id: str, lead: dict, config: dict):
-    """Notify owner of new lead via email."""
-    try:
-        from notifications.email import send_email_alert
-        from notifications.notification import notify_owner
-        business_name = config.get("business_name", business_id)
-        call_data = {
-            "call_id": lead["lead_id"],
-            "name": lead.get("name", ""),
-            "phone": lead.get("phone", ""),
-            "email": lead.get("email", ""),
-            "service": f"Chat inquiry: {lead.get('question', '')}",
-            "preferred_time": "ASAP",
-            "urgent": "NO",
-            "summary": f"Customer {lead.get('name', 'Unknown')} contacted via chat widget.",
-            "timestamp": lead["timestamp"],
-            "status": "NEW",
-            "address": ""
-        }
-        notify_owner(business_id=business_id, call=call_data)
-    except Exception as e:
-        print(f"[LEAD NOTIFY ERROR] {e}")
-
-
 # ═══════════════════════════════════════════════════════════════════════════════
 # API ROUTES
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -374,7 +350,6 @@ def chat_lead():
     }
 
     save_lead(business_id, lead)
-    notify_lead(business_id, lead, config)
     session["lead_captured"] = True
 
     return jsonify({
