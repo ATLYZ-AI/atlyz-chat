@@ -207,7 +207,7 @@ Lead saved to leads.csv → owner notified via email + WhatsApp
 2. ~~**404 page**~~ ✅ Done — `404.html` created
 3. ~~**Contact form backend**~~ ✅ Done — `POST /contact` route in chatbot_server.py; sends email via Gmail SMTP if `EMAIL_FROM`/`EMAIL_PASSWORD` are set
 4. ~~**Fix index.html product links**~~ ✅ Done — links point to `chat-product.html`, `voice-product.html`, `agent-product.html` (all created)
-5. **Demo page** — live chatbot demo embedded on the Atlyz website itself
+5. ~~**Demo page**~~ ✅ Done — `demo.html` created with self-contained interactive demo (QuickFix Plumbing simulation, no server required)
 6. **GitHub setup** — needs new account with atlyz.com email
 7. **Railway deployment** — not deployed yet, running on ngrok only
 8. **Domain purchase** — atlyz.com not bought yet

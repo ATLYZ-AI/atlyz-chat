@@ -193,11 +193,12 @@ footer a:hover{color:var(--text)}
   <div class="foot-top">
     <div class="foot-brand">
       <div class="foot-logo">Atlyz</div>
-      <p>AI that works for your business, around the clock.</p>
+      <p>The Atlas Of Your Business.</p>
       <div class="foot-social">
-        <a href="https://twitter.com/atlyzai" class="foot-social-link" aria-label="Twitter / X">
+        <a href="https://twitter.com/Atlyz_Ai" class="foot-social-link" aria-label="Twitter / X">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         </a>
+        <a href="https://twitter.com/Atlyz_Ai?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @Atlyz_Ai</a>
       </div>
     </div>
     <div class="foot-col">
@@ -221,7 +222,7 @@ footer a:hover{color:var(--text)}
     </div>
   </div>
   <div class="foot-bottom">
-    <p>© 2025 Atlyz. All rights reserved.</p>
+    <p>© 2026 Atlyz. All rights reserved.</p>
     <p class="foot-mono">v0.1.0-beta</p>
   </div>
 </footer>
@@ -252,13 +253,14 @@ if(window.gsap){
   gsap.from('.hero .badge',{duration:.7,y:20,opacity:0,ease:'power2.out'});
   gsap.from('.hero h1',{duration:.9,y:44,opacity:0,delay:.1,ease:'power3.out'});
   gsap.from('.hero .hero-sub',{duration:.7,y:24,opacity:0,delay:.25,ease:'power2.out'});
-  gsap.from('.feat-card',{scrollTrigger:{trigger:'.features-grid',start:'top 80%'},duration:.65,y:28,opacity:0,stagger:.1,ease:'power2.out'});
   gsap.from('.cta-section h2',{scrollTrigger:{trigger:'.cta-section',start:'top 80%'},duration:.8,y:32,opacity:0,ease:'power3.out'});
 }
+(function(){var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';obs.unobserve(e.target);}});},{threshold:0.08});document.querySelectorAll('.feat-card').forEach(function(c){c.style.opacity='0';c.style.transform='translateY(28px)';c.style.transition='opacity .6s ease, transform .6s ease';obs.observe(c);});})();
 var gh=document.querySelector('.hero-glow');
 document.addEventListener('mousemove',function(e){if(gh){var mx=e.clientX/window.innerWidth-.5;var my=e.clientY/window.innerHeight-.5;gh.style.transform='translateX(calc(-50% + '+(mx*30)+'px)) translateY('+(my*20)+'px)'}},{passive:true});
 </script>
 <!-- Atlyz Chat Widget -->
 <script src="http://localhost:5002/widget.js?id=atlyz_website"></script>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </body>
 </html>

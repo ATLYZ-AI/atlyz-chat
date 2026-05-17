@@ -146,14 +146,17 @@ def load_business_config(business_id: str) -> dict:
 def load_chatbot_config(business_id: str) -> dict:
     path = os.path.join("clients", business_id, "config", "chatbot_config.json")
     defaults = {
-        "primary_color": "#7c3aed",
+        "primary_color":   "#7c3aed",
         "secondary_color": "#f3f4f6",
-        "icon": "default",
-        "greeting": "Hi! How can I help you today?",
-        "language_lock": None,
-        "business_name": "Business",
-        "collect_leads": True,
-        "widget_position": "bottom-right"
+        "icon":            "default",
+        "greeting":        "Hi! How can I help you today?",
+        "language_lock":   None,
+        "business_name":   "Business",
+        "bot_name":        "Aria",
+        "bot_tagline":     "Your AI Assistant",
+        "collect_leads":   True,
+        "widget_position": "bottom-right",
+        "white_label":     False
     }
     if os.path.exists(path):
         try:
@@ -170,17 +173,8 @@ def load_chatbot_config(business_id: str) -> dict:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def ai_chat_response(message: str, business_id: str, session: dict, knowledge: str, config: dict) -> dict:
-    business_name    = config.get("business_name", "the business")
-    language_lock    = config.get("language_lock")
-
-    history_text = ""
-    if session.get("history"):
-        recent = session["history"][-6:]
-        history_text = "\nConversation so far:\n" + "\n".join(
-            f"  Customer: {h['customer']}\n  Atlyz: {h['atlyz']}" for h in recent
-        )
-
-    knowledge_section = f"\n\nBusiness Knowledge:\n{knowledge}" if knowledge else "\n\n(No business information available yet.)"
+    business_name = config.get("business_name", "the business")
+    language_lock = config.get("language_lock")
 
     language_instruction = (
         f"Always respond in {language_lock} only."
@@ -188,44 +182,47 @@ def ai_chat_response(message: str, business_id: str, session: dict, knowledge: s
         else "Detect the customer's language and respond in the same language. If unclear, use English."
     )
 
-    try:
-        from openai import OpenAI
-        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    knowledge_section = knowledge if knowledge else "(No business information provided yet.)"
 
-        prompt = f"""You are Atlyz, a smart and friendly AI assistant for {business_name}.
-You work like ChatGPT or Gemini but you only know about this specific business.
+    system_prompt = f"""You are a smart, friendly AI assistant for {business_name}. You only know about this specific business.
 
-Customer message: "{message}"{history_text}{knowledge_section}
+BUSINESS KNOWLEDGE:
+{knowledge_section}
 
 HOW TO BEHAVE:
-- Sound natural, warm and conversational — like a real human assistant
-- Keep replies concise — 1-3 sentences usually enough
+- Sound natural and conversational — like a real human, never robotic
+- Keep replies concise — 1-3 sentences is usually enough
+- NEVER start a reply with "Hi", "Hello", "Hey" or any greeting word — get straight to the point
+- Use the full conversation history to understand context; never ask something you already know from earlier in the chat
 - {language_instruction}
 
 ANSWERING RULES:
 - Answer directly and confidently from the business knowledge
-- If something is clearly in the knowledge, state it as fact: "Our return policy is 30 days" not "I think it might be..."
+- State facts as facts: "Our hours are 9-5" not "I think it might be..."
 - If something is NOT in the knowledge, say honestly: "I don't have that info, but you can reach the team at [contact if available]"
 - NEVER make up prices, products, or policies
-- NEVER offer to collect contact details unless customer explicitly asks to be contacted
-- If customer asks "can I speak to someone" or "contact owner" THEN set action to "collect_lead"
-- If customer says bye/goodbye/thanks that's it: set action to "end"
+- NEVER offer to collect contact details unless the customer explicitly asks to be contacted or speak to someone
+- If customer asks to speak to someone or contact the owner: set action to "collect_lead"
+- If customer says bye/goodbye/thanks and is done: set action to "end"
 - Handle rude messages calmly and professionally
-- For greetings, respond warmly and ask how you can help
 
-Respond in EXACTLY this JSON (no markdown, no extra text):
-{{
-  "reply": "your natural response here",
-  "action": "chat or collect_lead or end",
-  "language": "English or detected language"
-}}"""
+Respond in EXACTLY this JSON format (no markdown, no extra text):
+{{"reply": "your response here", "action": "chat or collect_lead or end", "language": "English or detected language"}}"""
+
+    try:
+        from openai import OpenAI
+        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+        # Build proper chat history as real role turns so the model actually remembers context
+        messages = [{"role": "system", "content": system_prompt}]
+        for h in session.get("history", [])[-10:]:
+            messages.append({"role": "user",      "content": h["customer"]})
+            messages.append({"role": "assistant",  "content": h["atlyz"]})
+        messages.append({"role": "user", "content": message})
 
         response = client.chat.completions.create(
             model="gpt-4.1-nano",
-            messages=[
-                {"role": "system", "content": "You are a JSON-only API. Return valid JSON and nothing else."},
-                {"role": "user", "content": prompt}
-            ],
+            messages=messages,
             max_completion_tokens=300
         )
 
@@ -300,12 +297,15 @@ def chat_start():
     }
 
     return jsonify({
-        "session_id": session_id,
-        "greeting": config.get("greeting", "Hi! How can I help you today?"),
+        "session_id":    session_id,
+        "greeting":      config.get("greeting", "Hi! How can I help you today?"),
         "business_name": config["business_name"],
         "config": {
-            "primary_color": config.get("primary_color", "#7c3aed"),
-            "widget_position": config.get("widget_position", "bottom-right")
+            "primary_color":   config.get("primary_color", "#7c3aed"),
+            "widget_position": config.get("widget_position", "bottom-right"),
+            "bot_name":        config.get("bot_name", "Aria"),
+            "bot_tagline":     config.get("bot_tagline", "Your AI Assistant"),
+            "white_label":     config.get("white_label", False)
         }
     })
 
@@ -339,7 +339,9 @@ def chat_message():
     action   = result.get("action", "chat")
     language = result.get("language", "English")
 
-    session["history"].append({"customer": message, "atlyz": reply})
+    # Store full JSON in history so the model sees consistent formatting and doesn't switch to plain text
+    history_entry = json.dumps({"reply": reply, "action": action, "language": language})
+    session["history"].append({"customer": message, "atlyz": history_entry})
     if len(session["history"]) > 20:
         session["history"].pop(0)
 
@@ -400,7 +402,7 @@ def save_chatbot_config(business_id):
         return jsonify({"success": False, "error": "Business not found"}), 404
 
     current = load_chatbot_config(business_id)
-    for field in ["primary_color", "greeting", "widget_position", "business_name", "language_lock"]:
+    for field in ["primary_color", "greeting", "widget_position", "business_name", "language_lock", "bot_name", "bot_tagline", "white_label"]:
         if field in data:
             current[field] = data[field]
 
@@ -525,8 +527,11 @@ def setup_create():
         "greeting":        greeting,
         "language_lock":   None,
         "business_name":   business_name,
+        "bot_name":        data.get("bot_name", "Aria"),
+        "bot_tagline":     data.get("bot_tagline", "Your AI Assistant"),
         "collect_leads":   True,
-        "widget_position": position
+        "widget_position": position,
+        "white_label":     False
     }
     with open(os.path.join(config_dir, "chatbot_config.json"), "w") as f:
         json.dump(chatbot_cfg, f, indent=2)

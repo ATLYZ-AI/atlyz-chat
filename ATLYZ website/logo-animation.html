@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlyz — Logo Animation</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  width:100%;height:100%;min-height:100vh;
+  background:#09090b;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,0.04) 1px,transparent 1px);
+  background-size:36px 36px;pointer-events:none;z-index:0;
+}
+
+/* ── STAGE ── */
+.stage{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;gap:40px;
+}
+
+/* ── AMBIENT GLOW (behind the SVG) ── */
+.logo-wrap{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.logo-wrap::before{
+  content:'';
+  position:absolute;
+  width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(14,165,233,0.14) 0%,rgba(14,165,233,0.04) 50%,transparent 70%);
+  pointer-events:none;
+  animation:ambient-pulse 3s ease-in-out infinite;
+  animation-delay:2.8s;
+  opacity:0;
+}
+@keyframes ambient-pulse{
+  0%,100%{opacity:0.7;transform:scale(0.95)}
+  50%{opacity:1;transform:scale(1.08)}
+}
+
+/* ── SVG ── */
+.logo-svg{
+  width:280px;height:280px;overflow:visible;
+  filter:
+    drop-shadow(0 0 4px rgba(14,165,233,0.95))
+    drop-shadow(0 0 14px rgba(14,165,233,0.6))
+    drop-shadow(0 0 40px rgba(14,165,233,0.25));
+}
+
+/* ══════════════════════════════════════════════════
+   SVG ELEMENT INITIAL STATES
+   ══════════════════════════════════════════════════ */
+
+/* Lines — hidden by dashoffset = dasharray */
+/* lengths (px in viewBox units):
+   line-l  : sqrt(31²+42²) = 52.20
+   line-lc : sqrt(16²+56²) = 58.26
+   line-c  : 62
+   line-rc : sqrt(16²+56²) = 58.26
+   line-r  : sqrt(31²+42²) = 52.20                */
+.line-l  { stroke-dasharray:52.2;  stroke-dashoffset:52.2;  animation: draw 0.80s cubic-bezier(.4,0,.2,1) 0.35s forwards; }
+.line-lc { stroke-dasharray:58.26; stroke-dashoffset:58.26; animation: draw 0.75s cubic-bezier(.4,0,.2,1) 0.35s forwards; }
+.line-c  { stroke-dasharray:62;    stroke-dashoffset:62;    animation: draw 0.70s cubic-bezier(.4,0,.2,1) 0.35s forwards; }
+.line-rc { stroke-dasharray:58.26; stroke-dashoffset:58.26; animation: draw 0.75s cubic-bezier(.4,0,.2,1) 0.35s forwards; }
+.line-r  { stroke-dasharray:52.2;  stroke-dashoffset:52.2;  animation: draw 0.80s cubic-bezier(.4,0,.2,1) 0.35s forwards; }
+
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Dots — hidden by scale(0), all use fill-box transform */
+.dot{
+  transform-box:fill-box;
+  transform-origin:center;
+  transform:scale(0);
+}
+
+/* Root dot — first to appear */
+.dot-root{
+  animation: pop 0.45s cubic-bezier(.34,1.56,.64,1) 0.08s forwards;
+}
+
+/* Mid dots — appear when lines are ~50% drawn (0.35 + 0.38 ≈ 0.73s) */
+.dot-mid-l { animation: pop 0.35s cubic-bezier(.34,1.56,.64,1) 0.73s forwards; }
+.dot-mid-c { animation: pop 0.35s cubic-bezier(.34,1.56,.64,1) 0.76s forwards; }
+.dot-mid-r { animation: pop 0.35s cubic-bezier(.34,1.56,.64,1) 0.73s forwards; }
+
+/* Tip dots — appear when lines finish (~0.35 + 0.80 = 1.15s) */
+.dot-tip-l  { animation: pop 0.40s cubic-bezier(.34,1.56,.64,1) 1.08s forwards; }
+.dot-tip-lc { animation: pop 0.40s cubic-bezier(.34,1.56,.64,1) 1.12s forwards; }
+.dot-tip-c  { animation: pop 0.40s cubic-bezier(.34,1.56,.64,1) 1.15s forwards; }
+.dot-tip-rc { animation: pop 0.40s cubic-bezier(.34,1.56,.64,1) 1.12s forwards; }
+.dot-tip-r  { animation: pop 0.40s cubic-bezier(.34,1.56,.64,1) 1.08s forwards; }
+
+@keyframes pop {
+  from { transform: scale(0); }
+  60%  { transform: scale(1.25); }
+  to   { transform: scale(1); }
+}
+
+/* Circle — draws last, completes the frame */
+/* circumference: 2π × 44 = 276.46 */
+/* starts at top (12 o'clock) via rotate(-90deg) */
+.svg-circle{
+  stroke-dasharray: 276.46;
+  stroke-dashoffset: 276.46;
+  transform: rotate(-90deg);
+  transform-origin: 50px 50px;
+  animation: draw-ring 1.4s cubic-bezier(.4,0,.15,1) 1.35s forwards;
+}
+
+@keyframes draw-ring {
+  from { stroke-dashoffset: 276.46; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* After-completion idle glow pulse on entire SVG */
+.logo-svg{
+  animation: idle-glow 3s ease-in-out infinite;
+  animation-delay: 2.85s;
+}
+@keyframes idle-glow {
+  0%,100%{ filter:
+    drop-shadow(0 0 4px rgba(14,165,233,0.95))
+    drop-shadow(0 0 14px rgba(14,165,233,0.6))
+    drop-shadow(0 0 40px rgba(14,165,233,0.25)); }
+  50%{ filter:
+    drop-shadow(0 0 6px rgba(14,165,233,1))
+    drop-shadow(0 0 22px rgba(14,165,233,0.8))
+    drop-shadow(0 0 60px rgba(14,165,233,0.4)); }
+}
+
+/* ── BRAND TEXT ── */
+.brand{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  opacity:0;
+  animation: brand-in 0.9s ease 2.85s forwards;
+}
+@keyframes brand-in {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.brand-name{
+  font-family:'Syne',sans-serif;
+  font-size:42px;font-weight:700;letter-spacing:6px;
+  background:linear-gradient(135deg,#67e8f9,#0ea5e9);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.brand-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(14,165,233,0.55);
+}
+
+/* ── REPLAY BUTTON ── */
+.replay-btn{
+  position:fixed;bottom:28px;right:28px;
+  background:rgba(14,165,233,0.08);
+  border:1px solid rgba(14,165,233,0.25);
+  color:rgba(14,165,233,0.7);
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;letter-spacing:1px;
+  padding:10px 18px;border-radius:8px;cursor:pointer;
+  transition:.2s;z-index:10;
+  opacity:0;
+  animation:brand-in 0.6s ease 3.2s forwards;
+}
+.replay-btn:hover{
+  background:rgba(14,165,233,0.14);
+  border-color:rgba(14,165,233,0.5);
+  color:rgba(14,165,233,1);
+  transform:translateY(-1px);
+  box-shadow:0 4px 20px rgba(14,165,233,0.2);
+}
+
+/* ── TIMING LABEL (small dev helper, hide for prod) ── */
+.phase-label{
+  position:fixed;bottom:28px;left:28px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:rgba(255,255,255,0.15);letter-spacing:.5px;
+}
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="logo-wrap">
+    <svg class="logo-svg" id="logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="lg" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0%" stop-color="#0ea5e9"/>
+          <stop offset="100%" stop-color="#67e8f9"/>
+        </linearGradient>
+        <!-- Soft inner glow fill for background disc -->
+        <radialGradient id="disc-g" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(14,165,233,0.06)"/>
+          <stop offset="100%" stop-color="rgba(14,165,233,0)"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Subtle background fill disc (always visible, no animation) -->
+      <circle cx="50" cy="50" r="43" fill="url(#disc-g)"/>
+
+      <!-- ══ MAIN CIRCLE — draws last ══ -->
+      <circle
+        class="svg-circle"
+        cx="50" cy="50" r="44"
+        stroke="url(#lg)" stroke-width="2.6"
+        stroke-linecap="round"
+      />
+
+      <!-- ══ 5 LINES from root (50,73) ══ -->
+      <!-- Far left: (50,73)→(19,31) length≈52.2 -->
+      <line class="line-l"
+        x1="50" y1="73" x2="19" y2="31"
+        stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+
+      <!-- Left-center: (50,73)→(34,17) length≈58.26 -->
+      <line class="line-lc"
+        x1="50" y1="73" x2="34" y2="17"
+        stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+
+      <!-- Center: (50,73)→(50,11) length=62 -->
+      <line class="line-c"
+        x1="50" y1="73" x2="50" y2="11"
+        stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+
+      <!-- Right-center: (50,73)→(66,17) length≈58.26 -->
+      <line class="line-rc"
+        x1="50" y1="73" x2="66" y2="17"
+        stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+
+      <!-- Far right: (50,73)→(81,31) length≈52.2 -->
+      <line class="line-r"
+        x1="50" y1="73" x2="81" y2="31"
+        stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+
+      <!-- ══ MID DOTS (appear when lines pass through) ══ -->
+      <circle class="dot dot-mid-l"  cx="34" cy="52" r="4"   fill="url(#lg)"/>
+      <circle class="dot dot-mid-c"  cx="50" cy="42" r="4"   fill="url(#lg)"/>
+      <circle class="dot dot-mid-r"  cx="66" cy="52" r="4"   fill="url(#lg)"/>
+
+      <!-- ══ TIP DOTS (appear when lines finish) ══ -->
+      <circle class="dot dot-tip-l"  cx="19" cy="31" r="5"   fill="url(#lg)"/>
+      <circle class="dot dot-tip-lc" cx="34" cy="17" r="5"   fill="url(#lg)"/>
+      <circle class="dot dot-tip-c"  cx="50" cy="11" r="5"   fill="url(#lg)"/>
+      <circle class="dot dot-tip-rc" cx="66" cy="17" r="5"   fill="url(#lg)"/>
+      <circle class="dot dot-tip-r"  cx="81" cy="31" r="5"   fill="url(#lg)"/>
+
+      <!-- ══ ROOT DOT — first to appear ══ -->
+      <circle class="dot dot-root"   cx="50" cy="73" r="5.5" fill="url(#lg)"/>
+    </svg>
+  </div>
+
+  <div class="brand">
+    <span class="brand-name">ATLYZ</span>
+    <span class="brand-tag">The Atlas Of Your Business</span>
+  </div>
+
+</div>
+
+<button class="replay-btn" onclick="replayAnim()">&#8635; Replay</button>
+<div class="phase-label" id="phase-lbl">◆ Root</div>
+
+<script>
+/* Replay — remove inline animation styles to restart CSS animations */
+function replayAnim() {
+  var els = document.querySelectorAll(
+    '.svg-circle, .line-l, .line-lc, .line-c, .line-rc, .line-r, ' +
+    '.dot-root, .dot-mid-l, .dot-mid-c, .dot-mid-r, ' +
+    '.dot-tip-l, .dot-tip-lc, .dot-tip-c, .dot-tip-rc, .dot-tip-r, ' +
+    '.brand, .logo-wrap::before'
+  );
+  els.forEach(function(el) {
+    el.style.animation = 'none';
+    el.getBoundingClientRect(); /* force reflow */
+    el.style.animation = '';
+  });
+  document.querySelector('.logo-svg').style.animation = 'none';
+  document.querySelector('.logo-svg').getBoundingClientRect();
+  document.querySelector('.logo-svg').style.animation = '';
+  document.querySelector('.logo-wrap').style.setProperty('--restart', Date.now());
+}
+
+/* Live phase label (optional dev indicator) */
+var phases = [
+  [0,    '◆ Root'],
+  [350,  '↑ Lines growing…'],
+  [730,  '• Mid dots'],
+  [1100, '• Tip dots'],
+  [1350, '○ Circle completing…'],
+  [2750, '✦ Complete'],
+];
+function runPhaseLabel() {
+  var lbl = document.getElementById('phase-lbl');
+  phases.forEach(function(p) {
+    setTimeout(function() { if(lbl) lbl.textContent = p[1]; }, p[0]);
+  });
+}
+runPhaseLabel();
+</script>
+
+</body>
+</html>

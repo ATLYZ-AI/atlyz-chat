@@ -546,6 +546,56 @@ section{
   transform:translateY(-1px);
 }
 
+/* ─────────────── FOUNDING MEMBER PRICING ─────────────── */
+.founding-banner{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(245,158,11,.06));
+  border:1px solid rgba(251,191,36,.3);
+  border-radius:100px;padding:8px 20px;margin:0 auto 40px;
+  font-size:12px;font-weight:500;color:#fbbf24;
+  letter-spacing:.3px;font-family:'JetBrains Mono',monospace;
+}
+.founding-banner::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:#fbbf24;box-shadow:0 0 6px #fbbf24;
+  animation:pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+.founding-banner span{color:rgba(251,191,36,.6);margin-left:2px}
+
+.price-original{
+  font-size:18px;font-weight:400;color:var(--muted);
+  text-decoration:line-through;margin-bottom:2px;
+  letter-spacing:-1px;opacity:.55;
+}
+.price-discount-tag{
+  display:inline-block;
+  background:linear-gradient(135deg,rgba(251,191,36,.15),rgba(245,158,11,.08));
+  border:1px solid rgba(251,191,36,.25);
+  color:#fbbf24;font-size:10px;font-weight:600;
+  padding:3px 10px;border-radius:100px;margin-bottom:6px;
+  font-family:'JetBrains Mono',monospace;letter-spacing:.5px;
+}
+.price-amount.founder-price{
+  font-size:52px;
+  background:linear-gradient(135deg,#fff 60%,rgba(251,191,36,.7));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.price-founding-note{
+  font-size:10px;color:rgba(251,191,36,.5);margin-top:-20px;
+  margin-bottom:22px;letter-spacing:.3px;font-family:'JetBrains Mono',monospace;
+}
+.founder-badge{
+  position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#b45309,#d97706);
+  color:#fff;font-size:10px;font-weight:500;
+  padding:4px 18px;border-radius:100px;letter-spacing:1.5px;
+  text-transform:uppercase;white-space:nowrap;
+  font-family:'JetBrains Mono',monospace;
+  box-shadow:0 4px 12px rgba(180,83,9,.3);
+}
+
 /* ─────────────── FAQ ─────────────── */
 .faq-list{
   margin-top:56px;
@@ -839,6 +889,107 @@ footer{
   .cta-email-input{width:100%}
   .foot-top{flex-direction:column;gap:32px}
 }
+
+/* ══════════════════════════════════════════════════
+   LOGO ANIMATION SYSTEM  (la- prefix)
+   Total sequence: ~4.15s  |  Circle completes last
+   ══════════════════════════════════════════════════ */
+@keyframes la-draw{to{stroke-dashoffset:0}}
+@keyframes la-pop{
+  from{transform:scale(0)}
+  60%{transform:scale(1.3)}
+  to{transform:scale(1)}
+}
+@keyframes la-ring{
+  from{stroke-dashoffset:276.46}
+  to{stroke-dashoffset:0}
+}
+@keyframes la-glow-idle{
+  0%,100%{filter:drop-shadow(0 0 4px rgba(14,165,233,.9)) drop-shadow(0 0 14px rgba(14,165,233,.55)) drop-shadow(0 0 40px rgba(14,165,233,.2))}
+  50%{filter:drop-shadow(0 0 7px rgba(14,165,233,1)) drop-shadow(0 0 24px rgba(14,165,233,.75)) drop-shadow(0 0 64px rgba(14,165,233,.35))}
+}
+
+/* Shared dot rule — all start hidden, scale-in via animation */
+.la-dot{transform-box:fill-box;transform-origin:center;transform:scale(0)}
+
+/* ── BOTTOM LOGO SECTION ── */
+.la-section{
+  position:relative;z-index:1;
+  padding:80px 24px 70px;text-align:center;
+  border-top:1px solid rgba(255,255,255,0.05);
+  display:flex;flex-direction:column;align-items:center;gap:28px;
+}
+.la-section-glow{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:600px;height:320px;pointer-events:none;
+  background:radial-gradient(ellipse,rgba(14,165,233,0.08) 0%,transparent 70%);
+}
+.la-section-tag{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;
+  text-transform:uppercase;color:rgba(14,165,233,0.45);
+}
+.la-section-title{
+  font-family:'Syne',sans-serif;font-size:clamp(22px,3vw,34px);
+  font-weight:700;letter-spacing:5px;
+  background:linear-gradient(135deg,#67e8f9,#0ea5e9,#67e8f9);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:lbl-flow 4s linear infinite;
+}
+
+#la-bottom{
+  width:200px;height:200px;overflow:visible;
+  filter:drop-shadow(0 0 4px rgba(14,165,233,.9)) drop-shadow(0 0 14px rgba(14,165,233,.5)) drop-shadow(0 0 40px rgba(14,165,233,.2));
+}
+/* Lines — bottom (1.5× slower than logo-animation.html) */
+#la-bottom .la-line-l  {stroke-dasharray:52.2; stroke-dashoffset:52.2; animation:la-draw 1.20s cubic-bezier(.4,0,.2,1) 0.53s both}
+#la-bottom .la-line-lc {stroke-dasharray:58.26;stroke-dashoffset:58.26;animation:la-draw 1.13s cubic-bezier(.4,0,.2,1) 0.53s both}
+#la-bottom .la-line-c  {stroke-dasharray:62;   stroke-dashoffset:62;   animation:la-draw 1.05s cubic-bezier(.4,0,.2,1) 0.53s both}
+#la-bottom .la-line-rc {stroke-dasharray:58.26;stroke-dashoffset:58.26;animation:la-draw 1.13s cubic-bezier(.4,0,.2,1) 0.53s both}
+#la-bottom .la-line-r  {stroke-dasharray:52.2; stroke-dashoffset:52.2; animation:la-draw 1.20s cubic-bezier(.4,0,.2,1) 0.53s both}
+/* Dots — bottom */
+#la-bottom .la-dot-root  {animation:la-pop .65s cubic-bezier(.34,1.56,.64,1) .12s both}
+#la-bottom .la-dot-mid-l {animation:la-pop .50s cubic-bezier(.34,1.56,.64,1) 1.10s both}
+#la-bottom .la-dot-mid-c {animation:la-pop .50s cubic-bezier(.34,1.56,.64,1) 1.14s both}
+#la-bottom .la-dot-mid-r {animation:la-pop .50s cubic-bezier(.34,1.56,.64,1) 1.10s both}
+#la-bottom .la-dot-tip-l  {animation:la-pop .55s cubic-bezier(.34,1.56,.64,1) 1.63s both}
+#la-bottom .la-dot-tip-lc {animation:la-pop .55s cubic-bezier(.34,1.56,.64,1) 1.68s both}
+#la-bottom .la-dot-tip-c  {animation:la-pop .55s cubic-bezier(.34,1.56,.64,1) 1.71s both}
+#la-bottom .la-dot-tip-rc {animation:la-pop .55s cubic-bezier(.34,1.56,.64,1) 1.68s both}
+#la-bottom .la-dot-tip-r  {animation:la-pop .55s cubic-bezier(.34,1.56,.64,1) 1.63s both}
+/* Circle — bottom (draws last) */
+#la-bottom .la-circle{
+  stroke-dasharray:276.46;stroke-dashoffset:276.46;
+  transform:rotate(-90deg);transform-origin:50px 50px;
+  animation:la-ring 2.10s cubic-bezier(.4,0,.15,1) 2.05s both
+}
+/* Idle glow after sequence (starts at 4.2s) */
+#la-bottom.la-idle{animation:la-glow-idle 3s ease-in-out infinite}
+
+/* ── NAV LOGO (plays on load, replays every 60s) ── */
+#la-nav{width:32px;height:32px;overflow:visible}
+/* Lines — nav */
+#la-nav .la-line-l  {stroke-dasharray:52.2; stroke-dashoffset:52.2; animation:la-draw .90s cubic-bezier(.4,0,.2,1) .40s both}
+#la-nav .la-line-lc {stroke-dasharray:58.26;stroke-dashoffset:58.26;animation:la-draw .85s cubic-bezier(.4,0,.2,1) .40s both}
+#la-nav .la-line-c  {stroke-dasharray:62;   stroke-dashoffset:62;   animation:la-draw .80s cubic-bezier(.4,0,.2,1) .40s both}
+#la-nav .la-line-rc {stroke-dasharray:58.26;stroke-dashoffset:58.26;animation:la-draw .85s cubic-bezier(.4,0,.2,1) .40s both}
+#la-nav .la-line-r  {stroke-dasharray:52.2; stroke-dashoffset:52.2; animation:la-draw .90s cubic-bezier(.4,0,.2,1) .40s both}
+/* Dots — nav */
+#la-nav .la-dot-root  {animation:la-pop .40s cubic-bezier(.34,1.56,.64,1) .05s both}
+#la-nav .la-dot-mid-l {animation:la-pop .30s cubic-bezier(.34,1.56,.64,1) .78s both}
+#la-nav .la-dot-mid-c {animation:la-pop .30s cubic-bezier(.34,1.56,.64,1) .82s both}
+#la-nav .la-dot-mid-r {animation:la-pop .30s cubic-bezier(.34,1.56,.64,1) .78s both}
+#la-nav .la-dot-tip-l  {animation:la-pop .35s cubic-bezier(.34,1.56,.64,1) 1.20s both}
+#la-nav .la-dot-tip-lc {animation:la-pop .35s cubic-bezier(.34,1.56,.64,1) 1.24s both}
+#la-nav .la-dot-tip-c  {animation:la-pop .35s cubic-bezier(.34,1.56,.64,1) 1.27s both}
+#la-nav .la-dot-tip-rc {animation:la-pop .35s cubic-bezier(.34,1.56,.64,1) 1.24s both}
+#la-nav .la-dot-tip-r  {animation:la-pop .35s cubic-bezier(.34,1.56,.64,1) 1.20s both}
+/* Circle — nav */
+#la-nav .la-circle{
+  stroke-dasharray:276.46;stroke-dashoffset:276.46;
+  transform:rotate(-90deg);transform-origin:50px 50px;
+  animation:la-ring 1.50s cubic-bezier(.4,0,.15,1) 1.55s both
+}
 </style>
 </head>
 <body>
@@ -856,34 +1007,35 @@ footer{
 <!-- NAV -->
 <nav>
   <a href="index.html" class="nav-logo">
-    <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg id="la-nav" width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="atlyz-g" x1="0" y1="1" x2="1" y2="0">
+        <linearGradient id="nav-lg" x1="0" y1="1" x2="1" y2="0">
           <stop offset="0%" stop-color="#0ea5e9"/>
           <stop offset="100%" stop-color="#67e8f9"/>
         </linearGradient>
       </defs>
-      <circle cx="50" cy="50" r="44" stroke="url(#atlyz-g)" stroke-width="3"/>
-      <line x1="50" y1="73" x2="19" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-      <circle cx="19" cy="31" r="5" fill="url(#atlyz-g)"/>
-      <circle cx="34" cy="52" r="4" fill="url(#atlyz-g)"/>
-      <line x1="50" y1="73" x2="34" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-      <circle cx="34" cy="17" r="5" fill="url(#atlyz-g)"/>
-      <line x1="50" y1="73" x2="50" y2="11" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-      <circle cx="50" cy="11" r="5" fill="url(#atlyz-g)"/>
-      <circle cx="50" cy="42" r="4" fill="url(#atlyz-g)"/>
-      <line x1="50" y1="73" x2="66" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-      <circle cx="66" cy="17" r="5" fill="url(#atlyz-g)"/>
-      <line x1="50" y1="73" x2="81" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-      <circle cx="81" cy="31" r="5" fill="url(#atlyz-g)"/>
-      <circle cx="66" cy="52" r="4" fill="url(#atlyz-g)"/>
-      <circle cx="50" cy="73" r="5.5" fill="url(#atlyz-g)"/>
+      <circle class="la-circle"  cx="50" cy="50" r="44" stroke="url(#nav-lg)" stroke-width="3"/>
+      <line   class="la-line-l"  x1="50" y1="73" x2="19" y2="31" stroke="url(#nav-lg)" stroke-width="2.8" stroke-linecap="round"/>
+      <line   class="la-line-lc" x1="50" y1="73" x2="34" y2="17" stroke="url(#nav-lg)" stroke-width="2.8" stroke-linecap="round"/>
+      <line   class="la-line-c"  x1="50" y1="73" x2="50" y2="11" stroke="url(#nav-lg)" stroke-width="2.8" stroke-linecap="round"/>
+      <line   class="la-line-rc" x1="50" y1="73" x2="66" y2="17" stroke="url(#nav-lg)" stroke-width="2.8" stroke-linecap="round"/>
+      <line   class="la-line-r"  x1="50" y1="73" x2="81" y2="31" stroke="url(#nav-lg)" stroke-width="2.8" stroke-linecap="round"/>
+      <circle class="la-dot la-dot-mid-l"  cx="34" cy="52" r="4"   fill="url(#nav-lg)"/>
+      <circle class="la-dot la-dot-mid-c"  cx="50" cy="42" r="4"   fill="url(#nav-lg)"/>
+      <circle class="la-dot la-dot-mid-r"  cx="66" cy="52" r="4"   fill="url(#nav-lg)"/>
+      <circle class="la-dot la-dot-tip-l"  cx="19" cy="31" r="5"   fill="url(#nav-lg)"/>
+      <circle class="la-dot la-dot-tip-lc" cx="34" cy="17" r="5"   fill="url(#nav-lg)"/>
+      <circle class="la-dot la-dot-tip-c"  cx="50" cy="11" r="5"   fill="url(#nav-lg)"/>
+      <circle class="la-dot la-dot-tip-rc" cx="66" cy="17" r="5"   fill="url(#nav-lg)"/>
+      <circle class="la-dot la-dot-tip-r"  cx="81" cy="31" r="5"   fill="url(#nav-lg)"/>
+      <circle class="la-dot la-dot-root"   cx="50" cy="73" r="5.5" fill="url(#nav-lg)"/>
     </svg>
     <span class="logo-word">ATLYZ</span>
   </a>
   <div class="nav-links">
     <a href="#how-it-works">How it works</a>
     <a href="#features">Features</a>
+    <a href="demo.html">Live Demo</a>
     <a href="#pricing">Pricing</a>
     <a href="contact.html">Contact</a>
   </div>
@@ -911,7 +1063,7 @@ footer{
 
   <div class="hero-btns">
     <a href="setup.html" class="btn-primary">Start free — no card needed →</a>
-    <a href="#how-it-works" class="btn-outline">See how it works</a>
+    <a href="demo.html" class="btn-outline">Try live demo</a>
   </div>
 
   <p class="no-cc">No credit card required · Setup in under 5 minutes · Cancel any time</p>
@@ -1151,14 +1303,21 @@ footer{
     <div class="section-label" style="text-align:center">Pricing</div>
     <div class="section-title">Simple, honest pricing</div>
     <p class="section-sub" style="margin:0 auto">No hidden fees. No setup costs. Cancel any time.</p>
+    <div style="margin-top:24px;display:flex;justify-content:center">
+      <div class="founding-banner">Founding Member Pricing — First 10 clients only<span>· Spots filling fast</span></div>
+    </div>
   </div>
 
   <div class="pricing-grid">
 
-    <div class="price-card reveal">
-      <div class="price-tier">Starter</div>
-      <div class="price-amount">$49</div>
+    <div class="price-card reveal" style="position:relative">
+      <div class="founder-badge">Founding Member</div>
+      <div class="price-tier" style="margin-top:10px">Starter</div>
+      <div class="price-original">$55</div>
+      <div class="price-discount-tag">18% Off — First 10 Clients</div>
+      <div class="price-amount founder-price">$45</div>
       <div class="price-period">per month</div>
+      <div class="price-founding-note">Lock in this rate forever</div>
       <div class="price-feats">
         <div class="pf has"><span class="ck">✓</span><span>1 website</span></div>
         <div class="pf has"><span class="ck">✓</span><span>500 chats / month</span></div>
@@ -1168,14 +1327,17 @@ footer{
         <div class="pf"><span class="no">✕</span><span>Lead capture</span></div>
         <div class="pf"><span class="no">✕</span><span>Analytics dashboard</span></div>
       </div>
-      <a href="setup.html" class="price-btn outline">Get started</a>
+      <a href="setup.html" class="price-btn outline">Claim Founding Rate</a>
     </div>
 
     <div class="price-card featured reveal">
       <div class="price-badge">Most Popular</div>
-      <div class="price-tier">Growth</div>
-      <div class="price-amount">$99</div>
+      <div class="price-tier" style="margin-top:10px">Growth</div>
+      <div class="price-original">$99</div>
+      <div class="price-discount-tag">14% Off — First 10 Clients</div>
+      <div class="price-amount founder-price">$85</div>
       <div class="price-period">per month</div>
+      <div class="price-founding-note">Lock in this rate forever</div>
       <div class="price-feats">
         <div class="pf has"><span class="ck">✓</span><span>1 website</span></div>
         <div class="pf has"><span class="ck">✓</span><span>Unlimited chats</span></div>
@@ -1185,13 +1347,17 @@ footer{
         <div class="pf has"><span class="ck">✓</span><span>Analytics dashboard</span></div>
         <div class="pf has"><span class="ck">✓</span><span>Priority support</span></div>
       </div>
-      <a href="setup.html" class="price-btn solid">Get started</a>
+      <a href="setup.html" class="price-btn solid">Claim Founding Rate</a>
     </div>
 
-    <div class="price-card reveal">
-      <div class="price-tier">Pro</div>
-      <div class="price-amount">$149</div>
+    <div class="price-card reveal" style="position:relative">
+      <div class="founder-badge">Founding Member</div>
+      <div class="price-tier" style="margin-top:10px">Pro</div>
+      <div class="price-original">$149</div>
+      <div class="price-discount-tag">13% Off — First 10 Clients</div>
+      <div class="price-amount founder-price">$130</div>
       <div class="price-period">per month</div>
+      <div class="price-founding-note">Lock in this rate forever</div>
       <div class="price-feats">
         <div class="pf has"><span class="ck">✓</span><span>3 websites</span></div>
         <div class="pf has"><span class="ck">✓</span><span>Unlimited chats</span></div>
@@ -1201,7 +1367,7 @@ footer{
         <div class="pf has"><span class="ck">✓</span><span>Advanced analytics</span></div>
         <div class="pf has"><span class="ck">✓</span><span>White-label widget</span></div>
       </div>
-      <a href="setup.html" class="price-btn outline">Get started</a>
+      <a href="setup.html" class="price-btn outline">Claim Founding Rate</a>
     </div>
 
   </div>
@@ -1280,12 +1446,47 @@ footer{
   </div>
 </div>
 
+<!-- ANIMATED LOGO SECTION -->
+<div class="la-section">
+  <div class="la-section-glow"></div>
+  <div class="la-section-tag">Atlyz — The Atlas Of Your Business</div>
+  <svg id="la-bottom" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="bot-lg" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0%" stop-color="#0ea5e9"/>
+        <stop offset="100%" stop-color="#67e8f9"/>
+      </linearGradient>
+      <radialGradient id="bot-disc" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="rgba(14,165,233,0.07)"/>
+        <stop offset="100%" stop-color="rgba(14,165,233,0)"/>
+      </radialGradient>
+    </defs>
+    <circle cx="50" cy="50" r="43" fill="url(#bot-disc)"/>
+    <circle class="la-circle"  cx="50" cy="50" r="44" stroke="url(#bot-lg)" stroke-width="2.6" stroke-linecap="round"/>
+    <line   class="la-line-l"  x1="50" y1="73" x2="19" y2="31" stroke="url(#bot-lg)" stroke-width="2.8" stroke-linecap="round"/>
+    <line   class="la-line-lc" x1="50" y1="73" x2="34" y2="17" stroke="url(#bot-lg)" stroke-width="2.8" stroke-linecap="round"/>
+    <line   class="la-line-c"  x1="50" y1="73" x2="50" y2="11" stroke="url(#bot-lg)" stroke-width="2.8" stroke-linecap="round"/>
+    <line   class="la-line-rc" x1="50" y1="73" x2="66" y2="17" stroke="url(#bot-lg)" stroke-width="2.8" stroke-linecap="round"/>
+    <line   class="la-line-r"  x1="50" y1="73" x2="81" y2="31" stroke="url(#bot-lg)" stroke-width="2.8" stroke-linecap="round"/>
+    <circle class="la-dot la-dot-mid-l"  cx="34" cy="52" r="4"   fill="url(#bot-lg)"/>
+    <circle class="la-dot la-dot-mid-c"  cx="50" cy="42" r="4"   fill="url(#bot-lg)"/>
+    <circle class="la-dot la-dot-mid-r"  cx="66" cy="52" r="4"   fill="url(#bot-lg)"/>
+    <circle class="la-dot la-dot-tip-l"  cx="19" cy="31" r="5"   fill="url(#bot-lg)"/>
+    <circle class="la-dot la-dot-tip-lc" cx="34" cy="17" r="5"   fill="url(#bot-lg)"/>
+    <circle class="la-dot la-dot-tip-c"  cx="50" cy="11" r="5"   fill="url(#bot-lg)"/>
+    <circle class="la-dot la-dot-tip-rc" cx="66" cy="17" r="5"   fill="url(#bot-lg)"/>
+    <circle class="la-dot la-dot-tip-r"  cx="81" cy="31" r="5"   fill="url(#bot-lg)"/>
+    <circle class="la-dot la-dot-root"   cx="50" cy="73" r="5.5" fill="url(#bot-lg)"/>
+  </svg>
+  <div class="la-section-title">ATLYZ</div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="foot-top">
     <div class="foot-brand">
       <div class="foot-logo">Atlyz</div>
-      <p>AI that works for your business, around the clock.</p>
+      <p>The Atlas Of Your Business.</p>
       <div class="foot-newsletter">
         <p>Get product updates:</p>
         <div class="foot-nl-form">
@@ -1294,9 +1495,10 @@ footer{
         </div>
       </div>
       <div class="social-links">
-        <a href="https://twitter.com/atlyzai" class="social-link" aria-label="Twitter / X">
+        <a href="https://twitter.com/Atlyz_Ai" class="social-link" aria-label="Twitter / X">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         </a>
+        <a href="https://twitter.com/Atlyz_Ai?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @Atlyz_Ai</a>
       </div>
     </div>
     <div class="foot-col">
@@ -1320,7 +1522,7 @@ footer{
     </div>
   </div>
   <div class="foot-bottom">
-    <p>© 2025 Atlyz. All rights reserved.</p>
+    <p>© 2026 Atlyz. All rights reserved.</p>
     <p class="foot-mono">v0.1.0-beta</p>
   </div>
 </footer>
@@ -1479,6 +1681,30 @@ function goSetup(){
 }
 if(ctaInput) ctaInput.addEventListener('keydown',function(e){if(e.key==='Enter') goSetup();});
 if(ctaBtn) ctaBtn.addEventListener('click',function(e){e.preventDefault();goSetup();});
+
+// ── LOGO ANIMATION SYSTEM
+function laReplay(svgId){
+  var svg=document.getElementById(svgId);
+  if(!svg) return;
+  var sel='.la-circle,.la-line-l,.la-line-lc,.la-line-c,.la-line-rc,.la-line-r,'+
+          '.la-dot-root,.la-dot-mid-l,.la-dot-mid-c,.la-dot-mid-r,'+
+          '.la-dot-tip-l,.la-dot-tip-lc,.la-dot-tip-c,.la-dot-tip-rc,.la-dot-tip-r';
+  svg.querySelectorAll(sel).forEach(function(el){
+    el.style.animation='none';
+    el.getBoundingClientRect();
+    el.style.animation='';
+  });
+}
+// Bottom logo: loops continuously every 5.2 seconds
+(function loopBottom(){
+  var bot=document.getElementById('la-bottom');
+  if(bot) bot.classList.remove('la-idle');
+  laReplay('la-bottom');
+  setTimeout(function(){ var b=document.getElementById('la-bottom'); if(b) b.classList.add('la-idle'); }, 4200);
+  setTimeout(loopBottom, 5200);
+})();
+// Nav logo: plays on load then replays every 60 seconds
+setInterval(function(){ laReplay('la-nav'); }, 60000);
 </script>
 
 <!-- GSAP -->
@@ -1638,5 +1864,6 @@ if(window.gsap&&window.ScrollTrigger){
 
 <!-- Atlyz Chat Widget -->
 <script src="http://localhost:5002/widget.js?id=atlyz_website"></script>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </body>
 </html>

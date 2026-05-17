@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Demo — Atlyz Chat | See It Working Right Now</title>
+<meta name="description" content="Try a live Atlyz chatbot right now. No signup needed. See exactly what your customers will experience on your website.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ── */
+:root{
+  --bg:#09090b;--surface:#111113;--surface2:#18181b;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.12);
+  --text:#fafafa;--muted:#71717a;--muted2:#52525b;
+  --purple:#8b5cf6;--blue:#3b82f6;--green:#22c55e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(9,9,11,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-word{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f4}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:.2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{background:var(--text);color:var(--bg);padding:8px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;transition:.2s}
+.nav-cta:hover{background:#e4e4e7;transform:translateY(-1px)}
+
+/* ── HAMBURGER ── */
+.hamburger{display:none;background:none;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:4px;line-height:1}
+@media(max-width:768px){
+  nav{padding:14px 20px}
+  .hamburger{display:block}
+  .nav-links.open{display:flex !important;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(9,9,11,0.97);padding:20px 24px;gap:20px;border-bottom:1px solid rgba(255,255,255,0.06);z-index:99}
+}
+
+/* ── HERO ── */
+.hero{position:relative;z-index:1;text-align:center;padding:120px 24px 60px}
+.hero-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:800px;height:500px;background:radial-gradient(ellipse,rgba(139,92,246,0.14) 0%,rgba(37,99,235,0.08) 40%,transparent 70%);pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:100px;border:1px solid rgba(34,197,94,0.3);background:rgba(34,197,94,0.06);font-size:12px;color:#4ade80;font-family:'JetBrains Mono',monospace;margin-bottom:24px}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:blink 2s infinite;display:inline-block}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:clamp(32px,5vw,60px);letter-spacing:-2px;line-height:1.05;margin-bottom:20px}
+.grad{background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:clamp(15px,2vw,17px);color:var(--muted);max-width:480px;margin:0 auto 16px;line-height:1.7}
+.hero-hint{font-size:13px;color:var(--muted2);margin-top:8px;font-family:'JetBrains Mono',monospace}
+
+/* ── DEMO STAGE ── */
+.demo-stage{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:1fr 400px;gap:48px;align-items:start}
+@media(max-width:960px){.demo-stage{grid-template-columns:1fr;gap:36px}}
+
+/* ── LEFT PANEL ── */
+.demo-left{}
+.business-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px}
+.biz-header{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.biz-avatar{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#2563eb);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.biz-info h3{font-size:16px;font-weight:500;margin-bottom:3px}
+.biz-info p{font-size:13px;color:var(--muted)}
+.biz-info span{font-size:12px;color:#4ade80;display:flex;align-items:center;gap:5px;margin-top:2px}
+.biz-info span::before{content:'';width:5px;height:5px;border-radius:50%;background:#22c55e;display:inline-block}
+
+.biz-details{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.biz-detail{background:var(--surface2);border-radius:10px;padding:12px 14px}
+.biz-detail-label{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.biz-detail-val{font-size:13px;color:var(--text);line-height:1.5}
+
+.try-these{margin-bottom:24px}
+.try-these h4{font-size:13px;font-weight:500;color:var(--muted);margin-bottom:12px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;text-transform:uppercase}
+.suggestion-btns{display:flex;flex-direction:column;gap:8px}
+.sug-btn{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--muted);font-size:13px;text-align:left;cursor:pointer;transition:.2s;font-family:inherit;display:flex;align-items:center;gap:10px}
+.sug-btn:hover{border-color:rgba(139,92,246,0.4);color:var(--text);background:rgba(139,92,246,0.05);transform:translateX(3px)}
+.sug-icon{font-size:15px;flex-shrink:0}
+
+.what-you-see{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px}
+.what-you-see h4{font-size:14px;font-weight:500;margin-bottom:16px;color:var(--text)}
+.feature-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.feature-row:last-child{margin-bottom:0}
+.feat-icon-sm{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.feat-icon-sm.purple{background:rgba(139,92,246,0.15)}
+.feat-icon-sm.blue{background:rgba(59,130,246,0.15)}
+.feat-icon-sm.green{background:rgba(34,197,94,0.15)}
+.feat-icon-sm.orange{background:rgba(249,115,22,0.15)}
+.feature-row p{font-size:13px;color:var(--muted);line-height:1.55}
+.feature-row strong{color:var(--text);font-weight:500}
+
+/* ── CHAT WIDGET (RIGHT) ── */
+.chat-demo-wrap{position:sticky;top:88px}
+.chat-window{background:#0f0f11;border:1px solid rgba(255,255,255,.08);border-radius:20px;overflow:hidden;box-shadow:0 0 0 1px rgba(124,58,237,.1),0 24px 80px rgba(0,0,0,.8);font-family:'Inter',system-ui,sans-serif;height:540px;display:flex;flex-direction:column}
+
+.chat-head{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(37,99,235,.08))}
+.chat-logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#7c3aed,#2563eb);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chat-head-info{flex:1;min-width:0}
+.chat-head-name{font-size:14px;font-weight:600;color:#f4f4f5;letter-spacing:-.2px}
+.chat-head-status{font-size:11px;color:#4ade80;margin-top:2px;display:flex;align-items:center;gap:4px}
+.chat-head-status::before{content:'';width:5px;height:5px;border-radius:50%;background:#4ade80;display:inline-block}
+.chat-head-status.thinking{color:#a78bfa}
+.chat-head-status.thinking::before{background:#a78bfa;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.demo-badge-pill{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.25);border-radius:6px;padding:2px 8px;font-size:10px;color:#4ade80;font-family:'JetBrains Mono',monospace;letter-spacing:.3px}
+
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;background:#09090b;scroll-behavior:smooth}
+.chat-msgs::-webkit-scrollbar{width:3px}
+.chat-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.msg{max-width:84%;padding:9px 13px;font-size:13.5px;line-height:1.55;word-wrap:break-word;animation:msg-in .18s ease}
+@keyframes msg-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg-bot{background:#18181b;color:#d4d4d8;border-radius:4px 12px 12px 12px;align-self:flex-start;border:1px solid rgba(255,255,255,.06)}
+.msg-user{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border-radius:12px 4px 12px 12px;align-self:flex-end}
+
+.thinking-bubble{display:flex;align-items:center;gap:9px;padding:9px 13px;background:#18181b;border:1px solid rgba(167,139,250,.15);border-radius:4px 12px 12px 12px;align-self:flex-start;animation:msg-in .18s ease;max-width:84%}
+.th-dots{display:flex;gap:3px;flex-shrink:0}
+.th-dots span{width:5px;height:5px;border-radius:50%;background:#7c3aed;animation:dotbounce 1.2s infinite}
+.th-dots span:nth-child(2){animation-delay:.2s}
+.th-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotbounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.th-text{font-size:12.5px;color:#71717a;font-style:italic}
+
+.chat-input-wrap{padding:12px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:flex-end;background:#0f0f11;flex-shrink:0}
+.chat-input{flex:1;background:#18181b;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:9px 13px;font-size:13.5px;color:#f4f4f5;outline:none;resize:none;max-height:80px;font-family:inherit;line-height:1.45;transition:border-color .2s}
+.chat-input::placeholder{color:#52525b}
+.chat-input:focus{border-color:rgba(124,58,237,.5)}
+.chat-send{width:36px;height:36px;border-radius:9px;flex-shrink:0;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .15s,transform .15s}
+.chat-send:hover{opacity:.9;transform:translateY(-1px)}
+.chat-send:disabled{opacity:.3;cursor:not-allowed;transform:none}
+
+.chat-foot{text-align:center;font-size:10.5px;color:#3f3f46;padding:6px 0 8px;background:#0f0f11;border-top:1px solid rgba(255,255,255,.04);flex-shrink:0}
+.chat-foot a{color:#7c3aed;text-decoration:none}
+
+/* Lead form */
+.lead-form{padding:14px 12px;background:#0f0f11;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.lead-input{background:#18181b;border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:9px 13px;font-size:13px;color:#f4f4f5;outline:none;font-family:inherit;transition:border-color .2s;width:100%}
+.lead-input::placeholder{color:#52525b}
+.lead-input:focus{border-color:rgba(124,58,237,.5)}
+.lead-submit{padding:10px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:opacity .2s}
+.lead-submit:hover{opacity:.9}
+
+/* ── HOW SECTION ── */
+.how-section{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:60px 24px 80px;border-top:1px solid var(--border)}
+.section-label{font-size:12px;color:var(--purple);letter-spacing:2px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:12px}
+.section-title{font-size:clamp(28px,4vw,44px);letter-spacing:-1.5px;line-height:1.1;margin-bottom:12px}
+.section-sub{font-size:16px;color:var(--muted);max-width:520px;margin-bottom:48px}
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:768px){.steps-grid{grid-template-columns:1fr}}
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;transition:.2s}
+.step-card:hover{border-color:var(--border-h);transform:translateY(-2px)}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--purple);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.step-card h3{font-size:18px;letter-spacing:-.3px;margin-bottom:8px;font-weight:500}
+.step-card p{font-size:14px;color:var(--muted);line-height:1.6}
+
+/* ── CTA ── */
+.cta-section{position:relative;z-index:1;text-align:center;padding:60px 24px 100px}
+.cta-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(124,58,237,0.12),transparent 70%);pointer-events:none}
+.cta-section h2{font-size:clamp(28px,4vw,48px);letter-spacing:-1.5px;margin-bottom:16px}
+.cta-section p{font-size:16px;color:var(--muted);max-width:420px;margin:0 auto 36px}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{padding:14px 32px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;text-decoration:none;font-weight:500;font-size:15px;border:none;cursor:pointer;transition:.2s;box-shadow:0 0 0 1px rgba(124,58,237,.4),0 8px 40px rgba(124,58,237,.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(124,58,237,.5),0 12px 56px rgba(124,58,237,.4)}
+.btn-outline{padding:14px 32px;border-radius:10px;border:1px solid var(--border-h);color:var(--text);text-decoration:none;font-weight:400;font-size:15px;background:rgba(255,255,255,.03);transition:.2s}
+.btn-outline:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.24)}
+.cta-note{font-size:12px;color:var(--muted2);margin-top:14px;font-family:'JetBrains Mono',monospace}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:1;padding:32px 24px;border-top:1px solid var(--border);max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+footer p{font-size:13px;color:var(--muted)}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}
+.footer-links a{color:var(--muted);text-decoration:none;font-size:13px;transition:.2s}
+.footer-links a:hover{color:var(--text)}
+@media(max-width:600px){footer{flex-direction:column;text-align:center}}
+
+/* ── ORBS ── */
+.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;animation:orb-drift 28s ease-in-out infinite alternate}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.16),transparent 65%);top:-200px;left:-150px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,.12),transparent 65%);bottom:0;right:-200px;animation-direction:alternate-reverse;animation-delay:-12s}
+@keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,-40px) scale(1.08)}}
+
+.reveal{opacity:0;transform:translateY(20px);transition:.7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
+      <defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#93c5fd"/></linearGradient></defs>
+      <circle cx="50" cy="50" r="44" stroke="url(#lg)" stroke-width="3"/>
+      <line x1="50" y1="73" x2="19" y2="31" stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="19" cy="31" r="5" fill="url(#lg)"/>
+      <line x1="50" y1="73" x2="50" y2="11" stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="50" cy="11" r="5" fill="url(#lg)"/>
+      <line x1="50" y1="73" x2="81" y2="31" stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="81" cy="31" r="5" fill="url(#lg)"/>
+      <circle cx="50" cy="73" r="5.5" fill="url(#lg)"/>
+    </svg>
+    <span class="logo-word">Atlyz</span>
+  </a>
+  <div class="nav-links" id="nav-links">
+    <a href="index.html">Home</a>
+    <a href="chat-product.html">Chat</a>
+    <a href="voice-product.html">Voice</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="setup.html" class="nav-cta">Get Started</a>
+  </div>
+  <button class="hamburger" onclick="toggleNav()" aria-label="Open menu">&#9776;</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="badge"><span class="badge-dot"></span>LIVE INTERACTIVE DEMO</div>
+  <h1>See <span class="grad">Atlyz Chat</span><br>working right now</h1>
+  <p class="hero-sub">This is a real Atlyz chatbot, trained on a sample plumbing business. Type anything — just like your customers would.</p>
+  <p class="hero-hint">&#8595; Scroll down to try it</p>
+</div>
+
+<!-- DEMO STAGE -->
+<div class="demo-stage">
+
+  <!-- LEFT -->
+  <div class="demo-left">
+
+    <div class="business-card reveal">
+      <div class="biz-header">
+        <div class="biz-avatar">🔧</div>
+        <div class="biz-info">
+          <h3>QuickFix Plumbing</h3>
+          <p>Sample demo business</p>
+          <span>Demo chatbot is live</span>
+        </div>
+      </div>
+      <div class="biz-details">
+        <div class="biz-detail">
+          <div class="biz-detail-label">Hours</div>
+          <div class="biz-detail-val">Mon–Sat 7am–8pm<br>Sun 9am–5pm</div>
+        </div>
+        <div class="biz-detail">
+          <div class="biz-detail-label">Emergency</div>
+          <div class="biz-detail-val">24/7 emergency<br>call-outs available</div>
+        </div>
+        <div class="biz-detail">
+          <div class="biz-detail-label">Location</div>
+          <div class="biz-detail-val">Austin, Texas<br>Serving Travis County</div>
+        </div>
+        <div class="biz-detail">
+          <div class="biz-detail-label">Pricing</div>
+          <div class="biz-detail-val">From $85/hr<br>Free estimates</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="try-these reveal">
+      <h4>Try asking</h4>
+      <div class="suggestion-btns">
+        <button class="sug-btn" onclick="sendSuggestion('Do you do emergency plumbing?')">
+          <span class="sug-icon">🚨</span>Do you do emergency plumbing?
+        </button>
+        <button class="sug-btn" onclick="sendSuggestion('How much does a pipe repair cost?')">
+          <span class="sug-icon">💰</span>How much does a pipe repair cost?
+        </button>
+        <button class="sug-btn" onclick="sendSuggestion('What areas do you cover?')">
+          <span class="sug-icon">📍</span>What areas do you cover?
+        </button>
+        <button class="sug-btn" onclick="sendSuggestion('Can I get a free estimate?')">
+          <span class="sug-icon">📋</span>Can I get a free estimate?
+        </button>
+        <button class="sug-btn" onclick="sendSuggestion('I need to speak to someone')">
+          <span class="sug-icon">📞</span>I need to speak to someone
+        </button>
+      </div>
+    </div>
+
+    <div class="what-you-see reveal">
+      <h4>What you're seeing</h4>
+      <div class="feature-row">
+        <div class="feat-icon-sm purple">⚡</div>
+        <p><strong>Instant answers</strong> — the bot responds in under 1 second, 24/7, even on weekends.</p>
+      </div>
+      <div class="feature-row">
+        <div class="feat-icon-sm blue">🌍</div>
+        <p><strong>Any language</strong> — write in Spanish, French, Urdu — it replies in the same language automatically.</p>
+      </div>
+      <div class="feature-row">
+        <div class="feat-icon-sm green">📬</div>
+        <p><strong>Lead capture</strong> — when a customer asks to be contacted, the form appears and the owner gets an email.</p>
+      </div>
+      <div class="feature-row">
+        <div class="feat-icon-sm orange">🎨</div>
+        <p><strong>Your branding</strong> — color, name, and greeting all match your business when you sign up.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: DEMO CHAT WINDOW -->
+  <div class="chat-demo-wrap">
+    <div class="chat-window">
+
+      <div class="chat-head">
+        <div class="chat-logo">
+          <svg width="18" height="18" viewBox="0 0 100 100" fill="none">
+            <defs><linearGradient id="lh" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#93c5fd"/></linearGradient></defs>
+            <circle cx="50" cy="50" r="44" stroke="url(#lh)" stroke-width="3"/>
+            <line x1="50" y1="73" x2="19" y2="31" stroke="url(#lh)" stroke-width="2.8" stroke-linecap="round"/>
+            <circle cx="19" cy="31" r="5" fill="url(#lh)"/>
+            <line x1="50" y1="73" x2="50" y2="11" stroke="url(#lh)" stroke-width="2.8" stroke-linecap="round"/>
+            <circle cx="50" cy="11" r="5" fill="url(#lh)"/>
+            <line x1="50" y1="73" x2="81" y2="31" stroke="url(#lh)" stroke-width="2.8" stroke-linecap="round"/>
+            <circle cx="81" cy="31" r="5" fill="url(#lh)"/>
+            <circle cx="50" cy="73" r="5.5" fill="url(#lh)"/>
+          </svg>
+        </div>
+        <div class="chat-head-info">
+          <div class="chat-head-name">QuickFix Plumbing</div>
+          <div class="chat-head-status" id="demo-status">Online now</div>
+        </div>
+        <span class="demo-badge-pill">DEMO</span>
+      </div>
+
+      <div class="chat-msgs" id="demo-msgs"></div>
+
+      <div id="demo-input-wrap" class="chat-input-wrap">
+        <textarea id="demo-input" class="chat-input" placeholder="Ask anything..." rows="1" aria-label="Message"></textarea>
+        <button id="demo-send" class="chat-send" aria-label="Send">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+
+      <div class="chat-foot">Powered by <a href="https://atlyz.com" target="_blank">Atlyz</a></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how-section">
+  <div class="section-label">How it works</div>
+  <div class="section-title">From signup to live in<br>5 minutes</div>
+  <p class="section-sub">Once you sign up, your chatbot is working on your site the same day. No developer, no configuration.</p>
+
+  <div class="steps-grid">
+    <div class="step-card reveal">
+      <div class="step-num">Step 01</div>
+      <h3>Enter your website URL</h3>
+      <p>We scrape up to 15 pages of your site automatically. Your chatbot learns your services, pricing, hours, and FAQs in about 60 seconds.</p>
+    </div>
+    <div class="step-card reveal">
+      <div class="step-num">Step 02</div>
+      <h3>Copy one line of code</h3>
+      <p>Add a single script tag to your website — just like a Google Analytics snippet. Works on any site: WordPress, Wix, Squarespace, custom HTML.</p>
+    </div>
+    <div class="step-card reveal">
+      <div class="step-num">Step 03</div>
+      <h3>Your bot is live</h3>
+      <p>Customers start getting instant answers 24/7. Every lead gets emailed to you immediately. You never miss a customer again.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-glow"></div>
+  <h2>Ready to add this<br>to your website?</h2>
+  <p>Setup takes 5 minutes. No credit card required to start. Cancel anytime.</p>
+  <div class="cta-btns">
+    <a href="setup.html" class="btn-primary">Set Up My Chatbot — Free</a>
+    <a href="contact.html" class="btn-outline">Talk to us first</a>
+  </div>
+  <p class="cta-note">No credit card · 5-minute setup · Works on any website</p>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Atlyz. Built for small businesses.</p>
+  <div class="footer-links">
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="contact.html">Contact</a>
+    <a href="chat-product.html">Atlyz Chat</a>
+    <a href="voice-product.html">Atlyz Voice</a>
+  </div>
+</footer>
+
+<script>
+/* ── NAV ── */
+function toggleNav() {
+  var nl = document.getElementById('nav-links');
+  nl.classList.toggle('open');
+}
+document.querySelectorAll('#nav-links a').forEach(function(a) {
+  a.addEventListener('click', function() {
+    document.getElementById('nav-links').classList.remove('open');
+  });
+});
+
+/* ── REVEAL ── */
+var reveals = document.querySelectorAll('.reveal');
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(function(r) { observer.observe(r); });
+
+/* ══════════════════════════════════════════════════════
+   DEMO CHATBOT — self-contained, no server required
+   ══════════════════════════════════════════════════════ */
+
+var demoState = {
+  leadMode: false,
+  msgCount: 0
+};
+
+/* Knowledge base for QuickFix Plumbing */
+var KB = {
+  name: "QuickFix Plumbing",
+  greeting: "Hi! I'm the Atlyz assistant for QuickFix Plumbing. How can I help you today?",
+  rules: [
+    {
+      match: ["emergency", "urgent", "burst pipe", "flood", "flooding", "overflow", "overflow", "24/7", "24 hour", "tonight", "right now", "asap"],
+      reply: "Yes! We offer 24/7 emergency call-outs for burst pipes, flooding, and urgent plumbing issues. Emergency response typically within 60–90 minutes in the Austin area. Call us directly at (512) 555-0192 for emergencies — or I can take your details and have someone call you back right away."
+    },
+    {
+      match: ["cost", "price", "how much", "charge", "fee", "rate", "quote", "estimate"],
+      reply: "Our standard rate is $85/hour, with a minimum 1-hour call-out fee. For most common jobs:\n• Dripping tap / faucet repair: $85–$140\n• Toilet repair or replacement: $120–$300\n• Pipe repair (minor leak): $150–$400\n• Water heater installation: $800–$1,500\n\nWe always provide a free written estimate before starting any work — no surprises."
+    },
+    {
+      match: ["free estimate", "free quote", "no obligation", "estimate", "quote"],
+      reply: "Absolutely — we offer free, no-obligation estimates for all jobs. One of our plumbers will come to your property, assess the problem, and give you a written quote before touching anything. Want me to get your details so we can schedule that?"
+    },
+    {
+      match: ["area", "cover", "service", "location", "where", "come to", "near me", "travis county", "austin"],
+      reply: "We cover all of Austin and Travis County, including Cedar Park, Round Rock, Pflugerville, Buda, and Kyle. If you're just outside our main area, give us a call at (512) 555-0192 and we'll let you know if we can help."
+    },
+    {
+      match: ["hour", "open", "available", "when", "schedule", "appointment", "time", "weekend", "saturday", "sunday"],
+      reply: "Our regular hours are Monday to Saturday 7am–8pm and Sunday 9am–5pm. We also have 24/7 emergency availability for urgent situations — just call (512) 555-0192 any time."
+    },
+    {
+      match: ["service", "what do you do", "what can you", "fix", "repair", "install", "plumbing"],
+      reply: "We handle all residential and commercial plumbing, including:\n• Leak detection and repair\n• Pipe replacement and re-piping\n• Toilet, tap, and faucet repair\n• Water heater installation and repair\n• Drain cleaning and unblocking\n• Bathroom and kitchen plumbing\n• Emergency call-outs\n\nAnything plumbing-related, we've got you covered."
+    },
+    {
+      match: ["phone", "number", "call", "telephone", "contact"],
+      reply: "You can reach us at (512) 555-0192. We're available Monday to Saturday 7am–8pm, Sunday 9am–5pm, and 24/7 for emergencies. Or I can take your number and have someone call you back!"
+    },
+    {
+      match: ["speak", "human", "person", "owner", "manager", "talk to", "call back", "contact you", "reach you", "someone"],
+      reply: "Of course! I'll pass your details to our team and they'll get back to you as soon as possible. Just fill in the short form below.",
+      action: "lead"
+    },
+    {
+      match: ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "hola", "howdy"],
+      reply: "Hi there! Welcome to QuickFix Plumbing. I can answer questions about our services, pricing, hours, and coverage area. What can I help you with today?"
+    },
+    {
+      match: ["thank", "thanks", "thx", "appreciate", "great", "perfect", "awesome"],
+      reply: "You're welcome! Is there anything else I can help you with? We're always happy to answer questions."
+    },
+    {
+      match: ["bye", "goodbye", "see you", "that's all", "nothing else"],
+      reply: "Thanks for reaching out to QuickFix Plumbing! Don't hesitate to come back if you have more questions. Have a great day!"
+    }
+  ],
+  fallback: "I don't have that specific information, but our team would be happy to help. You can call us at (512) 555-0192 (Mon–Sat 7am–8pm, Sun 9am–5pm) or I can take your details and have someone reach out to you directly."
+};
+
+function matchRules(text) {
+  var lower = text.toLowerCase();
+  for (var i = 0; i < KB.rules.length; i++) {
+    var rule = KB.rules[i];
+    for (var j = 0; j < rule.match.length; j++) {
+      if (lower.includes(rule.match[j])) {
+        return rule;
+      }
+    }
+  }
+  return null;
+}
+
+function addMsg(text, fromUser) {
+  var msgs = document.getElementById('demo-msgs');
+  var el = document.createElement('div');
+  el.className = 'msg ' + (fromUser ? 'msg-user' : 'msg-bot');
+  el.textContent = text;
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showThinking() {
+  var msgs = document.getElementById('demo-msgs');
+  var el = document.createElement('div');
+  el.className = 'thinking-bubble';
+  el.id = 'demo-thinking';
+  el.innerHTML = '<div class="th-dots"><span></span><span></span><span></span></div><span class="th-text">Thinking…</span>';
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+  var status = document.getElementById('demo-status');
+  if (status) { status.textContent = 'Thinking…'; status.className = 'chat-head-status thinking'; }
+}
+
+function hideThinking() {
+  var el = document.getElementById('demo-thinking');
+  if (el) el.remove();
+  var status = document.getElementById('demo-status');
+  if (status) { status.textContent = 'Online now'; status.className = 'chat-head-status'; }
+}
+
+function showLeadForm() {
+  demoState.leadMode = true;
+  var wrap = document.getElementById('demo-input-wrap');
+  if (!wrap) return;
+
+  var form = document.createElement('div');
+  form.className = 'lead-form';
+  form.id = 'demo-lead-form';
+  form.innerHTML =
+    '<input class="lead-input" id="dlf-name" type="text" placeholder="Your name" />' +
+    '<input class="lead-input" id="dlf-email" type="email" placeholder="Email address" />' +
+    '<input class="lead-input" id="dlf-phone" type="tel" placeholder="Phone (optional)" />' +
+    '<button class="lead-submit" onclick="submitDemoLead()">Send — we\'ll be in touch</button>';
+
+  wrap.style.display = 'none';
+  wrap.parentNode.insertBefore(form, wrap);
+}
+
+function submitDemoLead() {
+  var name  = (document.getElementById('dlf-name')  || {}).value || '';
+  var email = (document.getElementById('dlf-email') || {}).value || '';
+  if (!name && !email) { alert('Please enter your name or email.'); return; }
+
+  var form = document.getElementById('demo-lead-form');
+  if (form) form.innerHTML = '<p style="text-align:center;color:#71717a;font-size:13px;padding:8px 0;">Got it — the team will reach out soon. (This is a demo — no real message was sent.)</p>';
+  addMsg("Great — our team will get back to you at " + (email || name) + " shortly. Thanks for reaching out!", false);
+}
+
+function respondTo(text) {
+  var rule = matchRules(text);
+  var reply, action;
+
+  if (rule) {
+    reply = rule.reply;
+    action = rule.action || 'chat';
+  } else {
+    reply = KB.fallback;
+    action = 'chat';
+  }
+
+  setTimeout(function() {
+    hideThinking();
+    addMsg(reply, false);
+    if (action === 'lead' && !demoState.leadMode) {
+      setTimeout(showLeadForm, 300);
+    }
+    var sendBtn = document.getElementById('demo-send');
+    var inp = document.getElementById('demo-input');
+    if (sendBtn) sendBtn.disabled = false;
+    if (inp) { inp.disabled = false; inp.focus(); }
+  }, 800 + Math.random() * 600);
+}
+
+function sendMessage() {
+  var inp = document.getElementById('demo-input');
+  if (!inp) return;
+  var text = inp.value.trim();
+  if (!text) return;
+
+  inp.value = '';
+  inp.style.height = 'auto';
+  addMsg(text, true);
+  showThinking();
+
+  var sendBtn = document.getElementById('demo-send');
+  if (sendBtn) sendBtn.disabled = true;
+  inp.disabled = true;
+
+  respondTo(text);
+}
+
+function sendSuggestion(text) {
+  var inp = document.getElementById('demo-input');
+  if (inp) { inp.value = text; }
+  sendMessage();
+  document.getElementById('demo-msgs').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* Setup input listeners */
+document.addEventListener('DOMContentLoaded', function() {
+  var inp = document.getElementById('demo-input');
+  var sendBtn = document.getElementById('demo-send');
+
+  if (inp) {
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+    inp.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 80) + 'px';
+    });
+  }
+  if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+
+  /* Greeting after short delay */
+  setTimeout(function() {
+    addMsg(KB.greeting, false);
+  }, 600);
+});
+</script>
+</body>
+</html>
