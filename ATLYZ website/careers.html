@@ -427,7 +427,18 @@ document.querySelectorAll('.perk,.job-card').forEach(function(el){
 });
 </script>
 <!-- Atlyz Chat Widget -->
-<script src="https://web-production-baaea.up.railway.app/widget.js?id=atlyz_website"></script>
+<!-- Atlyz Chat Widget — auto-detects local vs production -->
+<script>
+(function(){
+  var s = document.createElement('script');
+  var h = window.location.hostname;
+  var base = (h === 'localhost' || h === '127.0.0.1' || window.location.protocol === 'file:')
+    ? 'http://localhost:5002'
+    : 'https://web-production-baaea.up.railway.app';
+  s.src = base + '/widget.js?id=atlyz_website';
+  document.head.appendChild(s);
+})();
+</script>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </body>
 </html>
