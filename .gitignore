@@ -9,8 +9,11 @@ __pycache__/
 *.pyc
 *.pyo
 
-# Client data (contains personal info and API secrets)
-clients/
+# Client data — leads/personal info never committed
+clients/*/data/
+
+# test_shop is dev-only, not needed in production
+clients/test_shop/
 
 # Logs
 *.log

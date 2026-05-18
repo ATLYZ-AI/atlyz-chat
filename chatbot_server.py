@@ -601,6 +601,13 @@ def contact_options():
     return response
 
 
+@app.route("/site/")
+@app.route("/site/<path:filename>")
+def serve_atlyz_site(filename="index.html"):
+    site_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ATLYZ website")
+    return send_from_directory(site_dir, filename)
+
+
 @app.route("/chat/test/<business_id>")
 def test_page(business_id):
     config          = load_chatbot_config(business_id)
@@ -612,10 +619,152 @@ def test_page(business_id):
                            config=config)
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# ATLYZ WEBSITE AUTO-SCRAPE
+# Reads local ATLYZ website HTML files on startup and keeps AIS knowledge fresh.
+# Runs in a background thread — never blocks the server.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def auto_scrape_atlyz_website():
+    import threading
+
+    ATLYZ_BUSINESS_ID = "atlyz_website"
+    ATLYZ_PAGES = [
+        ("index.html",          "/"),
+        ("chat-product.html",   "/chat-product"),
+        ("voice-product.html",  "/voice-product"),
+        ("agent-product.html",  "/agent-product"),
+        ("about.html",          "/about"),
+        ("contact.html",        "/contact"),
+        ("blog.html",           "/blog"),
+    ]
+
+    def run():
+        try:
+            knowledge_path = os.path.join("clients", ATLYZ_BUSINESS_ID, "config", "knowledge.txt")
+
+            # Never overwrite a manually-curated knowledge base (one that has the IDENTITY section)
+            if os.path.exists(knowledge_path):
+                with open(knowledge_path, encoding="utf-8") as f:
+                    existing = f.read()
+                if "IDENTITY" in existing and len(existing) > 500:
+                    print("[AIS] Manually-curated knowledge found — skipping auto-scrape overwrite")
+                    return
+
+            meta_path = os.path.join("clients", ATLYZ_BUSINESS_ID, "config", "scrape_meta.json")
+
+            website_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ATLYZ website")
+            if not os.path.exists(website_dir):
+                print("[AIS] ATLYZ website folder not found — skipping auto-scrape")
+                return
+
+            import re as _re
+
+            def clean_html_local(html):
+                html = _re.sub(r'<(script|style)[^>]*>.*?</(script|style)>', '', html, flags=_re.DOTALL | _re.IGNORECASE)
+                html = _re.sub(r'<[^>]+>', ' ', html)
+                html = html.replace('&nbsp;', ' ').replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>').replace('&quot;', '"')
+                html = _re.sub(r'\s+', ' ', html).strip()
+                return html
+
+            pages_content = []
+            for filename, path in ATLYZ_PAGES:
+                filepath = os.path.join(website_dir, filename)
+                if not os.path.exists(filepath):
+                    continue
+                with open(filepath, encoding="utf-8") as f:
+                    html = f.read()
+                text = clean_html_local(html)
+                if text and len(text) > 100:
+                    pages_content.append(f"=== Page: {path} ===\n{text[:3000]}\n")
+                    print(f"[AIS] Read {filename} ({len(text):,} chars)")
+
+            if not pages_content:
+                print("[AIS] No HTML content found — skipping auto-scrape")
+                return
+
+            from openai import OpenAI
+            client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            combined = "\n".join(pages_content)
+
+            prompt = f"""You are extracting business knowledge from the Atlyz website.
+
+Scraped content from atlyz.com:
+{combined[:7000]}
+
+Extract and organize all useful information into clear sections:
+- About Atlyz (company overview)
+- Products: Atlyz Chat, Atlyz Voice, Atlyz Agent — features, status, how they work
+- Pricing (all plans, founding member rates if mentioned)
+- How to get started / onboarding steps
+- Contact information
+- FAQs
+- Any current offers or promotions
+
+Write it clearly so AIS (the Atlyz AI assistant) can use it to answer visitor questions accurately.
+Remove navigation menus, footers, cookie notices, and repetitive UI text.
+Keep it factual and concise."""
+
+            response = client.chat.completions.create(
+                model="gpt-4.1-nano",
+                messages=[
+                    {"role": "system", "content": "You extract and organize business information from website content."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_completion_tokens=1800
+            )
+            summarized = response.choices[0].message.content.strip()
+
+            if len(summarized) < 300:
+                print("[AIS] Summarization too short — keeping existing knowledge")
+                return
+
+            config_dir = os.path.join("clients", ATLYZ_BUSINESS_ID, "config")
+            os.makedirs(config_dir, exist_ok=True)
+
+            knowledge_path = os.path.join(config_dir, "knowledge.txt")
+
+            # Preserve the IDENTITY / ABOUT AIS header block (manually curated)
+            identity_block = ""
+            if os.path.exists(knowledge_path):
+                with open(knowledge_path, encoding="utf-8") as f:
+                    existing = f.read()
+                # Keep everything up to and including "ABOUT AIS (YOURSELF)" section
+                marker = "ABOUT ATLYZ\n==========="
+                if marker in existing:
+                    identity_block = existing[:existing.index(marker)].rstrip() + "\n\n"
+
+            with open(knowledge_path, "w", encoding="utf-8") as f:
+                f.write(identity_block)
+                f.write(f"Source: https://atlyz.com (auto-scraped from local files)\n")
+                f.write(f"Scraped: {len(pages_content)} pages\n\n")
+                f.write(summarized)
+
+            with open(meta_path, "w") as f:
+                json.dump({
+                    "url": "https://atlyz.com",
+                    "pages_scraped": len(pages_content),
+                    "status": "ok",
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "source": "local_files"
+                }, f, indent=2)
+
+            knowledge_cache.pop(ATLYZ_BUSINESS_ID, None)
+            print(f"[AIS] Knowledge auto-updated from {len(pages_content)} pages ✓")
+
+        except Exception as e:
+            print(f"[AIS] Auto-scrape failed: {e}")
+
+    t = threading.Thread(target=run, daemon=True, name="ais-auto-scrape")
+    t.start()
+
+
 if __name__ == "__main__":
     print("=" * 50)
     print("  ATLYZ — Chat Server")
     print("  API:  http://localhost:5002")
     print("  Test: http://localhost:5002/chat/test/test_shop")
     print("=" * 50)
-    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5002)), debug=True)
+    auto_scrape_atlyz_website()
+    debug = os.getenv("DEV_MODE", "false").lower() == "true"
+    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5002)), debug=debug)

@@ -104,9 +104,9 @@
     var css = [
       "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');",
 
-      /* ── FAB button ── */
+      /* ── FAB button (rounded square) ── */
       "#atz-btn{position:fixed;" + side + "bottom:24px;width:56px;height:56px;",
-      "border-radius:50%;background:linear-gradient(135deg,var(--atz-c),var(--atz-c2));",
+      "border-radius:16px;background:linear-gradient(135deg,var(--atz-c),var(--atz-c2));",
       "border:none;cursor:pointer;z-index:999998;",
       "box-shadow:0 0 0 1px rgba(124,58,237,.25),0 8px 28px rgba(124,58,237,.38);",
       "display:flex;align-items:center;justify-content:center;",
@@ -115,10 +115,23 @@
       "box-shadow:0 0 0 1px rgba(124,58,237,.4),0 14px 40px rgba(124,58,237,.48);}",
 
       /* pulse ring on FAB */
-      "#atz-btn::before{content:'';position:absolute;inset:-4px;border-radius:50%;",
+      "#atz-btn::before{content:'';position:absolute;inset:-4px;border-radius:20px;",
       "border:1.5px solid rgba(124,58,237,.35);",
       "animation:atz-ring 2.4s ease-in-out infinite;pointer-events:none;}",
       "@keyframes atz-ring{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.12);opacity:0}}",
+
+      /* ── AIS logo draw animation ── */
+      "#atz-fab-dl,#atz-fab-dc,#atz-fab-dr,#atz-fab-db{transform-box:fill-box;transform-origin:center;}",
+      "@keyframes atz-line-s{from{stroke-dashoffset:52.2}to{stroke-dashoffset:0}}",
+      "@keyframes atz-line-m{from{stroke-dashoffset:62}to{stroke-dashoffset:0}}",
+      "@keyframes atz-dot-p{0%{transform:scale(0);opacity:0}65%{transform:scale(1.3);opacity:1}100%{transform:scale(1);opacity:1}}",
+      "#atz-btn.atz-play #atz-fab-ll{stroke-dashoffset:52.2;animation:atz-line-s .55s cubic-bezier(.4,0,.2,1) .1s forwards;}",
+      "#atz-btn.atz-play #atz-fab-lc{stroke-dashoffset:62;animation:atz-line-m .5s cubic-bezier(.4,0,.2,1) .1s forwards;}",
+      "#atz-btn.atz-play #atz-fab-lr{stroke-dashoffset:52.2;animation:atz-line-s .55s cubic-bezier(.4,0,.2,1) .1s forwards;}",
+      "#atz-btn.atz-play #atz-fab-db{animation:atz-dot-p .3s ease 0s both;}",
+      "#atz-btn.atz-play #atz-fab-dl{animation:atz-dot-p .3s ease .6s both;}",
+      "#atz-btn.atz-play #atz-fab-dc{animation:atz-dot-p .3s ease .57s both;}",
+      "#atz-btn.atz-play #atz-fab-dr{animation:atz-dot-p .3s ease .6s both;}",
 
       /* notification dot */
       "#atz-dot{position:absolute;top:1px;right:1px;width:11px;height:11px;",
@@ -266,11 +279,38 @@
   }
 
   // ── Icons ────────────────────────────────────────────────────────────────────
-  var CHAT_ICON  = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>';
+  // FAB button: AIS logo (circle ring + 3-prong) in white — matches header logo style
+  // IDs on lines/dots enable the draw animation
+  var AIS_LOGO_WHITE = '<svg id="atz-fab-svg" width="22" height="22" viewBox="0 0 100 100" fill="none">' +
+    '<circle cx="50" cy="50" r="44" stroke="rgba(255,255,255,0.55)" stroke-width="3"/>' +
+    '<line id="atz-fab-ll" x1="50" y1="73" x2="19" y2="31" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="52.2"/>' +
+    '<line id="atz-fab-lc" x1="50" y1="73" x2="50" y2="11" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="62"/>' +
+    '<line id="atz-fab-lr" x1="50" y1="73" x2="81" y2="31" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="52.2"/>' +
+    '<circle id="atz-fab-dl" cx="19" cy="31" r="5" fill="#fff"/>' +
+    '<circle id="atz-fab-dc" cx="50" cy="11" r="5" fill="#fff"/>' +
+    '<circle id="atz-fab-dr" cx="81" cy="31" r="5" fill="#fff"/>' +
+    '<circle id="atz-fab-db" cx="50" cy="73" r="5.5" fill="#fff"/>' +
+    '</svg>';
+
+  var CHAT_ICON  = AIS_LOGO_WHITE;
   var CLOSE_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
   var CLEAR_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>';
+  // Send button: paper-plane arrow (standard send icon)
   var SEND_ICON  = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
-  var LOGO_ICON  = '<svg width="18" height="18" viewBox="0 0 100 100" fill="none"><defs><linearGradient id="ag" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#93c5fd"/></linearGradient></defs><circle cx="50" cy="50" r="44" stroke="url(#ag)" stroke-width="3"/><line x1="50" y1="73" x2="19" y2="31" stroke="url(#ag)" stroke-width="2.8" stroke-linecap="round"/><circle cx="19" cy="31" r="5" fill="url(#ag)"/><line x1="50" y1="73" x2="50" y2="11" stroke="url(#ag)" stroke-width="2.8" stroke-linecap="round"/><circle cx="50" cy="11" r="5" fill="url(#ag)"/><line x1="50" y1="73" x2="81" y2="31" stroke="url(#ag)" stroke-width="2.8" stroke-linecap="round"/><circle cx="81" cy="31" r="5" fill="url(#ag)"/><circle cx="50" cy="73" r="5.5" fill="url(#ag)"/></svg>';
+  // Header logo: AIS 3-prong with circle ring + purple-blue gradient
+  var LOGO_ICON  = '<svg width="18" height="18" viewBox="0 0 100 100" fill="none">' +
+    '<defs><linearGradient id="atz-hg" x1="0" y1="1" x2="1" y2="0">' +
+    '<stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#93c5fd"/>' +
+    '</linearGradient></defs>' +
+    '<circle cx="50" cy="50" r="44" stroke="url(#atz-hg)" stroke-width="3"/>' +
+    '<line x1="50" y1="73" x2="19" y2="31" stroke="url(#atz-hg)" stroke-width="2.8" stroke-linecap="round"/>' +
+    '<line x1="50" y1="73" x2="50" y2="11" stroke="url(#atz-hg)" stroke-width="2.8" stroke-linecap="round"/>' +
+    '<line x1="50" y1="73" x2="81" y2="31" stroke="url(#atz-hg)" stroke-width="2.8" stroke-linecap="round"/>' +
+    '<circle cx="19" cy="31" r="5" fill="url(#atz-hg)"/>' +
+    '<circle cx="50" cy="11" r="5" fill="url(#atz-hg)"/>' +
+    '<circle cx="81" cy="31" r="5" fill="url(#atz-hg)"/>' +
+    '<circle cx="50" cy="73" r="5.5" fill="url(#atz-hg)"/>' +
+    '</svg>';
 
   // ── Build DOM ────────────────────────────────────────────────────────────────
   function buildHTML() {
@@ -560,11 +600,38 @@
     });
   }
 
+  // ── AIS logo animation ───────────────────────────────────────────────────────
+  function triggerLogoAnim() {
+    var btn = document.getElementById("atz-btn");
+    if (!btn) return;
+    btn.classList.remove("atz-play");
+    void btn.offsetWidth; // force reflow to restart animation
+    btn.classList.add("atz-play");
+    setTimeout(function () { btn.classList.remove("atz-play"); }, 1100);
+  }
+
   // ── Init ──────────────────────────────────────────────────────────────────────
   function init() {
     injectCSS();
     buildHTML();
     setTimeout(initSession, 400);
+
+    // Animate on FAB click
+    var btn = document.getElementById("atz-btn");
+    if (btn) {
+      var origOnclick = btn.onclick;
+      btn.onclick = function () { triggerLogoAnim(); origOnclick(); };
+    }
+
+    // Idle animation every 60 seconds when chat is closed
+    setInterval(function () {
+      if (!isOpen) triggerLogoAnim();
+    }, 60000);
+
+    // First idle animation after 3 seconds (welcome attention-grab)
+    setTimeout(function () {
+      if (!isOpen) triggerLogoAnim();
+    }, 3000);
   }
 
   if (document.readyState === "loading") {
