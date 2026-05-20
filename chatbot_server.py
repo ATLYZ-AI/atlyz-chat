@@ -175,47 +175,54 @@ def load_chatbot_config(business_id: str) -> dict:
 def ai_chat_response(message: str, business_id: str, session: dict, knowledge: str, config: dict) -> dict:
     business_name = config.get("business_name", "the business")
     language_lock = config.get("language_lock")
+    last_language = session.get("last_language", "")
 
-    language_instruction = (
-        f"Always respond in {language_lock} only."
-        if language_lock
-        else "Detect the customer's language and respond in the same language. If unclear, use English."
-    )
+    if language_lock:
+        language_instruction = f"You MUST always respond in {language_lock} only, regardless of what language the customer writes in."
+    else:
+        language_hint = f" The previous message was in {last_language} — stay consistent unless the customer switches." if last_language else ""
+        language_instruction = f"""LANGUAGE RULES (non-negotiable):
+- Detect the language of the customer's current message.
+- Respond ENTIRELY in that same language — every single word of your reply.
+- Never mix two languages in one response.
+- If the customer switches language mid-conversation, switch with them immediately.
+- Supported languages include: English, Spanish, French, Arabic, Urdu, Hindi, Portuguese, German, Italian, Dutch, Russian, Mandarin Chinese, Japanese, Korean, Turkish, Polish, Swedish, Norwegian, Danish, Finnish, Greek, Hebrew, Thai, Vietnamese, Indonesian, Malay, Bengali, Punjabi, Swahili, Romanian, Czech, Hungarian, Ukrainian, Catalan, Welsh, Serbian, Croatian, Bulgarian, Slovak, Albanian, Latvian, Lithuanian, Estonian, Slovenian, and 20+ more.{language_hint}
+- Set the "language" field in your JSON to the name of the language you are responding in (e.g. "Spanish", "Urdu", "French")."""
 
     knowledge_section = knowledge if knowledge else "(No business information provided yet.)"
 
-    system_prompt = f"""You are a smart, friendly AI assistant for {business_name}. You only know about this specific business.
+    system_prompt = f"""You are a sharp, knowledgeable AI assistant for {business_name}. You represent this business to their customers.
 
 BUSINESS KNOWLEDGE:
 {knowledge_section}
 
 HOW TO BEHAVE:
-- Sound natural and conversational — like a real human, never robotic
-- Keep replies concise — 1-3 sentences is usually enough
-- NEVER start a reply with "Hi", "Hello", "Hey" or any greeting word — get straight to the point
-- Use the full conversation history to understand context; never ask something you already know from earlier in the chat
-- {language_instruction}
+- Sound natural and human — warm but efficient, never robotic or repetitive
+- Keep replies concise and direct — 1-3 sentences unless the question genuinely needs more detail
+- NEVER open with "Hi", "Hello", "Hey" or any greeting — get straight to the answer
+- Use the full conversation history for context; never ask for information the customer already gave
+- If the customer seems frustrated, acknowledge it briefly before answering
+- Be confident — state facts as facts ("Our hours are 9am–6pm"), not hedged guesses ("I think maybe...")
 
 ANSWERING RULES:
-- Answer directly and confidently from the business knowledge
-- State facts as facts: "Our hours are 9-5" not "I think it might be..."
-- If something is NOT in the knowledge, say honestly: "I don't have that info, but you can reach the team at [contact if available]"
-- NEVER make up prices, products, or policies
-- NEVER offer to collect contact details unless the customer explicitly asks to be contacted or speak to someone
-- If customer asks to speak to someone or contact the owner: set action to "collect_lead"
-- If customer says bye/goodbye/thanks and is done: set action to "end"
-- Handle rude messages calmly and professionally
+- Answer directly from the business knowledge — no fabrication of prices, products, or policies
+- If something is genuinely not in the knowledge, say: "I don't have that detail, but you can reach the team at [contact if available]"
+- NEVER proactively offer to collect contact details — only trigger lead capture when the customer explicitly asks to speak to someone, be contacted, or book something
+- If the customer asks to speak to someone, contact the owner, book/schedule something, or leave their details: set action to "collect_lead"
+- If the customer says bye/goodbye/thanks and is clearly done: set action to "end"
+- Handle rude or off-topic messages calmly and redirect to how you can help
 
-Respond in EXACTLY this JSON format (no markdown, no extra text):
-{{"reply": "your response here", "action": "chat or collect_lead or end", "language": "English or detected language"}}"""
+{language_instruction}
+
+Respond in EXACTLY this JSON format — no markdown, no code block, no extra text outside the JSON:
+{{"reply": "your response here", "action": "chat or collect_lead or end", "language": "detected language name"}}"""
 
     try:
         from openai import OpenAI
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-        # Build proper chat history as real role turns so the model actually remembers context
         messages = [{"role": "system", "content": system_prompt}]
-        for h in session.get("history", [])[-10:]:
+        for h in session.get("history", [])[-12:]:
             messages.append({"role": "user",      "content": h["customer"]})
             messages.append({"role": "assistant",  "content": h["atlyz"]})
         messages.append({"role": "user", "content": message})
@@ -223,7 +230,7 @@ Respond in EXACTLY this JSON format (no markdown, no extra text):
         response = client.chat.completions.create(
             model="gpt-4.1-nano",
             messages=messages,
-            max_completion_tokens=300
+            max_completion_tokens=400
         )
 
         raw = response.choices[0].message.content.strip()
@@ -339,9 +346,9 @@ def chat_message():
     action   = result.get("action", "chat")
     language = result.get("language", "English")
 
-    # Store full JSON in history so the model sees consistent formatting and doesn't switch to plain text
-    history_entry = json.dumps({"reply": reply, "action": action, "language": language})
-    session["history"].append({"customer": message, "atlyz": history_entry})
+    # Store plain reply text so the model sees natural conversation history (not raw JSON)
+    session["history"].append({"customer": message, "atlyz": reply})
+    session["last_language"] = language
     if len(session["history"]) > 20:
         session["history"].pop(0)
 
