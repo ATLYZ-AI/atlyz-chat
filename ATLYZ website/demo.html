@@ -421,307 +421,10 @@ var observer = new IntersectionObserver(function(entries) {
 reveals.forEach(function(r) { observer.observe(r); });
 
 /* ══════════════════════════════════════════════════════
-   DEMO CHATBOT — self-contained, multilingual (50+ languages)
+   DEMO CHATBOT — powered by Atlyz Chat API
    ══════════════════════════════════════════════════════ */
 
-var demoState = { leadMode: false };
-
-/* ── Language detection ── */
-var LANG_WORDS = {
-  spanish:    ['hola','qué','cuándo','horario','horarios','precio','servicio','emergencia','gracias','cuál','dónde','tiene','cuánto','cómo','hablar','llamar','cuanto','cuando','como'],
-  french:     ['bonjour','salut','comment','quand','quel','quelle','où','prix','service','urgence','merci','proposez','avez','êtes','pouvez','parler','contacter'],
-  german:     ['hallo','guten','wie','wann','welche','wo','preis','notfall','danke','bitte','öffnungszeiten','sprechen','haben','sind','gibt'],
-  portuguese: ['olá','ola','como','quando','qual','onde','preço','serviço','emergência','obrigado','ligar','contato','vocês','serviços'],
-  turkish:    ['merhaba','nasıl','ne zaman','hangi','nerede','fiyat','hizmet','acil','teşekkür','lütfen','çalışma','konuşmak'],
-  italian:    ['ciao','come','quando','quale','dove','prezzo','servizio','urgenza','grazie','avete','parlare','chiamare'],
-  dutch:      ['hallo','hoe','wanneer','welke','waar','prijs','dankjewel','bellen','spreken'],
-  malay:      ['helo','apa','bila','mana','harga','perkhidmatan','kecemasan','terima kasih','jam','waktu'],
-  indonesian: ['halo','apa','kapan','mana','harga','layanan','darurat','terima kasih','jam','waktu']
-};
-
-function detectLang(text) {
-  if (/[一-鿿]/.test(text)) return 'chinese';
-  if (/[぀-ヿ]/.test(text)) return 'japanese';
-  if (/[가-힯]/.test(text)) return 'korean';
-  if (/[ऀ-ॿ]/.test(text)) return 'hindi';
-  if (/[؀-ۿ]/.test(text)) {
-    return /[گںھہےپٹ]/.test(text) ? 'urdu' : 'arabic';
-  }
-  if (/[Ѐ-ӿ]/.test(text)) return 'russian';
-  if (/[฀-๿]/.test(text)) return 'thai';
-  var low = text.toLowerCase();
-  for (var lang in LANG_WORDS) {
-    var words = LANG_WORDS[lang];
-    for (var i = 0; i < words.length; i++) {
-      if (low.indexOf(words[i]) !== -1) return lang;
-    }
-  }
-  return 'english';
-}
-
-/* ── Translations ── */
-var T = {
-  greeting: {
-    english:    "Hi! I'm the virtual assistant for QuickFix Plumbing. How can I help you today?",
-    spanish:    "¡Hola! Soy el asistente virtual de QuickFix Plumbing. ¿En qué puedo ayudarle?",
-    french:     "Bonjour ! Je suis l'assistant virtuel de QuickFix Plumbing. Comment puis-je vous aider ?",
-    german:     "Hallo! Ich bin der virtuelle Assistent von QuickFix Plumbing. Wie kann ich Ihnen helfen?",
-    portuguese: "Olá! Sou o assistente virtual da QuickFix Plumbing. Como posso ajudá-lo?",
-    arabic:     "مرحباً! أنا المساعد الافتراضي لـ QuickFix Plumbing. كيف يمكنني مساعدتك اليوم؟",
-    urdu:       "ہیلو! میں QuickFix Plumbing کا ورچوئل اسسٹنٹ ہوں۔ آج میں آپ کی کیسے مدد کر سکتا ہوں؟",
-    hindi:      "नमस्ते! मैं QuickFix Plumbing का वर्चुअल असिस्टेंट हूं। आज मैं आपकी कैसे मदद कर सकता हूं?",
-    turkish:    "Merhaba! QuickFix Plumbing'in sanal asistanıyım. Size nasıl yardımcı olabilirim?",
-    chinese:    "您好！我是 QuickFix Plumbing 的虚拟助手。今天有什么可以帮您的？",
-    japanese:   "こんにちは！QuickFix Plumbing のバーチャルアシスタントです。どのようにお手伝いできますか？",
-    korean:     "안녕하세요! QuickFix Plumbing 가상 도우미입니다. 어떻게 도와드릴까요?",
-    russian:    "Здравствуйте! Я виртуальный помощник QuickFix Plumbing. Чем могу помочь?",
-    thai:       "สวัสดีครับ! ผมคือผู้ช่วยเสมือนของ QuickFix Plumbing วันนี้มีอะไรให้ช่วยครับ?",
-    italian:    "Ciao! Sono l'assistente virtuale di QuickFix Plumbing. Come posso aiutarti?",
-    dutch:      "Hallo! Ik ben de virtuele assistent van QuickFix Plumbing. Hoe kan ik u helpen?"
-  },
-  emergency: {
-    english:    "Yes! We offer 24/7 emergency call-outs for burst pipes, flooding, and urgent plumbing issues. Response typically within 60–90 minutes in Austin. Call (512) 555-0192 or leave your details and we'll call you back.",
-    spanish:    "¡Sí! Ofrecemos servicio de emergencia 24/7 para tuberías rotas e inundaciones. Tiempo de respuesta de 60-90 minutos en Austin. Llámenos al (512) 555-0192 o déjenos sus datos.",
-    french:     "Oui ! Nous intervenons 24h/24 et 7j/7 pour les urgences (fuites, inondations). Délai d'intervention 60-90 min sur Austin. Appelez le (512) 555-0192 ou laissez vos coordonnées.",
-    german:     "Ja! 24/7-Notfalldienst für Rohrbrüche und Überschwemmungen. Reaktionszeit 60-90 Minuten in Austin. Rufen Sie (512) 555-0192 an oder hinterlassen Sie Ihre Daten.",
-    portuguese: "Sim! Atendimento de emergência 24/7 para canos rompidos e inundações. Resposta em 60-90 min em Austin. Ligue (512) 555-0192 ou deixe seus dados.",
-    arabic:     "نعم! نقدم خدمة طوارئ 24/7 لمشاكل الأنابيب والفيضانات. وقت الاستجابة 60-90 دقيقة في أوستن. اتصل بـ (512) 555-0192.",
-    urdu:       "جی ہاں! ہم 24/7 ایمرجنسی سروس فراہم کرتے ہیں۔ آسٹن میں 60-90 منٹ میں پہنچتے ہیں۔ (512) 555-0192 پر کال کریں۔",
-    hindi:      "हाँ! हम 24/7 आपातकालीन सेवा प्रदान करते हैं। Austin में 60-90 मिनट में पहुंचते हैं। (512) 555-0192 पर कॉल करें।",
-    turkish:    "Evet! 7/24 acil servis sunuyoruz. Austin'de 60-90 dakika içinde müdahale. (512) 555-0192'yi arayın.",
-    chinese:    "是的！我们提供24/7紧急上门服务。奥斯汀地区通常60-90分钟响应。请拨打 (512) 555-0192。",
-    japanese:   "はい！24時間365日の緊急サービスを提供しています。オースティンでは60〜90分以内に対応。(512) 555-0192 へお電話ください。",
-    korean:     "네! 24/7 긴급 출동 서비스를 제공합니다. Austin 지역 60-90분 내 도착. (512) 555-0192로 전화하세요.",
-    russian:    "Да! Мы оказываем круглосуточную аварийную помощь. Время реагирования 60–90 минут. Звоните (512) 555-0192.",
-    italian:    "Sì! Offriamo interventi di emergenza 24/7. Tempi di risposta 60-90 minuti ad Austin. Chiama (512) 555-0192.",
-    thai:       "ใช่ครับ! เราให้บริการฉุกเฉิน 24/7 สำหรับท่อแตกและน้ำท่วม ตอบสนองภายใน 60-90 นาทีในออสติน โทร (512) 555-0192"
-  },
-  price: {
-    english:    "Standard rate is $85/hour (1-hour minimum). Common jobs: faucet repair $85–140, toilet repair $120–300, pipe leak $150–400, water heater $800–1,500. We always give a free written estimate before starting.",
-    spanish:    "Tarifa estándar $85/hora (mínimo 1 hora). Trabajos comunes: grifo $85-140, WC $120-300, fuga de tuberías $150-400, calentador $800-1,500. Siempre ofrecemos presupuesto escrito gratuito.",
-    french:     "Tarif standard 85$/heure (1h minimum). Travaux courants : robinet 85-140$, WC 120-300$, fuite 150-400$, chauffe-eau 800-1 500$. Devis gratuit systématique.",
-    german:     "Standardtarif 85$/Stunde (mind. 1 Stunde). Häufige Arbeiten: Wasserhahn 85-140$, Toilette 120-300$, Rohr 150-400$, Warmwassergerät 800-1.500$. Kostenloser Kostenvoranschlag.",
-    portuguese: "Tarifa padrão $85/hora (mín. 1h). Serviços comuns: torneira $85-140, vaso $120-300, vazamento $150-400, aquecedor $800-1.500. Orçamento escrito gratuito.",
-    arabic:     "السعر الأساسي $85/ساعة (حد أدنى ساعة). أعمال شائعة: صنبور $85-140، مرحاض $120-300، تسرب $150-400، سخان مياه $800-1,500. تقدير مكتوب مجاني دائماً.",
-    urdu:       "معیاری قیمت $85 فی گھنٹہ (کم از کم 1 گھنٹہ)۔ عام کام: نل $85-140، ٹوائلٹ $120-300، پائپ لیک $150-400، واٹر ہیٹر $800-1,500۔ مفت تحریری تخمینہ۔",
-    hindi:      "मानक दर $85/घंटा (न्यूनतम 1 घंटा)। सामान्य काम: नल $85-140, टॉयलेट $120-300, पाइप $150-400, वाटर हीटर $800-1,500। मुफ़्त लिखित अनुमान।",
-    turkish:    "Standart ücret saatte $85 (min. 1 saat). Yaygın işler: musluk $85-140, tuvalet $120-300, boru $150-400, şofben $800-1.500. Ücretsiz yazılı teklif.",
-    chinese:    "标准费率 $85/小时（最少1小时）。常见服务：水龙头维修 $85-140，马桶维修 $120-300，管道漏水 $150-400，热水器 $800-1,500。始终提供免费书面报价。",
-    japanese:   "標準料金は時間当たり85ドル（最低1時間）。一般的な作業：蛇口修理 85-140$、トイレ修理 120-300$、パイプ漏れ 150-400$、給湯器 800-1,500$。無料見積もり提供。",
-    korean:     "기본 요금 $85/시간(최소 1시간). 일반 작업: 수도꼭지 $85-140, 변기 $120-300, 파이프 누수 $150-400, 온수기 $800-1,500. 무료 서면 견적 제공.",
-    russian:    "Стандартный тариф $85/час (минимум 1 час). Стандартные работы: кран $85-140, унитаз $120-300, течь трубы $150-400, водонагреватель $800-1500. Бесплатная смета.",
-    italian:    "Tariffa standard $85/ora (minimo 1 ora). Lavori comuni: rubinetto $85-140, WC $120-300, perdita $150-400, scaldabagno $800-1.500. Preventivo scritto gratuito.",
-    thai:       "อัตรามาตรฐาน $85/ชั่วโมง (ขั้นต่ำ 1 ชั่วโมง) งานทั่วไป: ซ่อมก๊อก $85-140, ซ่อมห้องน้ำ $120-300, ท่อรั่ว $150-400, เครื่องทำน้ำอุ่น $800-1,500 พร้อมใบเสนอราคาฟรี"
-  },
-  hours: {
-    english:    "Regular hours: Monday–Saturday 7am–8pm and Sunday 9am–5pm. 24/7 emergency availability — call (512) 555-0192 any time.",
-    spanish:    "Horario regular: lunes–sábado 7am–8pm y domingo 9am–5pm. Disponibles 24/7 para emergencias — llame al (512) 555-0192.",
-    french:     "Horaires réguliers : lundi–samedi 7h–20h et dimanche 9h–17h. Disponibles 24h/24 pour les urgences — appelez le (512) 555-0192.",
-    german:     "Öffnungszeiten: Mo–Sa 7–20 Uhr und So 9–17 Uhr. 24/7-Notfalldienst — rufen Sie (512) 555-0192 an.",
-    portuguese: "Horário regular: segunda–sábado 7h–20h e domingo 9h–17h. Emergência 24/7 — ligue (512) 555-0192.",
-    arabic:     "ساعات العمل: الاثنين–السبت 7 صباحاً–8 مساءً والأحد 9 صباحاً–5 مساءً. خدمة طوارئ 24/7 — اتصل بـ (512) 555-0192.",
-    urdu:       "کام کے اوقات: پیر–ہفتہ 7am–8pm اور اتوار 9am–5pm۔ ایمرجنسی کے لیے 24/7 — (512) 555-0192 پر کال کریں۔",
-    hindi:      "काम के घंटे: सोमवार–शनिवार 7am–8pm और रविवार 9am–5pm। आपातकाल के लिए 24/7 — (512) 555-0192 पर कॉल करें।",
-    turkish:    "Çalışma saatleri: Pzt–Cmt 07:00–20:00 ve Pazar 09:00–17:00. 7/24 acil servis — (512) 555-0192.",
-    chinese:    "正常工时：周一至周六 7am–8pm，周日 9am–5pm。24/7紧急服务 — 拨打 (512) 555-0192。",
-    japanese:   "通常営業時間：月曜〜土曜 7:00〜20:00、日曜 9:00〜17:00。24時間緊急対応 — (512) 555-0192 へ。",
-    korean:     "영업시간: 월–토 7am–8pm, 일 9am–5pm. 24/7 긴급 서비스 — (512) 555-0192.",
-    russian:    "Рабочие часы: пн–сб 7:00–20:00 и вс 9:00–17:00. Аварийная служба 24/7 — (512) 555-0192.",
-    italian:    "Orario: lunedì–sabato 7–20 e domenica 9–17. Servizio di emergenza 24/7 — chiama (512) 555-0192.",
-    thai:       "เวลาทำการ: จันทร์–เสาร์ 7am–8pm และอาทิตย์ 9am–5pm บริการฉุกเฉิน 24/7 — โทร (512) 555-0192"
-  },
-  area: {
-    english:    "We cover all of Austin and Travis County — Cedar Park, Round Rock, Pflugerville, Buda, and Kyle. Outside the area? Call (512) 555-0192 and we'll check.",
-    spanish:    "Cubrimos toda Austin y el condado de Travis — Cedar Park, Round Rock, Pflugerville, Buda y Kyle. ¿Fuera del área? Llame al (512) 555-0192.",
-    french:     "Nous couvrons tout Austin et le comté de Travis — Cedar Park, Round Rock, Pflugerville, Buda et Kyle. Hors zone ? Appelez le (512) 555-0192.",
-    german:     "Wir decken ganz Austin und Travis County ab — Cedar Park, Round Rock, Pflugerville, Buda und Kyle. Außerhalb? Rufen Sie (512) 555-0192 an.",
-    portuguese: "Cobrimos Austin e Travis County — Cedar Park, Round Rock, Pflugerville, Buda e Kyle. Fora da área? Ligue (512) 555-0192.",
-    arabic:     "نغطي أوستن بالكامل ومقاطعة ترافيس — Cedar Park وRound Rock وPflugerville وBuda وKyle. خارج المنطقة؟ اتصل بـ (512) 555-0192.",
-    urdu:       "ہم آسٹن اور ٹریوس کاؤنٹی کو کور کرتے ہیں — Cedar Park، Round Rock، Pflugerville، Buda اور Kyle۔ علاقے سے باہر؟ (512) 555-0192 پر کال کریں۔",
-    hindi:      "हम Austin और Travis County को कवर करते हैं — Cedar Park, Round Rock, Pflugerville, Buda और Kyle। क्षेत्र के बाहर? (512) 555-0192 पर कॉल करें।",
-    turkish:    "Austin ve Travis County'nin tamamını kapsıyoruz — Cedar Park, Round Rock, Pflugerville, Buda ve Kyle. Bölge dışı? (512) 555-0192'yi arayın.",
-    chinese:    "我们覆盖奥斯汀及特拉维斯县——Cedar Park、Round Rock、Pflugerville、Buda和Kyle。区域外？拨打 (512) 555-0192。",
-    japanese:   "オースティン全域とトラビス郡をカバー — Cedar Park、Round Rock、Pflugerville、Buda、Kyle。エリア外は (512) 555-0192 へ。",
-    korean:     "Austin 및 Travis County 전체 — Cedar Park, Round Rock, Pflugerville, Buda, Kyle 포함. 지역 외? (512) 555-0192.",
-    russian:    "Мы обслуживаем весь Остин и округ Трэвис — Cedar Park, Round Rock, Pflugerville, Buda и Kyle. Вне зоны? Позвоните (512) 555-0192.",
-    italian:    "Copriamo tutta Austin e Travis County — Cedar Park, Round Rock, Pflugerville, Buda e Kyle. Fuori zona? Chiama (512) 555-0192.",
-    thai:       "เราให้บริการทั่วออสตินและ Travis County — Cedar Park, Round Rock, Pflugerville, Buda และ Kyle นอกพื้นที่? โทร (512) 555-0192"
-  },
-  services: {
-    english:    "We handle all residential and commercial plumbing: leak detection, pipe replacement, toilets, taps, water heaters, drain cleaning, and 24/7 emergency call-outs. If it's plumbing, we handle it.",
-    spanish:    "Hacemos toda clase de fontanería residencial y comercial: detección de fugas, cambio de tuberías, inodoros, grifos, calentadores, desatasco y emergencias 24/7.",
-    french:     "Nous réalisons tous types de plomberie résidentielle et commerciale : fuites, canalisations, toilettes, robinets, chauffe-eau, débouchage et urgences 24h/24.",
-    german:     "Wir erledigen alle Klempnerarbeiten: Lecksuche, Rohraustausch, Toiletten, Wasserhähne, Warmwassergeräte, Rohrreinigung und 24/7-Notfalleinsätze.",
-    portuguese: "Realizamos toda plomagem residencial e comercial: vazamentos, tubulações, vasos, torneiras, aquecedores, desentupimento e emergências 24/7.",
-    arabic:     "نتعامل مع جميع أعمال السباكة السكنية والتجارية: تسربات، أنابيب، مراحيض، صنابير، سخانات، تنظيف مجاري وطوارئ 24/7.",
-    urdu:       "ہم تمام رہائشی اور تجارتی پلمبنگ کام کرتے ہیں: لیک، پائپ، ٹوائلٹ، نل، واٹر ہیٹر، نالی کی صفائی اور 24/7 ایمرجنسی۔",
-    hindi:      "हम सभी आवासीय और वाणिज्यिक प्लंबिंग करते हैं: रिसाव, पाइप, टॉयलेट, नल, वाटर हीटर, नाली सफाई और 24/7 आपातकाल।",
-    turkish:    "Tüm konut ve ticari tesisat işlerini yapıyoruz: sızıntı, boru, tuvalet, musluk, şofben, tıkanıklık açma ve 7/24 acil servis.",
-    chinese:    "我们处理所有住宅和商业管道服务：漏水检测、管道更换、马桶、水龙头、热水器、下水道疏通及24/7紧急服务。",
-    japanese:   "住宅・商業施設の全配管作業に対応：漏水検出、配管交換、トイレ、蛇口、給湯器、排水清掃、24時間緊急対応。",
-    korean:     "주거 및 상업 시설의 모든 배관 작업: 누수 탐지, 배관 교체, 변기, 수도꼭지, 온수기, 배수관 청소, 24/7 긴급 서비스.",
-    russian:    "Выполняем все сантехнические работы для жилых и коммерческих объектов: утечки, трубы, унитазы, краны, водонагреватели, прочистка и аварийный выезд.",
-    italian:    "Realizziamo tutti i lavori idraulici residenziali e commerciali: perdite, tubature, WC, rubinetti, scaldabagni, spurgo e pronto intervento 24/7.",
-    thai:       "เราให้บริการงานประปาทุกประเภท: ซ่อมท่อรั่ว เปลี่ยนท่อ สุขภัณฑ์ ก๊อกน้ำ เครื่องทำน้ำอุ่น ล้างท่อ และบริการฉุกเฉิน 24/7"
-  },
-  phone: {
-    english:    "You can reach us at (512) 555-0192 — Monday–Saturday 7am–8pm, Sunday 9am–5pm, 24/7 for emergencies.",
-    spanish:    "Puede contactarnos al (512) 555-0192 — lunes–sábado 7am–8pm, domingo 9am–5pm, emergencias 24/7.",
-    french:     "Contactez-nous au (512) 555-0192 — lundi–samedi 7h–20h, dimanche 9h–17h, urgences 24h/24.",
-    german:     "Erreichbar unter (512) 555-0192 — Mo–Sa 7–20 Uhr, So 9–17 Uhr, Notfälle rund um die Uhr.",
-    portuguese: "Entre em contato: (512) 555-0192 — seg–sáb 7h–20h, dom 9h–17h, emergências 24/7.",
-    arabic:     "تواصل معنا على (512) 555-0192 — الاثنين–السبت 7 صباحاً–8 مساءً، الأحد 9 صباحاً–5 مساءً، طوارئ 24/7.",
-    urdu:       "(512) 555-0192 پر رابطہ کریں — پیر–ہفتہ 7am–8pm، اتوار 9am–5pm، ایمرجنسی 24/7۔",
-    hindi:      "(512) 555-0192 पर संपर्क करें — सोमवार–शनिवार 7am–8pm, रविवार 9am–5pm, आपातकाल 24/7।",
-    turkish:    "(512) 555-0192 — Pzt–Cmt 7:00–20:00, Pazar 9:00–17:00, acil durumlar için 7/24.",
-    chinese:    "请拨打 (512) 555-0192 — 周一至周六 7am–8pm，周日 9am–5pm，紧急情况24/7。",
-    japanese:   "(512) 555-0192 へ — 月–土 7:00–20:00、日 9:00–17:00、緊急は24時間。",
-    korean:     "(512) 555-0192 — 월–토 7am–8pm, 일 9am–5pm, 긴급 시 24/7.",
-    russian:    "Позвоните (512) 555-0192 — пн–сб 7:00–20:00, вс 9:00–17:00, аварии круглосуточно.",
-    italian:    "Contattaci al (512) 555-0192 — lun–sab 7–20, dom 9–17, emergenze 24/7.",
-    thai:       "ติดต่อเราที่ (512) 555-0192 — จันทร์–เสาร์ 7am–8pm, อาทิตย์ 9am–5pm, ฉุกเฉิน 24/7"
-  },
-  lead: {
-    english:    "Of course! Fill in the short form below and our team will get back to you as soon as possible.",
-    spanish:    "¡Por supuesto! Rellene el breve formulario a continuación y nuestro equipo se pondrá en contacto con usted.",
-    french:     "Bien sûr ! Remplissez le formulaire ci-dessous et notre équipe vous contactera rapidement.",
-    german:     "Natürlich! Füllen Sie das kurze Formular unten aus und unser Team meldet sich bei Ihnen.",
-    portuguese: "Claro! Preencha o formulário abaixo e nossa equipe entrará em contato em breve.",
-    arabic:     "بالتأكيد! يرجى ملء النموذج أدناه وسيتواصل معك فريقنا في أقرب وقت.",
-    urdu:       "ضرور! براہ کرم نیچے دیا گیا فارم پُر کریں اور ہماری ٹیم جلد آپ سے رابطہ کرے گی۔",
-    hindi:      "बिल्कुल! कृपया नीचे फॉर्म भरें और हमारी टीम जल्द आपसे संपर्क करेगी।",
-    turkish:    "Tabii! Aşağıdaki kısa formu doldurun, ekibimiz en kısa sürede sizinle iletişime geçecek.",
-    chinese:    "当然！请填写下面的简短表格，我们的团队会尽快与您联系。",
-    japanese:   "もちろんです！下のフォームにご記入ください。担当者が折り返しご連絡いたします。",
-    korean:     "물론입니다! 아래 양식을 작성해 주시면 담당자가 곧 연락드리겠습니다.",
-    russian:    "Конечно! Заполните короткую форму ниже, и наша команда свяжется с вами.",
-    italian:    "Certo! Compila il modulo qui sotto e il nostro team ti contatterà presto.",
-    thai:       "แน่นอนครับ! กรุณากรอกแบบฟอร์มด้านล่าง ทีมงานจะติดต่อกลับโดยเร็ว"
-  },
-  thanks: {
-    english:    "You're welcome! Anything else I can help you with?",
-    spanish:    "¡De nada! ¿Puedo ayudarle con algo más?",
-    french:     "De rien ! Puis-je vous aider avec autre chose ?",
-    german:     "Gern geschehen! Kann ich noch etwas für Sie tun?",
-    portuguese: "De nada! Posso ajudá-lo com mais alguma coisa?",
-    arabic:     "على الرحب! هل هناك شيء آخر يمكنني مساعدتك فيه؟",
-    urdu:       "کوئی بات نہیں! کیا میں آپ کی مزید مدد کر سکتا ہوں؟",
-    hindi:      "कोई बात नहीं! क्या मैं आपकी और कोई मदद कर सकता हूं?",
-    turkish:    "Rica ederim! Başka bir konuda yardımcı olabilir miyim?",
-    chinese:    "不客气！还有什么可以帮您的吗？",
-    japanese:   "どういたしまして！他にご用はありますか？",
-    korean:     "천만에요! 다른 도움이 필요하신가요?",
-    russian:    "Пожалуйста! Могу ли я помочь вам ещё чем-нибудь?",
-    italian:    "Prego! Posso aiutarti con altro?",
-    thai:       "ยินดีครับ! มีอะไรให้ช่วยอีกไหมครับ?"
-  },
-  bye: {
-    english:    "Thanks for reaching out to QuickFix Plumbing! Don't hesitate to come back if you have more questions. Have a great day!",
-    spanish:    "¡Gracias por contactar con QuickFix Plumbing! No dude en volver si tiene más preguntas. ¡Que tenga un buen día!",
-    french:     "Merci d'avoir contacté QuickFix Plumbing ! N'hésitez pas à revenir. Bonne journée !",
-    german:     "Danke, dass Sie QuickFix Plumbing kontaktiert haben! Kommen Sie gerne wieder. Einen schönen Tag!",
-    portuguese: "Obrigado por contatar a QuickFix Plumbing! Volte sempre que precisar. Tenha um ótimo dia!",
-    arabic:     "شكراً على تواصلك مع QuickFix Plumbing! لا تتردد في العودة. أتمنى لك يوماً سعيداً!",
-    urdu:       "QuickFix Plumbing سے رابطہ کرنے کا شکریہ! اگر مزید سوال ہوں تو واپس آئیں۔ آپ کا دن اچھا گزرے!",
-    hindi:      "QuickFix Plumbing से संपर्क करने का शुक्रिया! और सवाल होने पर वापस आएं। आपका दिन शुभ हो!",
-    turkish:    "QuickFix Plumbing ile iletişime geçtiğiniz için teşekkürler! İyi günler!",
-    chinese:    "感谢联系 QuickFix Plumbing！如有更多问题请随时回来。祝您愉快！",
-    japanese:   "QuickFix Plumbing にご連絡いただきありがとうございます！またのご利用をお待ちしています。良い一日を！",
-    korean:     "QuickFix Plumbing에 연락해 주셔서 감사합니다! 또 질문이 있으면 언제든지 돌아오세요. 좋은 하루 되세요!",
-    russian:    "Спасибо, что обратились в QuickFix Plumbing! Возвращайтесь, если появятся вопросы. Хорошего дня!",
-    italian:    "Grazie per aver contattato QuickFix Plumbing! Torna pure se hai altre domande. Buona giornata!",
-    thai:       "ขอบคุณที่ติดต่อ QuickFix Plumbing ครับ! ยินดีต้อนรับเสมอ ขอให้วันดีๆ ครับ!"
-  },
-  fallback: {
-    english:    "I don't have that specific information, but our team would be happy to help. Call (512) 555-0192 (Mon–Sat 7am–8pm, Sun 9am–5pm) or leave your details and we'll reach out.",
-    spanish:    "No tengo esa información específica, pero nuestro equipo le ayudará. Llame al (512) 555-0192 (Lun–Sáb 7am–8pm, Dom 9am–5pm) o déjenos sus datos.",
-    french:     "Je n'ai pas cette information, mais notre équipe sera ravie de vous aider. Appelez le (512) 555-0192 ou laissez vos coordonnées.",
-    german:     "Diese Information habe ich nicht, aber unser Team hilft Ihnen gerne. Rufen Sie (512) 555-0192 an oder hinterlassen Sie Ihre Daten.",
-    portuguese: "Não tenho essa informação, mas nossa equipe pode ajudar. Ligue (512) 555-0192 ou deixe seus dados.",
-    arabic:     "ليس لدي هذه المعلومات، لكن فريقنا سيساعدك بكل سرور. اتصل بـ (512) 555-0192 أو اترك بياناتك.",
-    urdu:       "مجھے یہ معلومات نہیں ہے، لیکن ہماری ٹیم خوشی سے مدد کرے گی۔ (512) 555-0192 پر کال کریں یا اپنی تفصیلات چھوڑیں۔",
-    hindi:      "मेरे पास वह जानकारी नहीं है, लेकिन हमारी टीम मदद करेगी। (512) 555-0192 पर कॉल करें या अपना विवरण छोड़ें।",
-    turkish:    "Bu bilgiye sahip değilim, ancak ekibimiz yardımcı olacaktır. (512) 555-0192'yi arayın veya bilgilerinizi bırakın.",
-    chinese:    "我没有这方面的具体信息，但我们的团队很乐意帮助您。请拨打 (512) 555-0192 或留下您的联系方式。",
-    japanese:   "その情報は持っていませんが、チームがお役に立てます。(512) 555-0192 にお電話いただくか、連絡先をお残しください。",
-    korean:     "해당 정보는 없지만 팀이 도와드릴 수 있습니다. (512) 555-0192로 전화하거나 연락처를 남겨주세요.",
-    russian:    "У меня нет этой информации, но наша команда с удовольствием поможет. Звоните (512) 555-0192 или оставьте свои данные.",
-    italian:    "Non ho questa informazione, ma il nostro team sarà felice di aiutarti. Chiama (512) 555-0192 o lascia i tuoi dati.",
-    thai:       "ผมไม่มีข้อมูลนั้น แต่ทีมงานยินดีช่วยเหลือครับ โทร (512) 555-0192 หรือฝากข้อมูลติดต่อไว้"
-  }
-};
-
-function tr(key, lang) {
-  var table = T[key];
-  if (!table) return '';
-  return table[lang] || table['english'] || '';
-}
-
-/* ── Rule matching (keywords in 15+ languages) ── */
-var RULES = [
-  {
-    match: ["emergency","urgent","burst pipe","flood","flooding","24/7","24 hour","asap","right now","tonight",
-            "emergencia","urgente","urgência","notfall","dringend","acil","urgence","طوارئ","عاجل","ایمرجنسی","فوری","आपातकाल","तत्काल","緊急","긴급","срочно","аварія","ฉุกเฉิน"],
-    key: "emergency"
-  },
-  {
-    match: ["cost","price","how much","charge","fee","rate","quote","estimate","pricing",
-            "precio","preço","preis","fiyat","tarif","prix","kosten","سعر","قيمت","दाम","कीमत","价格","料金","가격","цена","ราคา"],
-    key: "price"
-  },
-  {
-    match: ["hour","open","available","when","schedule","appointment","time","weekend","saturday","sunday",
-            "horario","horário","öffnungszeiten","saatleri","horaires","ساعات","اوقات","घंटे","समय","时间","時間","시간","часы","เวลา","waktu"],
-    key: "hours"
-  },
-  {
-    match: ["area","cover","location","where","near me","travis county","austin","zone","region",
-            "zona","área","bereich","bölge","منطقة","علاقہ","क्षेत्र","地区","地域","지역","район","พื้นที่"],
-    key: "area"
-  },
-  {
-    match: ["service","what do you do","fix","repair","install","plumbing","leak","drain","pipe","toilet","tap","faucet","water heater",
-            "servicio","serviço","dienst","hizmet","خدمة","سروس","सेवा","服务","サービス","서비스","услуга","บริการ","layanan"],
-    key: "services"
-  },
-  {
-    match: ["phone","number","call","telephone","contact","reach",
-            "teléfono","telefone","telefon","هاتف","فون","फोन","电话","電話","전화","телефон","โทร"],
-    key: "phone"
-  },
-  {
-    match: ["speak","human","person","owner","manager","talk to","call back","someone","contact you",
-            "hablar","parler","sprechen","konuşmak","تحدث","بات","बात","联系","話す","연락","поговорить","พูด"],
-    key: "lead",
-    action: "lead"
-  },
-  {
-    match: ["hello","hi","hey","good morning","good afternoon","good evening","howdy",
-            "hola","bonjour","salut","hallo","ciao","مرحبا","السلام","سلام","آداب","नमस्ते","你好","こんにちは","안녕","привет","สวัสดี"],
-    key: "greeting"
-  },
-  {
-    match: ["thank","thanks","thx","appreciate","great","perfect","awesome","wonderful",
-            "gracias","merci","danke","obrigado","teşekkür","شكرا","شکریہ","धन्यवाद","谢谢","ありがとう","감사","спасибо","ขอบคุณ","terima kasih"],
-    key: "thanks"
-  },
-  {
-    match: ["bye","goodbye","see you","that's all","nothing else","done","ciao",
-            "adiós","au revoir","auf wiedersehen","tchau","güle güle","مع السلامة","خدا حافظ","अलविदा","再见","さようなら","잘가요","до свидания","ลาก่อน"],
-    key: "bye"
-  }
-];
-
-function matchRule(text) {
-  var lower = text.toLowerCase();
-  for (var i = 0; i < RULES.length; i++) {
-    var r = RULES[i];
-    for (var j = 0; j < r.match.length; j++) {
-      if (lower.indexOf(r.match[j]) !== -1) return r;
-    }
-  }
-  return null;
-}
+var demoState = { sessionId: null, leadMode: false, busy: false };
 
 function addMsg(text, fromUser) {
   var msgs = document.getElementById('demo-msgs');
@@ -735,33 +438,46 @@ function addMsg(text, fromUser) {
 function showThinking() {
   var msgs = document.getElementById('demo-msgs');
   var el = document.createElement('div');
-  el.className = 'thinking-bubble';
-  el.id = 'demo-thinking';
+  el.className = 'thinking-bubble'; el.id = 'demo-thinking';
   el.innerHTML = '<div class="th-dots"><span></span><span></span><span></span></div><span class="th-text">Thinking…</span>';
-  msgs.appendChild(el);
-  msgs.scrollTop = msgs.scrollHeight;
-  var status = document.getElementById('demo-status');
-  if (status) { status.textContent = 'Thinking…'; status.className = 'chat-head-status thinking'; }
+  msgs.appendChild(el); msgs.scrollTop = msgs.scrollHeight;
+  var s = document.getElementById('demo-status');
+  if (s) { s.textContent = 'Thinking…'; s.className = 'chat-head-status thinking'; }
 }
 
 function hideThinking() {
-  var el = document.getElementById('demo-thinking');
-  if (el) el.remove();
-  var status = document.getElementById('demo-status');
-  if (status) { status.textContent = 'Online now'; status.className = 'chat-head-status'; }
+  var el = document.getElementById('demo-thinking'); if (el) el.remove();
+  var s = document.getElementById('demo-status');
+  if (s) { s.textContent = 'Online now'; s.className = 'chat-head-status'; }
+}
+
+function setInputEnabled(on) {
+  var inp = document.getElementById('demo-input');
+  var btn = document.getElementById('demo-send');
+  if (inp) inp.disabled = !on; if (btn) btn.disabled = !on;
+  demoState.busy = !on;
+}
+
+function showLangIndicator(lang) {
+  if (!lang || lang === 'English') return;
+  var old = document.getElementById('demo-lang-pill'); if (old) old.remove();
+  var el = document.createElement('div'); el.id = 'demo-lang-pill';
+  el.style.cssText = 'align-self:flex-start;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:3px 9px;font-size:11px;color:#a78bfa;font-family:"JetBrains Mono",monospace;letter-spacing:.3px;animation:msg-in .18s ease;margin-top:2px';
+  el.textContent = 'Responding in ' + lang;
+  var msgs = document.getElementById('demo-msgs');
+  msgs.appendChild(el); msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(function() { if (el.parentNode) el.remove(); }, 3500);
 }
 
 function showLeadForm() {
-  demoState.leadMode = true;
-  var wrap = document.getElementById('demo-input-wrap');
-  if (!wrap) return;
+  if (demoState.leadMode) return; demoState.leadMode = true;
+  var wrap = document.getElementById('demo-input-wrap'); if (!wrap) return;
   var form = document.createElement('div');
-  form.className = 'lead-form';
-  form.id = 'demo-lead-form';
+  form.className = 'lead-form'; form.id = 'demo-lead-form';
   form.innerHTML =
-    '<input class="lead-input" id="dlf-name" type="text" placeholder="Your name" />' +
+    '<input class="lead-input" id="dlf-name"  type="text"  placeholder="Your name" />' +
     '<input class="lead-input" id="dlf-email" type="email" placeholder="Email address" />' +
-    '<input class="lead-input" id="dlf-phone" type="tel" placeholder="Phone (optional)" />' +
+    '<input class="lead-input" id="dlf-phone" type="tel"   placeholder="Phone (optional)" />' +
     '<button class="lead-submit" onclick="submitDemoLead()">Send — we\'ll be in touch</button>';
   wrap.style.display = 'none';
   wrap.parentNode.insertBefore(form, wrap);
@@ -770,64 +486,83 @@ function showLeadForm() {
 function submitDemoLead() {
   var name  = (document.getElementById('dlf-name')  || {}).value || '';
   var email = (document.getElementById('dlf-email') || {}).value || '';
+  var phone = (document.getElementById('dlf-phone') || {}).value || '';
   if (!name && !email) { alert('Please enter your name or email.'); return; }
-  var form = document.getElementById('demo-lead-form');
-  if (form) form.innerHTML = '<p style="text-align:center;color:#71717a;font-size:13px;padding:8px 0;">Got it — the team will reach out soon. (This is a demo — no real message was sent.)</p>';
-  addMsg("Got it — our team will get back to you at " + (email || name) + " shortly!", false);
+  var userMsgs = document.querySelectorAll('.msg-user');
+  var lastQ = userMsgs.length ? userMsgs[userMsgs.length - 1].textContent : '';
+  var btn = document.querySelector('#demo-lead-form .lead-submit');
+  if (btn) btn.disabled = true;
+  fetch('/chat/lead', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ session_id: demoState.sessionId, name: name, email: email, phone: phone, question: lastQ })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    var form = document.getElementById('demo-lead-form');
+    if (form) form.innerHTML = '<p style="text-align:center;color:#71717a;font-size:13px;padding:10px 0;">Got it — the team will reach out soon. ✓</p>';
+    addMsg(d.message || "Thanks! The owner will contact you shortly.", false);
+  })
+  .catch(function() {
+    var b = document.querySelector('#demo-lead-form .lead-submit'); if (b) b.disabled = false;
+    addMsg("Something went wrong. Please call (512) 555-0192 directly.", false);
+  });
 }
 
-function respondTo(text) {
-  var lang = detectLang(text);
-  var rule = matchRule(text);
-  var reply, action;
-
-  if (rule) {
-    reply  = tr(rule.key, lang);
-    action = rule.action || 'chat';
-  } else {
-    reply  = tr('fallback', lang);
-    action = 'chat';
-  }
-
-  setTimeout(function() {
-    hideThinking();
-    addMsg(reply, false);
-    if (action === 'lead' && !demoState.leadMode) {
-      setTimeout(showLeadForm, 300);
-    }
-    var sendBtn = document.getElementById('demo-send');
-    var inp = document.getElementById('demo-input');
-    if (sendBtn) sendBtn.disabled = false;
-    if (inp) { inp.disabled = false; inp.focus(); }
-  }, 700 + Math.random() * 500);
+function startDemoSession() {
+  fetch('/chat/start', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ business_id: 'quickfix_plumbing' })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    demoState.sessionId = d.session_id;
+    setTimeout(function() {
+      addMsg(d.greeting || "Hi! I'm Alex, QuickFix Plumbing's assistant. How can I help?", false);
+    }, 600);
+  })
+  .catch(function() {
+    setTimeout(function() {
+      addMsg("Demo temporarily offline — please try again in a moment.", false);
+      setInputEnabled(false);
+    }, 600);
+  });
 }
 
 function sendMessage() {
-  var inp = document.getElementById('demo-input');
-  if (!inp) return;
-  var text = inp.value.trim();
-  if (!text) return;
-  inp.value = '';
-  inp.style.height = 'auto';
-  addMsg(text, true);
-  showThinking();
-  var sendBtn = document.getElementById('demo-send');
-  if (sendBtn) sendBtn.disabled = true;
-  inp.disabled = true;
-  respondTo(text);
+  if (demoState.busy || demoState.leadMode) return;
+  var inp = document.getElementById('demo-input'); if (!inp) return;
+  var text = inp.value.trim(); if (!text) return;
+  if (!demoState.sessionId) { addMsg("Still connecting — please try again in a moment.", false); return; }
+  inp.value = ''; inp.style.height = 'auto';
+  addMsg(text, true); showThinking(); setInputEnabled(false);
+  fetch('/chat/message', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ session_id: demoState.sessionId, message: text })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    hideThinking();
+    addMsg(d.reply || "Sorry, I couldn't process that.", false);
+    showLangIndicator(d.language);
+    if (d.action === 'collect_lead') setTimeout(showLeadForm, 300);
+    if (d.action !== 'end') { setInputEnabled(true); var i = document.getElementById('demo-input'); if (i && !demoState.leadMode) i.focus(); }
+  })
+  .catch(function() {
+    hideThinking(); setInputEnabled(true);
+    addMsg("Demo temporarily offline — please try again in a moment.", false);
+  });
 }
 
 function sendSuggestion(text) {
-  var inp = document.getElementById('demo-input');
-  if (inp) { inp.value = text; }
+  if (demoState.busy || demoState.leadMode) return;
+  var inp = document.getElementById('demo-input'); if (inp) inp.value = text;
   sendMessage();
   document.getElementById('demo-msgs').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-/* Setup input listeners */
 document.addEventListener('DOMContentLoaded', function() {
   var inp = document.getElementById('demo-input');
-  var sendBtn = document.getElementById('demo-send');
+  var btn = document.getElementById('demo-send');
   if (inp) {
     inp.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
@@ -837,11 +572,10 @@ document.addEventListener('DOMContentLoaded', function() {
       this.style.height = Math.min(this.scrollHeight, 80) + 'px';
     });
   }
-  if (sendBtn) sendBtn.addEventListener('click', sendMessage);
-  setTimeout(function() {
-    addMsg(tr('greeting', 'english'), false);
-  }, 600);
+  if (btn) btn.addEventListener('click', sendMessage);
+  startDemoSession();
 });
+
 </script>
 </body>
 </html>

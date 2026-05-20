@@ -230,7 +230,7 @@ RULES:
             response_format={"type": "json_object"}
         )
 
-        raw = response.choices[0].message.content.strip()
+        raw = (response.choices[0].message.content or "").strip()
 
         try:
             return json.loads(raw)
