@@ -175,47 +175,43 @@ def load_chatbot_config(business_id: str) -> dict:
 def ai_chat_response(message: str, business_id: str, session: dict, knowledge: str, config: dict) -> dict:
     business_name = config.get("business_name", "the business")
     language_lock = config.get("language_lock")
-    last_language = session.get("last_language", "")
 
     if language_lock:
-        language_instruction = f"You MUST always respond in {language_lock} only, regardless of what language the customer writes in."
+        language_instruction = (
+            f'LANGUAGE: Always write the "reply" value in {language_lock} only, '
+            f"regardless of what language the customer writes in."
+        )
     else:
-        language_hint = f" The previous message was in {last_language} — stay consistent unless the customer switches." if last_language else ""
-        language_instruction = f"""LANGUAGE RULES (non-negotiable):
-- Detect the language of the customer's current message.
-- Respond ENTIRELY in that same language — every single word of your reply.
-- Never mix two languages in one response.
-- If the customer switches language mid-conversation, switch with them immediately.
-- Supported languages include: English, Spanish, French, Arabic, Urdu, Hindi, Portuguese, German, Italian, Dutch, Russian, Mandarin Chinese, Japanese, Korean, Turkish, Polish, Swedish, Norwegian, Danish, Finnish, Greek, Hebrew, Thai, Vietnamese, Indonesian, Malay, Bengali, Punjabi, Swahili, Romanian, Czech, Hungarian, Ukrainian, Catalan, Welsh, Serbian, Croatian, Bulgarian, Slovak, Albanian, Latvian, Lithuanian, Estonian, Slovenian, and 20+ more.{language_hint}
-- Set the "language" field in your JSON to the name of the language you are responding in (e.g. "Spanish", "Urdu", "French")."""
+        language_instruction = (
+            'LANGUAGE: Look at the customer\'s latest message and detect its language. '
+            'Write the "reply" value in that exact language. '
+            'If the message is in Spanish, reply in Spanish. If Urdu, reply in Urdu. If Arabic, reply in Arabic. If French, reply in French. And so on for any of the 50+ supported languages. '
+            'CRITICAL: The JSON structure must never change — only the content of "reply" changes language. '
+            'The keys "reply", "action", "language" always stay in English. '
+            'The "action" value is always one of: chat, collect_lead, end — never translated. '
+            'The "language" value is always the English name of the language (e.g. "Spanish", "Urdu", "Arabic").'
+        )
 
     knowledge_section = knowledge if knowledge else "(No business information provided yet.)"
 
-    system_prompt = f"""You are a sharp, knowledgeable AI assistant for {business_name}. You represent this business to their customers.
+    system_prompt = f"""You are a sharp AI assistant for {business_name}. Always respond with valid JSON only.
+
+OUTPUT FORMAT (required): {{"reply": "...", "action": "chat", "language": "English"}}
+- "reply": your answer to the customer
+- "action": one of chat | collect_lead | end  (always in English)
+- "language": the English name of the language you are replying in
 
 BUSINESS KNOWLEDGE:
 {knowledge_section}
 
-HOW TO BEHAVE:
-- Sound natural and human — warm but efficient, never robotic or repetitive
-- Keep replies concise and direct — 1-3 sentences unless the question genuinely needs more detail
-- NEVER open with "Hi", "Hello", "Hey" or any greeting — get straight to the answer
-- Use the full conversation history for context; never ask for information the customer already gave
-- If the customer seems frustrated, acknowledge it briefly before answering
-- Be confident — state facts as facts ("Our hours are 9am–6pm"), not hedged guesses ("I think maybe...")
+RULES:
+- Answer from the knowledge above. If not in knowledge, say you don't have that info and give the contact if available.
+- Never make up prices, hours, or policies.
+- Keep replies to 1-3 sentences. Never greet with Hi/Hello.
+- If customer asks to speak to someone or be contacted: action = collect_lead
+- If customer says bye and is done: action = end
 
-ANSWERING RULES:
-- Answer directly from the business knowledge — no fabrication of prices, products, or policies
-- If something is genuinely not in the knowledge, say: "I don't have that detail, but you can reach the team at [contact if available]"
-- NEVER proactively offer to collect contact details — only trigger lead capture when the customer explicitly asks to speak to someone, be contacted, or book something
-- If the customer asks to speak to someone, contact the owner, book/schedule something, or leave their details: set action to "collect_lead"
-- If the customer says bye/goodbye/thanks and is clearly done: set action to "end"
-- Handle rude or off-topic messages calmly and redirect to how you can help
-
-{language_instruction}
-
-Respond in EXACTLY this JSON format — no markdown, no code block, no extra text outside the JSON:
-{{"reply": "your response here", "action": "chat or collect_lead or end", "language": "detected language name"}}"""
+{language_instruction}"""
 
     try:
         from openai import OpenAI
@@ -230,7 +226,8 @@ Respond in EXACTLY this JSON format — no markdown, no code block, no extra tex
         response = client.chat.completions.create(
             model="gpt-4.1-nano",
             messages=messages,
-            max_completion_tokens=400
+            max_completion_tokens=400,
+            response_format={"type": "json_object"}
         )
 
         raw = response.choices[0].message.content.strip()
