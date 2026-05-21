@@ -642,18 +642,22 @@ def auto_scrape_atlyz_website():
         ("about.html",          "/about"),
         ("contact.html",        "/contact"),
         ("blog.html",           "/blog"),
+        ("privacy.html",        "/privacy"),
+        ("terms.html",          "/terms"),
+        ("careers.html",        "/careers"),
+        ("cookies.html",        "/cookies"),
     ]
 
     def run():
         try:
             knowledge_path = os.path.join("clients", ATLYZ_BUSINESS_ID, "config", "knowledge.txt")
 
-            # Never overwrite a manually-curated knowledge base (one that has the IDENTITY section)
+            # Skip if the knowledge base is manually maintained (has IDENTITY or PRICING section)
             if os.path.exists(knowledge_path):
                 with open(knowledge_path, encoding="utf-8") as f:
                     existing = f.read()
-                if "IDENTITY" in existing and len(existing) > 500:
-                    print("[AIS] Manually-curated knowledge found — skipping auto-scrape overwrite")
+                if ("IDENTITY" in existing or "PRICING" in existing) and len(existing) > 500:
+                    print("[AIS] Manually-curated knowledge found — skipping auto-scrape")
                     return
 
             meta_path = os.path.join("clients", ATLYZ_BUSINESS_ID, "config", "scrape_meta.json")
@@ -695,18 +699,22 @@ def auto_scrape_atlyz_website():
             prompt = f"""You are extracting business knowledge from the Atlyz website.
 
 Scraped content from atlyz.com:
-{combined[:7000]}
+{combined[:10000]}
 
 Extract and organize all useful information into clear sections:
-- About Atlyz (company overview)
+- About Atlyz: mission, origin story, why it was built, company values
+- Founder / ownership: who built Atlyz and their background
 - Products: Atlyz Chat, Atlyz Voice, Atlyz Agent — features, status, how they work
 - Pricing (all plans, founding member rates if mentioned)
 - How to get started / onboarding steps
-- Contact information
+- Contact information (use contact@atlyz.com as the contact email)
+- Careers / open positions
+- Privacy policy summary (plain English points)
+- Terms of service summary (key points)
 - FAQs
 - Any current offers or promotions
 
-Write it clearly so AIS (the Atlyz AI assistant) can use it to answer visitor questions accurately.
+Write it clearly so AIS (the Atlyz AI assistant) can use it to answer ANY visitor question accurately.
 Remove navigation menus, footers, cookie notices, and repetitive UI text.
 Keep it factual and concise."""
 
