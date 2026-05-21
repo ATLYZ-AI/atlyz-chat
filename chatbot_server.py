@@ -183,13 +183,14 @@ def ai_chat_response(message: str, business_id: str, session: dict, knowledge: s
         )
     else:
         language_instruction = (
-            'LANGUAGE: Look at the customer\'s latest message and detect its language. '
-            'Write the "reply" value in that exact language. '
-            'If the message is in Spanish, reply in Spanish. If Urdu, reply in Urdu. If Arabic, reply in Arabic. If French, reply in French. And so on for any of the 50+ supported languages. '
-            'CRITICAL: The JSON structure must never change — only the content of "reply" changes language. '
-            'The keys "reply", "action", "language" always stay in English. '
-            'The "action" value is always one of: chat, collect_lead, end — never translated. '
-            'The "language" value is always the English name of the language (e.g. "Spanish", "Urdu", "Arabic").'
+            'LANGUAGE RULE (mandatory): Detect the language of the customer\'s latest message. '
+            'The "reply" value MUST be written in that exact same language — no exceptions. '
+            'This applies to ALL actions including collect_lead and end. '
+            'Examples: Urdu message → Urdu reply. Spanish message → Spanish reply. Arabic message → Arabic reply. '
+            'Do NOT reply in English if the customer wrote in another language. '
+            'The JSON keys "reply", "action", "language" always stay in English. '
+            'The "action" value is always one of: chat | collect_lead | end — never translated. '
+            'The "language" value is the English name of the language you replied in (e.g. "Urdu", "Spanish", "Arabic").'
         )
 
     knowledge_section = knowledge if knowledge else "(No business information provided yet.)"

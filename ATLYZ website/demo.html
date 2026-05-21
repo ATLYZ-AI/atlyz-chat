@@ -424,6 +424,7 @@ reveals.forEach(function(r) { observer.observe(r); });
    DEMO CHATBOT — powered by Atlyz Chat API
    ══════════════════════════════════════════════════════ */
 
+var SERVER_URL = location.protocol === 'file:' ? 'http://localhost:5002' : '';
 var demoState = { sessionId: null, leadMode: false, busy: false };
 
 function addMsg(text, fromUser) {
@@ -492,7 +493,7 @@ function submitDemoLead() {
   var lastQ = userMsgs.length ? userMsgs[userMsgs.length - 1].textContent : '';
   var btn = document.querySelector('#demo-lead-form .lead-submit');
   if (btn) btn.disabled = true;
-  fetch('/chat/lead', {
+  fetch(SERVER_URL + '/chat/lead', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ session_id: demoState.sessionId, name: name, email: email, phone: phone, question: lastQ })
   })
@@ -509,7 +510,7 @@ function submitDemoLead() {
 }
 
 function startDemoSession() {
-  fetch('/chat/start', {
+  fetch(SERVER_URL + '/chat/start', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ business_id: 'quickfix_plumbing' })
   })
@@ -522,8 +523,7 @@ function startDemoSession() {
   })
   .catch(function() {
     setTimeout(function() {
-      addMsg("Demo temporarily offline — please try again in a moment.", false);
-      setInputEnabled(false);
+      addMsg("Connecting to demo server… type your message and hit send to try again.", false);
     }, 600);
   });
 }
@@ -532,10 +532,16 @@ function sendMessage() {
   if (demoState.busy || demoState.leadMode) return;
   var inp = document.getElementById('demo-input'); if (!inp) return;
   var text = inp.value.trim(); if (!text) return;
-  if (!demoState.sessionId) { addMsg("Still connecting — please try again in a moment.", false); return; }
+  if (!demoState.sessionId) {
+    setInputEnabled(false);
+    startDemoSession();
+    setTimeout(function() { setInputEnabled(true); }, 2000);
+    addMsg("Reconnecting — please send your message again in a moment.", false);
+    return;
+  }
   inp.value = ''; inp.style.height = 'auto';
   addMsg(text, true); showThinking(); setInputEnabled(false);
-  fetch('/chat/message', {
+  fetch(SERVER_URL + '/chat/message', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ session_id: demoState.sessionId, message: text })
   })
