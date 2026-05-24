@@ -42,7 +42,7 @@ To set up: copy the values into your local `.env` file (create it if missing).
 - **Where to get it:** Gmail account → enable 2-Step Verification → create an **App Password**
   at https://myaccount.google.com/apppasswords (NOT your normal Gmail password).
 - **.env lines:**
-  `EMAIL_FROM=hello@atlyz.com`
+  `EMAIL_FROM=contact@atlyz.com`
   `EMAIL_PASSWORD=your-16-char-gmail-app-password`
 - **Cost:** free.
 
