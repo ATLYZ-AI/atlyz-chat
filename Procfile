@@ -1,1 +1,1 @@
-web: python chatbot_server.py
+web: gunicorn chatbot_server:app --preload --workers 2 --threads 4 --timeout 120 --bind 0.0.0.0:$PORT

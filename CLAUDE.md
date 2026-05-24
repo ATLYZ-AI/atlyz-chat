@@ -64,8 +64,8 @@ The company has three products planned:
 │   │   └── agent-product.html
 │   ├── venv/              ← Virtual environment (DO NOT COMMIT)
 │   ├── .env               ← API keys (DO NOT COMMIT EVER)
-│   ├── Procfile           ← Railway deployment: web: python chatbot_server.py
-│   └── requirements_chatbot.txt
+│   ├── Procfile           ← Railway deployment: gunicorn chatbot_server:app (dev still uses python chatbot_server.py)
+│   └── requirements.txt
 │
 └── receptionist/          ← Atlyz Voice (separate product)
     ├── receptionist_core.py   ← AI conversation engine
@@ -89,7 +89,7 @@ The company has three products planned:
 source venv/bin/activate
 
 # Install dependencies (first time only)
-pip install -r requirements_chatbot.txt
+pip install -r requirements.txt
 
 # Run server
 python chatbot_server.py
@@ -230,7 +230,13 @@ Lead saved to leads.csv → owner notified via email + WhatsApp
 ### Target: Railway.app
 
 ```
-Procfile already created: web: python chatbot_server.py
+Procfile already created: web: gunicorn chatbot_server:app --preload ... (see Procfile)
+
+IMPORTANT — Railway needs a persistent volume:
+- Add a Volume in Railway and mount it at /data
+- Set env var DATA_DIR=/data so accounts/ and clients/ (knowledge + leads)
+  survive deploys. Without this, all owner accounts, chatbots, and captured
+  leads are wiped on every redeploy (Railway's filesystem is ephemeral).
 
 Steps:
 1. Create GitHub account with atlyz.com email

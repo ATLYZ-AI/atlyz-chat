@@ -1,0 +1,19 @@
+# Atlyz Chat — Requirements
+# Local install:  pip install -r requirements.txt
+# Railway uses this file automatically to build the deploy.
+
+# Core
+flask>=3.0.0
+python-dotenv>=1.0.0
+
+# Production WSGI server (used by the Procfile on Railway)
+gunicorn>=21.2.0
+
+# AI
+openai>=1.30.0
+
+# Web scraping
+requests>=2.31.0
+
+# PDF knowledge support
+pdfplumber>=0.10.0

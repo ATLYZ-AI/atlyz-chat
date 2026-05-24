@@ -52,7 +52,8 @@ To set up: copy the values into your local `.env` file (create it if missing).
 
 | Variable | Purpose | Default |
 |---|---|---|
-| `DEV_MODE` | `true` enables debug + permissive auth fallback. Set `false` in production. | `false` |
+| `DEV_MODE` | `true` enables Flask debug. Set `false` in production. | `false` |
+| `DATA_DIR` | Where accounts + client data are stored. **On Railway set to `/data`** (a mounted volume) so data survives deploys. | `.` (project dir) |
 | `PORT` | Server port (Railway sets this automatically). | `5002` |
 | `MAX_MESSAGE_CHARS` | Max chars per customer message. | `2000` |
 | `MAX_KNOWLEDGE_CHARS` | Max chars of scraped knowledge sent to GPT. | `12000` |

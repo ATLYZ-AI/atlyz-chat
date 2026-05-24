@@ -5,7 +5,6 @@ import json
 import re
 import uuid
 import time
-import secrets
 import smtplib
 import csv
 from datetime import datetime
@@ -19,10 +18,21 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "atlyz-chat-secret")
 
+# Persistent data root. Locally defaults to the project dir; on Railway set
+# DATA_DIR=/data (a mounted volume) so accounts/clients/leads survive deploys.
+DATA_DIR    = os.getenv("DATA_DIR", ".")
+CLIENTS_DIR = os.path.join(DATA_DIR, "clients")
+
+# Stateless signed auth tokens — survive restarts and work across gunicorn
+# workers without shared storage. Signed with SECRET_KEY.
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+token_serializer = URLSafeTimedSerializer(app.secret_key, salt="atlyz-auth")
+TOKEN_MAX_AGE = 60 * 60 * 24 * 30  # 30 days
+
 @app.after_request
 def add_cors(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Admin-Key"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Admin-Key, X-Auth-Token"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     return response
 
@@ -31,7 +41,7 @@ def handle_options():
     if request.method == "OPTIONS":
         resp = app.make_default_options_response()
         resp.headers["Access-Control-Allow-Origin"] = "*"
-        resp.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Admin-Key"
+        resp.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Admin-Key, X-Auth-Token"
         resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
         return resp
 
@@ -44,9 +54,8 @@ RATE_LIMIT_MAX    = 20  # messages per window
 RATE_LIMIT_WINDOW = 60  # seconds
 
 # ── Accounts (owner signup / login) ─────────────────────────────────────────────
-ACCOUNTS_DIR  = "accounts"
+ACCOUNTS_DIR  = os.path.join(DATA_DIR, "accounts")
 ACCOUNTS_FILE = os.path.join(ACCOUNTS_DIR, "accounts.json")
-auth_tokens   = {}  # token → email (in-memory; cleared on server restart)
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
@@ -68,30 +77,28 @@ def save_accounts(accounts: dict):
 
 
 def issue_token(email: str) -> str:
-    token = secrets.token_urlsafe(32)
-    auth_tokens[token] = email
-    return token
+    return token_serializer.dumps(email)
 
 
 def email_from_token(token: str):
-    return auth_tokens.get(token) if token else None
+    if not token:
+        return None
+    try:
+        return token_serializer.loads(token, max_age=TOKEN_MAX_AGE)
+    except (BadSignature, SignatureExpired):
+        return None
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # HELPERS
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def check_admin_key():
-    """Return True if request carries a valid admin key, or if none is configured (dev)."""
-    required = os.getenv("ATLYZ_ADMIN_KEY", "")
-    if not required:
-        return True  # dev mode — no key set, allow all
-    provided = (
-        request.headers.get("X-Admin-Key", "") or
-        request.args.get("key", "") or
-        (request.json or {}).get("admin_key", "")
-    )
-    return provided == required
+def request_account_email():
+    """Email of the signed-in account on this request, or None.
+    Looks at account_token in the JSON body, the X-Auth-Token header, or ?token=."""
+    body  = request.get_json(silent=True) or {}
+    token = body.get("account_token", "") or request.headers.get("X-Auth-Token", "") or request.args.get("token", "")
+    return email_from_token(token)
 
 
 def check_rate_limit(session_id: str) -> bool:
@@ -142,7 +149,7 @@ def load_knowledge(business_id: str) -> str:
     if business_id in knowledge_cache:
         return knowledge_cache[business_id]
 
-    config_dir = os.path.join("clients", business_id, "config")
+    config_dir = os.path.join(CLIENTS_DIR, business_id, "config")
 
     for fname in ["knowledge.txt", "knowledge.pdf"]:
         path = os.path.join(config_dir, fname)
@@ -167,7 +174,7 @@ def load_knowledge(business_id: str) -> str:
 
 
 def load_business_config(business_id: str) -> dict:
-    config_path = os.path.join("clients", business_id, "config", "business_config.txt")
+    config_path = os.path.join(CLIENTS_DIR, business_id, "config", "business_config.txt")
     config = {}
     if os.path.exists(config_path):
         with open(config_path, encoding="utf-8") as f:
@@ -179,7 +186,7 @@ def load_business_config(business_id: str) -> dict:
 
 
 def load_chatbot_config(business_id: str) -> dict:
-    path = os.path.join("clients", business_id, "config", "chatbot_config.json")
+    path = os.path.join(CLIENTS_DIR, business_id, "config", "chatbot_config.json")
     defaults = {
         "primary_color":   "#7c3aed",
         "secondary_color": "#f3f4f6",
@@ -299,7 +306,7 @@ RULES:
 
 def save_lead(business_id: str, lead: dict):
     try:
-        path = os.path.join("clients", business_id, "data", "leads.csv")
+        path = os.path.join(CLIENTS_DIR, business_id, "data", "leads.csv")
         os.makedirs(os.path.dirname(path), exist_ok=True)
         write_header = not os.path.exists(path)
         with open(path, "a", newline="", encoding="utf-8") as f:
@@ -432,11 +439,11 @@ def get_chat_config(business_id):
 
 @app.route("/chatbot/config/<business_id>", methods=["POST"])
 def save_chatbot_config(business_id):
-    if not check_admin_key():
-        return jsonify({"error": "Unauthorized"}), 401
+    if not request_account_email():
+        return jsonify({"success": False, "error": "Please sign in to do that."}), 401
 
     data = request.json or {}
-    config_path = os.path.join("clients", business_id, "config", "chatbot_config.json")
+    config_path = os.path.join(CLIENTS_DIR, business_id, "config", "chatbot_config.json")
 
     if not os.path.exists(os.path.dirname(config_path)):
         return jsonify({"success": False, "error": "Business not found"}), 404
@@ -455,7 +462,7 @@ def save_chatbot_config(business_id):
 @app.route("/chatbot/stats/<business_id>", methods=["GET"])
 def chatbot_stats(business_id):
     leads_count = 0
-    leads_path  = os.path.join("clients", business_id, "data", "leads.csv")
+    leads_path  = os.path.join(CLIENTS_DIR, business_id, "data", "leads.csv")
     if os.path.exists(leads_path):
         with open(leads_path, encoding="utf-8") as f:
             leads_count = max(0, sum(1 for _ in f) - 1)  # subtract header row
@@ -464,7 +471,7 @@ def chatbot_stats(business_id):
     total_messages = sum(len(s.get("history", [])) for s in active)
 
     scrape_meta = {}
-    meta_path = os.path.join("clients", business_id, "config", "scrape_meta.json")
+    meta_path = os.path.join(CLIENTS_DIR, business_id, "config", "scrape_meta.json")
     if os.path.exists(meta_path):
         try:
             with open(meta_path) as f:
@@ -489,8 +496,8 @@ def widget_js():
 
 @app.route("/chat/scrape", methods=["POST"])
 def scrape_endpoint():
-    if not check_admin_key():
-        return jsonify({"error": "Unauthorized"}), 401
+    if not request_account_email():
+        return jsonify({"success": False, "error": "Please sign in to do that."}), 401
 
     data        = request.json or {}
     business_id = data.get("business_id", "")
@@ -572,8 +579,8 @@ def auth_me():
 
 @app.route("/setup/create", methods=["POST"])
 def setup_create():
-    if not check_admin_key():
-        return jsonify({"error": "Unauthorized"}), 401
+    if not request_account_email():
+        return jsonify({"success": False, "error": "Please sign in to do that."}), 401
 
     data          = request.json or {}
     business_name = data.get("business_name", "").strip()
@@ -595,12 +602,12 @@ def setup_create():
     slug        = slug[:40] or "business"
     business_id = slug
     counter     = 2
-    while os.path.exists(os.path.join("clients", business_id)):
+    while os.path.exists(os.path.join(CLIENTS_DIR, business_id)):
         business_id = f"{slug}-{counter}"
         counter += 1
 
-    config_dir = os.path.join("clients", business_id, "config")
-    data_dir   = os.path.join("clients", business_id, "data")
+    config_dir = os.path.join(CLIENTS_DIR, business_id, "config")
+    data_dir   = os.path.join(CLIENTS_DIR, business_id, "data")
     os.makedirs(config_dir, exist_ok=True)
     os.makedirs(data_dir,   exist_ok=True)
 
@@ -748,7 +755,7 @@ def auto_scrape_atlyz_website():
 
     def run():
         try:
-            knowledge_path = os.path.join("clients", ATLYZ_BUSINESS_ID, "config", "knowledge.txt")
+            knowledge_path = os.path.join(CLIENTS_DIR, ATLYZ_BUSINESS_ID, "config", "knowledge.txt")
 
             # Skip if the knowledge base is manually maintained (has IDENTITY or PRICING section)
             if os.path.exists(knowledge_path):
@@ -758,7 +765,7 @@ def auto_scrape_atlyz_website():
                     print("[AIS] Manually-curated knowledge found — skipping auto-scrape")
                     return
 
-            meta_path = os.path.join("clients", ATLYZ_BUSINESS_ID, "config", "scrape_meta.json")
+            meta_path = os.path.join(CLIENTS_DIR, ATLYZ_BUSINESS_ID, "config", "scrape_meta.json")
 
             website_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ATLYZ website")
             if not os.path.exists(website_dir):
@@ -830,7 +837,7 @@ Keep it factual and concise."""
                 print("[AIS] Summarization too short — keeping existing knowledge")
                 return
 
-            config_dir = os.path.join("clients", ATLYZ_BUSINESS_ID, "config")
+            config_dir = os.path.join(CLIENTS_DIR, ATLYZ_BUSINESS_ID, "config")
             os.makedirs(config_dir, exist_ok=True)
 
             knowledge_path = os.path.join(config_dir, "knowledge.txt")
@@ -870,12 +877,16 @@ Keep it factual and concise."""
     t.start()
 
 
+# Runs at import (works under both `python chatbot_server.py` and gunicorn).
+# It's daemon-threaded and skips when curated knowledge already exists.
+auto_scrape_atlyz_website()
+
+
 if __name__ == "__main__":
     print("=" * 50)
     print("  ATLYZ — Chat Server")
     print("  API:  http://localhost:5002")
     print("  Test: http://localhost:5002/chat/test/test_shop")
     print("=" * 50)
-    auto_scrape_atlyz_website()
     debug = os.getenv("DEV_MODE", "false").lower() == "true"
     app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5002)), debug=debug)
