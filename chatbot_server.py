@@ -5,12 +5,14 @@ import json
 import re
 import uuid
 import time
+import secrets
 import smtplib
 import csv
 from datetime import datetime
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, render_template, send_from_directory
+from werkzeug.security import generate_password_hash, check_password_hash
 
 load_dotenv()
 
@@ -40,6 +42,39 @@ rate_limits    = {}  # session_id → [timestamps]
 
 RATE_LIMIT_MAX    = 20  # messages per window
 RATE_LIMIT_WINDOW = 60  # seconds
+
+# ── Accounts (owner signup / login) ─────────────────────────────────────────────
+ACCOUNTS_DIR  = "accounts"
+ACCOUNTS_FILE = os.path.join(ACCOUNTS_DIR, "accounts.json")
+auth_tokens   = {}  # token → email (in-memory; cleared on server restart)
+
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
+def load_accounts() -> dict:
+    if os.path.exists(ACCOUNTS_FILE):
+        try:
+            with open(ACCOUNTS_FILE, encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
+
+
+def save_accounts(accounts: dict):
+    os.makedirs(ACCOUNTS_DIR, exist_ok=True)
+    with open(ACCOUNTS_FILE, "w", encoding="utf-8") as f:
+        json.dump(accounts, f, indent=2)
+
+
+def issue_token(email: str) -> str:
+    token = secrets.token_urlsafe(32)
+    auth_tokens[token] = email
+    return token
+
+
+def email_from_token(token: str):
+    return auth_tokens.get(token) if token else None
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -225,7 +260,7 @@ RULES:
         messages.append({"role": "user", "content": message})
 
         response = client.chat.completions.create(
-            model="gpt-4.1-nano",
+            model="gpt-5-nano",
             messages=messages,
             max_completion_tokens=400,
             response_format={"type": "json_object"}
@@ -486,6 +521,55 @@ def health():
     return jsonify({"status": "ok", "sessions": len(sessions)})
 
 
+@app.route("/auth/signup", methods=["POST"])
+def auth_signup():
+    data     = request.json or {}
+    name     = (data.get("name") or "").strip()
+    email    = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+
+    if not email or not EMAIL_RE.match(email):
+        return jsonify({"success": False, "error": "Please enter a valid email address."}), 400
+    if len(password) < 8:
+        return jsonify({"success": False, "error": "Password must be at least 8 characters."}), 400
+
+    accounts = load_accounts()
+    if email in accounts:
+        return jsonify({"success": False, "error": "An account with this email already exists — try logging in."}), 409
+
+    accounts[email] = {
+        "name":          name,
+        "password_hash": generate_password_hash(password),
+        "created_at":    datetime.now().isoformat(),
+        "businesses":    []
+    }
+    save_accounts(accounts)
+
+    return jsonify({"success": True, "token": issue_token(email), "email": email, "name": name})
+
+
+@app.route("/auth/login", methods=["POST"])
+def auth_login():
+    data     = request.json or {}
+    email    = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+
+    account = load_accounts().get(email)
+    if not account or not check_password_hash(account.get("password_hash", ""), password):
+        return jsonify({"success": False, "error": "Incorrect email or password."}), 401
+
+    return jsonify({"success": True, "token": issue_token(email), "email": email, "name": account.get("name", "")})
+
+
+@app.route("/auth/me", methods=["GET"])
+def auth_me():
+    email = email_from_token(request.args.get("token", "") or request.headers.get("X-Auth-Token", ""))
+    if not email:
+        return jsonify({"success": False, "error": "Not signed in"}), 401
+    account = load_accounts().get(email, {})
+    return jsonify({"success": True, "email": email, "name": account.get("name", ""), "businesses": account.get("businesses", [])})
+
+
 @app.route("/setup/create", methods=["POST"])
 def setup_create():
     if not check_admin_key():
@@ -495,6 +579,10 @@ def setup_create():
     business_name = data.get("business_name", "").strip()
     website_url   = data.get("website_url", "").strip()
     owner_email   = data.get("owner_email", "").strip()
+    account_token = data.get("account_token", "")
+    account_email = email_from_token(account_token)
+    if account_email and not owner_email:
+        owner_email = account_email
     primary_color = data.get("primary_color", "#7c3aed")
     greeting      = data.get("greeting", "")
     position      = data.get("widget_position", "bottom-right")
@@ -540,6 +628,16 @@ def setup_create():
     }
     with open(os.path.join(config_dir, "chatbot_config.json"), "w") as f:
         json.dump(chatbot_cfg, f, indent=2)
+
+    # Link this chatbot to the owner's account
+    if account_email:
+        accounts = load_accounts()
+        acct = accounts.get(account_email)
+        if acct is not None:
+            acct.setdefault("businesses", [])
+            if business_id not in acct["businesses"]:
+                acct["businesses"].append(business_id)
+            save_accounts(accounts)
 
     pages_scraped  = 0
     scrape_preview = ""
@@ -707,7 +805,7 @@ Extract and organize all useful information into clear sections:
 - Products: Atlyz Chat, Atlyz Voice, Atlyz Agent — features, status, how they work
 - Pricing (all plans, founding member rates if mentioned)
 - How to get started / onboarding steps
-- Contact information (use contact@atlyz.com as the contact email)
+- Contact information (use support@atlyz.com for general/support, billing@atlyz.com for billing, careers@atlyz.com for jobs)
 - Careers / open positions
 - Privacy policy summary (plain English points)
 - Terms of service summary (key points)
@@ -719,7 +817,7 @@ Remove navigation menus, footers, cookie notices, and repetitive UI text.
 Keep it factual and concise."""
 
             response = client.chat.completions.create(
-                model="gpt-4.1-nano",
+                model="gpt-5-nano",
                 messages=[
                     {"role": "system", "content": "You extract and organize business information from website content."},
                     {"role": "user", "content": prompt}

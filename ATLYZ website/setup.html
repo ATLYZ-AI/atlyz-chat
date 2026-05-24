@@ -157,6 +157,19 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
 .stat-num{font-size:24px;font-weight:500;letter-spacing:-1px;background:#6c92eb;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .stat-lab{font-size:12px;color:var(--muted);margin-top:2px}
 
+/* ── Payment (placeholder) ── */
+.pay-card{max-width:460px;margin:0 auto}
+.pay-plan{border:1px solid rgba(108,146,235,.25);background:rgba(108,146,235,.06);border-radius:14px;padding:18px 20px;margin-bottom:20px}
+.pay-plan-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.pay-plan-name{font-size:18px;font-weight:600;letter-spacing:-.3px}
+.pay-plan-price{font-size:26px;font-weight:600;letter-spacing:-1px;color:#6c92eb}
+.pay-plan-price span{font-size:14px;font-weight:400;color:var(--muted)}
+.pay-plan-note{font-size:12px;color:var(--muted2);margin-top:6px}
+.pay-features{list-style:none;margin:0 0 22px;padding:0;display:flex;flex-direction:column;gap:10px}
+.pay-features li{position:relative;padding-left:26px;font-size:14px;color:var(--muted);line-height:1.5}
+.pay-features li::before{content:'✓';position:absolute;left:0;top:1px;color:#6c92eb;font-weight:600}
+.pay-secure{font-size:12px;color:var(--muted2);text-align:center;margin-top:14px;line-height:1.6}
+
 </style>
 <link rel="stylesheet" href="atlyz.css">
 </head>
@@ -195,8 +208,7 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
     <a href="contact.html">Contact</a>
   </div>
   <div class="nav-right">
-    <a href="contact.html" class="btn-nav-ghost">Log in</a>
-    <a href="setup.html" class="btn-nav-cta">Start free</a>
+    <a href="signup.html" class="btn-nav-cta">Start free</a>
   </div>
   <button class="hamburger" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
 </nav>
@@ -392,6 +404,34 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
 
   <!-- ═══ STEP 3 ═══ -->
   <div class="step hidden" id="step-3">
+
+    <!-- Payment (placeholder — UI only, does not charge yet) -->
+    <div id="pay-view">
+      <div class="success-hero">
+        <div class="success-icon">✓</div>
+        <h2>Your chatbot is ready</h2>
+        <p>Activate your subscription to take it live on your website.</p>
+      </div>
+      <div class="card pay-card">
+        <div class="pay-plan">
+          <div class="pay-plan-row">
+            <span class="pay-plan-name" id="pay-plan-name">Starter</span>
+            <span class="pay-plan-price" id="pay-plan-price">$45<span>/mo</span></span>
+          </div>
+          <p class="pay-plan-note" id="pay-plan-note">Founding-member rate · billed monthly · cancel anytime</p>
+        </div>
+        <ul class="pay-features">
+          <li>Unlimited AI conversations on your website</li>
+          <li>Lead capture with instant email alerts</li>
+          <li>Full widget customization &amp; your branding</li>
+        </ul>
+        <button class="btn-primary" onclick="payAndGoLive()">Pay &amp; go live →</button>
+        <p class="pay-secure">🔒 Secure checkout. Card payments are being set up — for now we'll send an invoice and confirm within hours. Questions? <a href="mailto:billing@atlyz.com" style="color:#e0e0e0;text-decoration:none">billing@atlyz.com</a></p>
+      </div>
+    </div>
+
+    <!-- Go live — revealed after payment -->
+    <div id="live-view" style="display:none">
     <div class="success-hero">
       <div class="success-icon">✓</div>
       <h2>Your chatbot is live!</h2>
@@ -451,8 +491,9 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
     <div style="text-align:center;font-size:13px;color:var(--muted)">
       Need help installing? Open the <a id="guide-link" href="install-guide.html" target="_blank" style="color:#e0e0e0;text-decoration:none">step-by-step guide</a> for WordPress, Wix, Squarespace &amp; more ·
       <a href="#" onclick="startOver();return false;" style="color:#e0e0e0;text-decoration:none">Set up another</a> ·
-      Email <a href="mailto:contact@atlyz.com" style="color:#e0e0e0;text-decoration:none">contact@atlyz.com</a>
+      Email <a href="mailto:support@atlyz.com" style="color:#e0e0e0;text-decoration:none">support@atlyz.com</a>
     </div>
+    </div><!-- /#live-view -->
   </div>
 
 </div><!-- end .wrapper -->
@@ -461,6 +502,12 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
 var SERVER = window.location.protocol === 'file:'
   ? 'http://localhost:5002'
   : window.location.origin;
+
+// ── Require a signed-in account ────────────────────────────────────────────────
+var ATLYZ_TOKEN = localStorage.getItem('atlyz_token') || '';
+if(!ATLYZ_TOKEN){
+  window.location.replace('signup.html' + window.location.search);
+}
 
 // Read ?plan from URL
 var urlP = new URLSearchParams(window.location.search);
@@ -477,13 +524,31 @@ if(emailParam){
   if(emailField) emailField.value = decodeURIComponent(emailParam);
 }
 
+// Prefill owner email from the signed-in account; bounce stale tokens to login
+if(ATLYZ_TOKEN){
+  var savedEmail = localStorage.getItem('atlyz_email') || '';
+  var ef0 = document.getElementById('biz-email');
+  if(ef0 && !ef0.value && savedEmail) ef0.value = savedEmail;
+  fetch(SERVER + '/auth/me?token=' + encodeURIComponent(ATLYZ_TOKEN))
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(d){ if(!d || !d.success) throw 0; if(d.email){ var ef1=document.getElementById('biz-email'); if(ef1 && !ef1.value) ef1.value = d.email; } })
+    .catch(function(){ localStorage.removeItem('atlyz_token'); window.location.replace('signup.html?mode=login'); });
+}
+
 var bizName = '';
 var bizId   = '';
 var botName = 'Aria';
 var greetingEdited = false;
 var chosenColor = '#6c92eb';
 var chosenPos   = 'bottom-right';
+var chosenPlan  = 'starter';
 var embedCode   = '';
+
+var PLANS = {
+  starter: { name: 'Starter', price: '$45' },
+  growth:  { name: 'Growth',  price: '$85' },
+  pro:     { name: 'Pro',     price: '$130' }
+};
 
 // ── Step navigation ──────────────────────────────────────────────────────────
 function showStep(id){
@@ -524,6 +589,7 @@ function startAnalysis(){
 
   err.style.display = 'none';
   bizName = name;
+  chosenPlan = document.getElementById('biz-plan').value || 'starter';
 
   // Pre-fill greeting using the chosen bot name
   botName = (document.getElementById('cust-botname').value || '').trim() || 'Aria';
@@ -549,7 +615,8 @@ function startAnalysis(){
       widget_position: chosenPos,
       plan: document.getElementById('biz-plan').value,
       owner_email: email,
-      bot_name: botName
+      bot_name: botName,
+      account_token: ATLYZ_TOKEN
     })
   })
   .then(function(r){ return r.json(); })
@@ -626,7 +693,7 @@ function scrapeWarning(){
   showStep('step-1');
   var err = document.getElementById('err-1');
   err.className = 'error-msg warn';
-  err.innerHTML = "We couldn't read that website automatically — it looks like it blocks automated access (large sites behind Cloudflare often do this). Most small-business websites work fine. Double-check the URL or try your real site, and if it still won't read, email <a href=\"mailto:contact@atlyz.com\" style=\"color:#fbbf24;text-decoration:underline\">contact@atlyz.com</a> — we'll set it up for you.";
+  err.innerHTML = "We couldn't read that website automatically — it looks like it blocks automated access (large sites behind Cloudflare often do this). Most small-business websites work fine. Double-check the URL or try your real site, and if it still won't read, email <a href=\"mailto:support@atlyz.com\" style=\"color:#fbbf24;text-decoration:underline\">support@atlyz.com</a> — we'll set it up for you.";
   err.style.display = 'block';
   err.scrollIntoView({behavior:'smooth',block:'nearest'});
   setProgress(0);
@@ -724,7 +791,7 @@ function createChatbot(){
     })
   }).catch(function(){});
 
-  // Show step 3
+  // Prepare the go-live view (embed code + stats)
   document.getElementById('embed-code-display').textContent = embedCode;
   document.getElementById('stat-pages').textContent = window._pagesScraped || '—';
   document.getElementById('stat-id').textContent = bizId;
@@ -734,9 +801,23 @@ function createChatbot(){
   if(gl) gl.href = guideHref;
   var gb = document.getElementById('guide-btn');
   if(gb) gb.href = guideHref;
+
+  // Payment step first — embed code is revealed after "Pay & go live"
+  var plan = PLANS[chosenPlan] || PLANS.starter;
+  document.getElementById('pay-plan-name').textContent = plan.name;
+  document.getElementById('pay-plan-price').innerHTML = plan.price + '<span>/mo</span>';
+  document.getElementById('pay-view').style.display = '';
+  document.getElementById('live-view').style.display = 'none';
   updateIndicator(3);
-  setProgress(100);
+  setProgress(90);
   showStep('step-3');
+}
+
+function payAndGoLive(){
+  document.getElementById('pay-view').style.display = 'none';
+  document.getElementById('live-view').style.display = '';
+  setProgress(100);
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 // ── Step 3 ────────────────────────────────────────────────────────────────────

@@ -1060,8 +1060,7 @@ footer{
     <a href="contact.html">Contact</a>
   </div>
   <div class="nav-right">
-    <a href="contact.html" class="btn-nav-ghost">Log in</a>
-    <a href="setup.html" class="btn-nav-cta">Start free</a>
+    <a href="signup.html" class="btn-nav-cta">Start free</a>
   </div>
   <button class="hamburger" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
 </nav>
@@ -1083,7 +1082,7 @@ footer{
     </p>
 
     <div class="hero-btns">
-      <a href="setup.html" class="btn-primary">Start free — no card needed →</a>
+      <a href="signup.html" class="btn-primary">Start free — no card needed →</a>
       <a href="demo.html" class="btn-outline">Try live demo</a>
     </div>
 
@@ -1370,7 +1369,7 @@ footer{
     </div>
 
     <div class="testi-card reveal">
-      <p class="testi-quote">To get started, email <a href="mailto:contact@atlyz.com" style="color:var(--accent);text-decoration:none">contact@atlyz.com</a> with your website URL. We reply fast and can have you live the same day.</p>
+      <p class="testi-quote">To get started, email <a href="mailto:support@atlyz.com" style="color:var(--accent);text-decoration:none">support@atlyz.com</a> with your website URL. We reply fast and can have you live the same day.</p>
       <div class="result-badge">Same-day setup available</div>
     </div>
 
@@ -1406,7 +1405,7 @@ footer{
         <div class="pf"><span class="no">✕</span><span>Lead capture</span></div>
         <div class="pf"><span class="no">✕</span><span>Analytics dashboard</span></div>
       </div>
-      <a href="setup.html" class="price-btn outline">Claim Founding Rate</a>
+      <a href="signup.html" class="price-btn outline">Claim Founding Rate</a>
     </div>
 
     <div class="price-card featured reveal">
@@ -1425,7 +1424,7 @@ footer{
         <div class="pf has"><span class="ck">✓</span><span>Analytics dashboard</span></div>
         <div class="pf has"><span class="ck">✓</span><span>Priority support</span></div>
       </div>
-      <a href="setup.html" class="price-btn solid">Claim Founding Rate</a>
+      <a href="signup.html" class="price-btn solid">Claim Founding Rate</a>
     </div>
 
     <div class="price-card reveal" style="position:relative">
@@ -1444,7 +1443,7 @@ footer{
         <div class="pf has"><span class="ck">✓</span><span>Advanced analytics</span></div>
         <div class="pf has"><span class="ck">✓</span><span>White-label widget</span></div>
       </div>
-      <a href="setup.html" class="price-btn outline">Claim Founding Rate</a>
+      <a href="signup.html" class="price-btn outline">Claim Founding Rate</a>
     </div>
 
   </div>
@@ -1514,7 +1513,7 @@ footer{
   <p>We're in beta — onboarding founding customers with personal setup and support.</p>
   <div class="cta-email-form">
     <input type="email" class="cta-email-input" placeholder="your@email.com">
-    <a href="setup.html" class="btn-primary">Get started free →</a>
+    <a href="signup.html" class="btn-primary">Get started free →</a>
   </div>
   <div class="cta-risk">
     <span><span class="risk-check">✓</span> No credit card required</span>
@@ -1748,12 +1747,12 @@ function toggleFaq(btn){
   if(!isOpen) item.classList.add('open');
 }
 
-// ── CTA EMAIL — forward email to setup page
+// ── CTA EMAIL — forward email to signup page (create account first)
 var ctaInput=document.querySelector('.cta-email-input');
 var ctaBtn=document.querySelector('.cta-email-form .btn-primary');
 function goSetup(){
   var email=ctaInput?ctaInput.value.trim():'';
-  window.location='setup.html'+(email?'?email='+encodeURIComponent(email):'');
+  window.location='signup.html'+(email?'?email='+encodeURIComponent(email):'');
 }
 if(ctaInput) ctaInput.addEventListener('keydown',function(e){if(e.key==='Enter') goSetup();});
 if(ctaBtn) ctaBtn.addEventListener('click',function(e){e.preventDefault();goSetup();});

@@ -9,6 +9,9 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Owner accounts — email + hashed passwords, never committed
+accounts/
+
 # Client data — leads/personal info never committed
 clients/*/data/
 

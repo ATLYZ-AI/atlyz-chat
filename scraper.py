@@ -236,7 +236,7 @@ Remove any navigation text, cookie notices, or irrelevant content.
 Keep it factual and concise."""
 
         response = client.chat.completions.create(
-            model="gpt-4.1-nano",
+            model="gpt-5-nano",
             messages=[
                 {"role": "system", "content": "You extract and organize business information from website content. Be factual and concise."},
                 {"role": "user", "content": prompt}

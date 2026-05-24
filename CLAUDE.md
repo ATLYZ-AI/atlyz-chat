@@ -260,9 +260,9 @@ __pycache__/
 ## Important Rules When Editing Code
 
 1. **Never hardcode API keys** — always use `os.getenv()` and `.env` file
-2. **GPT model** — use `gpt-4.1-nano` for chat/classification, it supports `max_completion_tokens` not `max_tokens`
+2. **GPT model** — use `gpt-5-nano` for chat/classification, it supports `max_completion_tokens` not `max_tokens`
 3. **JSON parsing** — always use 3-layer parsing (direct → strip markdown → regex) for GPT responses
-4. **Temperature** — gpt-4.1-nano only supports default temperature, never set `temperature=0`
+4. **Temperature** — gpt-5-nano only supports default temperature, never set `temperature=0`
 5. **Session key** — dashboard uses `session[business_id] = True` not `session['user']`
 6. **Virtual environment** — always activate `venv/` before running, not `atlyz-env`
 7. **Port** — chatbot runs on 5002, dashboard (receptionist) runs on 5000
