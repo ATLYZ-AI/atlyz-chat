@@ -4,204 +4,283 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Atlyz Voice — AI Phone Receptionist</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#09090b;--surface:#111113;--surface2:#18181b;--border:rgba(255,255,255,0.06);--border-hover:rgba(255,255,255,0.12);--text:#fafafa;--muted:#71717a;--blue:#3b82f6;--purple:#8b5cf6}
+/* ── TOKENS ── */
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;line-height:1.6}
-body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(9,9,11,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-word{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;color:#f0f0f4}
-.logo-word{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f4}
-.nav-links{display:flex;gap:32px}
-.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;transition:.2s}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+
+/* ── NAV ── */
+nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;justify-content:space-between;gap:32px;padding:0 24px;height:52px;width:max-content;max-width:calc(100vw - 40px);min-width:320px;background:rgba(0,0,0,0.88);backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:100px;box-shadow:0 0 0 1px rgba(255,255,255,0.04) inset}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.logo-word{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f0}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:.2s}
 .nav-links a:hover{color:var(--text)}
-.nav-cta{background:var(--text);color:var(--bg);padding:8px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:400;transition:.2s}
-.nav-cta:hover{background:#e4e4e7;transform:translateY(-1px)}
-/* ── HAMBURGER MENU ── */
-.hamburger{display:none;background:none;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:4px;line-height:1}
+.nav-cta{background:#6c92eb;color:#04130d;padding:7px 18px;border-radius:100px;text-decoration:none;font-size:13px;font-weight:600;transition:.2s;flex-shrink:0}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(108,146,235,0.35)}
+.hamburger{display:none;background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0}
 @media(max-width:768px){
+  nav{gap:16px;padding:0 16px}
   .hamburger{display:block}
-  .nav-links.open{display:flex !important;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(9,9,11,0.97);padding:20px 24px;gap:20px;border-bottom:1px solid rgba(255,255,255,0.06);z-index:99}
+  .nav-links{display:none}
+  .nav-links.open{display:flex !important;flex-direction:column;position:fixed;top:80px;left:50%;transform:translateX(-50%);width:calc(100vw - 40px);background:rgba(0,0,0,0.96);backdrop-filter:blur(24px);padding:20px 24px;gap:18px;border-radius:20px;border:1px solid var(--border);z-index:199}
 }
-.hero{position:relative;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:140px 24px 80px;z-index:1}
-.hero-glow{position:absolute;top:10%;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse at center,rgba(59,130,246,0.15) 0%,transparent 70%);pointer-events:none}
-.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:100px;border:1px solid rgba(59,130,246,0.3);background:rgba(59,130,246,0.08);font-size:13px;color:#60a5fa;font-family:'JetBrains Mono',monospace;margin-bottom:24px}
-.badge-dot{width:6px;height:6px;border-radius:50%;background:#f59e0b;box-shadow:0 0 8px #f59e0b}
-h1{font-family:'Inter',sans-serif;font-size:64px;letter-spacing:-2px;line-height:1.05;margin-bottom:20px}
-.grad{background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-sub{font-size:18px;color:var(--muted);max-width:560px;margin-bottom:40px}
-.hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
-.btn-primary{background:linear-gradient(135deg,#1d4ed8,#0891b2);color:#fff;padding:13px 28px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:400;transition:.2s;box-shadow:0 0 40px rgba(59,130,246,0.3)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 60px rgba(59,130,246,0.4)}
-.btn-ghost{background:transparent;color:var(--muted);padding:13px 28px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:500;border:1px solid var(--border);transition:.2s}
-.btn-ghost:hover{color:var(--text);border-color:var(--border-hover)}
-.notice{display:inline-flex;align-items:center;gap:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:12px 20px;font-size:14px;color:#fbbf24;margin-top:24px}
-section{max-width:1100px;margin:0 auto;padding:80px 24px;position:relative;z-index:1}
-.section-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--blue);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
-.section-title{font-family:'Inter',sans-serif;font-size:48px;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
-.section-sub{font-size:17px;color:var(--muted);max-width:560px;margin-bottom:64px}
-.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.feat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;transition:.2s}
-.feat-card:hover{border-color:var(--border-hover);transform:translateY(-2px)}
-.feat-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;margin-bottom:16px}
-.feat-card h3{font-family:'Inter',sans-serif;font-size:20px;letter-spacing:-0.5px;margin-bottom:10px}
-.feat-card p{font-size:14px;color:var(--muted);line-height:1.6}
-.cta-section{position:relative;z-index:1;text-align:center;padding:80px 24px;max-width:700px;margin:0 auto}
-.cta-section h2{font-family:'Inter',sans-serif;font-size:44px;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
-.cta-section p{font-size:17px;color:var(--muted);margin-bottom:36px}
+
+/* ── HERO ── */
+.hero{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;min-height:100dvh;padding:120px 80px 80px;max-width:1200px;margin:0 auto}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding:120px 24px 60px}.hero-visual{display:none}}
+.hero-content{}
+.hero-glow{position:absolute;top:0;left:0;width:600px;height:500px;background:radial-gradient(ellipse,rgba(108,146,235,0.312) 0%,transparent 65%);pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:100px;border:1px solid rgba(108,146,235,0.3);background:rgba(108,146,235,0.06);font-size:12px;color:var(--accent);font-family:'JetBrains Mono',monospace;margin-bottom:28px}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.8rem,5vw,4.5rem);font-weight:800;letter-spacing:-0.03em;line-height:1.05;margin-bottom:20px;text-wrap:balance}
+.grad{color:var(--accent)}
+.hero-sub{font-size:1.05rem;color:var(--muted);max-width:52ch;margin-bottom:36px;line-height:1.75}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:100px;background:#6c92eb;color:#04130d;text-decoration:none;font-size:15px;font-weight:600;border:none;cursor:pointer;transition:transform .2s cubic-bezier(0.32,0.72,0,1),box-shadow .2s cubic-bezier(0.32,0.72,0,1)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(108,146,235,0.4)}
+.btn-primary:active{transform:translateY(0) scale(0.98)}
+.btn-ghost{display:inline-flex;align-items:center;padding:13px 26px;border-radius:100px;background:transparent;color:var(--muted);text-decoration:none;font-size:15px;font-weight:500;border:1px solid var(--border-h);transition:.2s}
+.btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.24);background:rgba(255,255,255,.04)}
+.notice{display:inline-flex;align-items:center;gap:10px;background:rgba(108,146,235,0.07);border:1px solid rgba(108,146,235,0.18);border-radius:100px;padding:8px 18px;font-size:13px;color:var(--accent);margin-top:24px;font-family:'JetBrains Mono',monospace}
+
+/* ── HERO VISUAL (waveform) ── */
+.hero-visual{display:flex;align-items:center;justify-content:center}
+.phone-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:24px;padding:3px;width:300px}
+.phone-card-inner{background:var(--surface3);border-radius:21px;padding:32px 28px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.07)}
+.call-status{font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.call-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse-green 2s infinite}
+@keyframes pulse-green{0%,100%{opacity:1}50%{opacity:.3}}
+.caller{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:6px}
+.caller-num{font-size:13px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:28px}
+.waveform{display:flex;align-items:center;justify-content:center;gap:4px;height:48px;margin-bottom:28px}
+.waveform span{display:inline-block;width:4px;border-radius:4px;background:var(--accent);animation:wave 1.4s ease-in-out infinite alternate}
+.waveform span:nth-child(1){height:20%;animation-delay:.0s}
+.waveform span:nth-child(2){height:55%;animation-delay:.1s}
+.waveform span:nth-child(3){height:90%;animation-delay:.2s}
+.waveform span:nth-child(4){height:65%;animation-delay:.3s}
+.waveform span:nth-child(5){height:100%;animation-delay:.4s}
+.waveform span:nth-child(6){height:70%;animation-delay:.3s}
+.waveform span:nth-child(7){height:85%;animation-delay:.2s}
+.waveform span:nth-child(8){height:45%;animation-delay:.1s}
+.waveform span:nth-child(9){height:25%;animation-delay:.0s}
+@keyframes wave{from{transform:scaleY(.3)}to{transform:scaleY(1)}}
+.call-note{font-size:12px;color:var(--muted);line-height:1.6;border-top:1px solid var(--border);padding-top:16px}
+.call-note strong{color:var(--text);font-weight:500}
+
+/* ── FEATURES ── */
+section{max-width:1100px;margin:0 auto;padding:100px 24px;position:relative;z-index:1}
+.section-label{font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:12px}
+.section-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;letter-spacing:-0.03em;line-height:1.1;margin-bottom:12px;text-wrap:balance}
+.section-sub{font-size:1rem;color:var(--muted);max-width:52ch;margin-bottom:56px;line-height:1.75}
+
+/* Bento grid: alternating wide/narrow */
+.bento{display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px}
+.bento-wide{grid-column:span 2}
+@media(max-width:768px){.bento,.bento-wide{grid-column:1;display:block;margin-bottom:16px}}
+
+/* Double-bezel card */
+.feat-shell{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:24px;padding:3px;position:relative;overflow:hidden;transition:border-color .25s cubic-bezier(0.32,0.72,0,1)}
+.feat-shell:hover{border-color:var(--border-h)}
+.feat-shell::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:none;transform:translateX(-140%);transition:transform .9s ease;pointer-events:none}
+.feat-shell:hover::after{transform:translateX(140%)}
+.feat-core{background:var(--surface3);border-radius:21px;padding:28px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.07);height:100%}
+.feat-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;margin-bottom:18px;position:relative;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.32)}
+.feat-icon::before{content:'';position:absolute;inset:0;background:currentColor;opacity:.24;border-radius:inherit;pointer-events:none}
+.feat-icon>svg{position:relative;z-index:1;filter:drop-shadow(0 0 5px currentColor)}
+.feat-core h3{font-size:1.1rem;font-weight:600;letter-spacing:-0.02em;margin-bottom:10px}
+.feat-core p{font-size:0.875rem;color:var(--muted);line-height:1.65}
+
+/* ── CTA ── */
+.cta-section{position:relative;z-index:1;text-align:center;padding:80px 24px 100px;max-width:700px;margin:0 auto}
+.cta-section h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;letter-spacing:-0.03em;line-height:1.1;margin-bottom:16px;text-wrap:balance}
+.cta-section p{font-size:1rem;color:var(--muted);margin-bottom:36px;line-height:1.75}
+.cta-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:500px;height:300px;background:radial-gradient(ellipse,rgba(108,146,235,0.26),transparent 70%);pointer-events:none}
+
+/* ── FOOTER ── */
 footer{position:relative;z-index:1;padding:40px 24px;border-top:1px solid var(--border);max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
-.footer-logo{font-family:'Inter',sans-serif;font-size:18px;background:linear-gradient(135deg,#fff,#a1a1aa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 footer p{font-size:13px;color:var(--muted)}
 footer a{color:var(--muted);text-decoration:none;font-size:13px;margin-left:20px;transition:.2s}
 footer a:hover{color:var(--text)}
-@media(max-width:768px){nav{padding:14px 20px}.nav-links{display:none}h1{font-size:40px}.features-grid{grid-template-columns:1fr}}
-/* ── MOTION ── */
-#scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;background:linear-gradient(90deg,#7c3aed,#60a5fa,#34d399);box-shadow:0 0 10px rgba(124,58,237,.8);pointer-events:none}
+
+/* ── SCROLL PROGRESS ── */
+#scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:300;background:linear-gradient(90deg,var(--accent),var(--green));pointer-events:none}
+
+/* ── AMBIENT ORBS ── */
 .amb-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orb-drift 24s ease-in-out infinite alternate}
-.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(37,99,235,.2),transparent 65%);top:-280px;left:-200px;animation-duration:30s}
-.orb2{width:600px;height:600px;background:radial-gradient(circle,rgba(8,145,178,.16),transparent 65%);top:30%;right:-220px;animation-duration:36s;animation-direction:alternate-reverse;animation-delay:-14s}
-.orb3{width:500px;height:500px;background:radial-gradient(circle,rgba(124,58,237,.12),transparent 65%);bottom:0;left:0;animation-duration:26s;animation-delay:-8s}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(108,146,235,0.336),transparent 65%);top:-280px;left:-200px;animation-duration:30s}
+.orb2{width:600px;height:600px;background:radial-gradient(circle,rgba(108,235,197,0.224),transparent 65%);top:30%;right:-220px;animation-duration:36s;animation-direction:alternate-reverse;animation-delay:-14s}
+.orb3{width:500px;height:500px;background:radial-gradient(circle,rgba(235,133,108,0.196),transparent 65%);bottom:0;left:0;animation-duration:26s;animation-delay:-8s}
 @keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(70px,-50px) scale(1.08)}}
-#particles-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s}
-#particles-canvas.ready{opacity:1}
-.section-label{background:linear-gradient(90deg,#3b82f6,#60a5fa,#34d399,#3b82f6);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lbl-flow 5s linear infinite}
-@keyframes lbl-flow{to{background-position:-200% center}}
-.feat-card{position:relative;overflow:hidden}
-.feat-card::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(108deg,transparent 28%,rgba(255,255,255,.055) 50%,transparent 72%);transform:translateX(-140%);transition:transform .9s ease;pointer-events:none;border-radius:inherit}
-.feat-card:hover::after{transform:translateX(140%)}
+#particles-canvas,#webgl-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s}
+#particles-canvas.ready,#webgl-canvas.ready{opacity:1}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(0.32,0.72,0,1),transform .7s cubic-bezier(0.32,0.72,0,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){.nav-links{display:none}}
+
 </style>
+<link rel="stylesheet" href="atlyz.css">
 </head>
 <body>
 <div id="scroll-prog"></div>
 <canvas id="particles-canvas"></canvas>
-<div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+<canvas id="webgl-canvas"></canvas>
+<div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div><div class="orb orb4"></div><div class="orb orb5"></div></div>
 
 <nav>
   <a href="index.html" class="nav-logo">
-  <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="atlyz-g" x1="0" y1="1" x2="1" y2="0">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="100%" stop-color="#ffffff"/>
-      </linearGradient>
-    </defs>
-    <circle cx="50" cy="50" r="44" stroke="url(#atlyz-g)" stroke-width="3"/>
-    <line x1="50" y1="73" x2="19" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="19" cy="31" r="5" fill="url(#atlyz-g)"/>
-    <circle cx="34" cy="52" r="4" fill="url(#atlyz-g)"/>
-    <line x1="50" y1="73" x2="34" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="34" cy="17" r="5" fill="url(#atlyz-g)"/>
-    <line x1="50" y1="73" x2="50" y2="11" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="50" cy="11" r="5" fill="url(#atlyz-g)"/>
-    <circle cx="50" cy="42" r="4" fill="url(#atlyz-g)"/>
-    <line x1="50" y1="73" x2="66" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="66" cy="17" r="5" fill="url(#atlyz-g)"/>
-    <line x1="50" y1="73" x2="81" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="81" cy="31" r="5" fill="url(#atlyz-g)"/>
-    <circle cx="66" cy="52" r="4" fill="url(#atlyz-g)"/>
-    <circle cx="50" cy="73" r="5.5" fill="url(#atlyz-g)"/>
-  </svg>
-  <span class="logo-word">ATLYZ</span>
-</a>
+    <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="3"/>
+      <line x1="50" y1="73" x2="19" y2="31" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="34" y2="17" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="50" y2="11" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="66" y2="17" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="81" y2="31" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="34" cy="52" r="4" fill="#fff"/>
+      <circle cx="50" cy="42" r="4" fill="#fff"/>
+      <circle cx="66" cy="52" r="4" fill="#fff"/>
+      <circle cx="19" cy="31" r="5" fill="#fff"/>
+      <circle cx="34" cy="17" r="5" fill="#fff"/>
+      <circle cx="50" cy="11" r="5" fill="#fff"/>
+      <circle cx="66" cy="17" r="5" fill="#fff"/>
+      <circle cx="81" cy="31" r="5" fill="#fff"/>
+      <circle cx="50" cy="73" r="5.5" fill="#fff"/>
+    </svg>
+    <span class="logo-word">ATLYZ</span>
+  </a>
   <div class="nav-links">
+    <a href="index.html#how-it-works">How it works</a>
     <a href="index.html#features">Features</a>
-    <a href="index.html#products">Products</a>
+    <a href="demo.html">Live Demo</a>
     <a href="index.html#pricing">Pricing</a>
     <a href="contact.html">Contact</a>
   </div>
-  <a href="setup.html" class="nav-cta">Get Started</a>
-  <button class="hamburger" onclick="toggleMobileNav()" aria-label="Open menu">&#9776;</button>
+  <div class="nav-right">
+    <a href="contact.html" class="btn-nav-ghost">Log in</a>
+    <a href="setup.html" class="btn-nav-cta">Start free</a>
+  </div>
+  <button class="hamburger" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
 </nav>
 
 <div class="hero">
   <div class="hero-glow"></div>
-  <div class="badge"><span class="badge-dot"></span>◐ Coming Soon</div>
-  <h1>Your AI phone<br><span class="grad">receptionist</span></h1>
-  <p class="hero-sub">Atlyz Voice answers calls for your business — takes messages, handles FAQs, and notifies you instantly. Never miss a customer again.</p>
-  <div class="hero-btns">
-    <a href="contact.html?role=early-access" class="btn-primary">Join the waitlist →</a>
-    <a href="chat-product.html" class="btn-ghost">Try Atlyz Chat now</a>
+
+  <div class="hero-content">
+    <div class="badge"><span class="badge-dot"></span>Coming Soon</div>
+    <h1>Your AI phone<br><span class="grad">receptionist</span></h1>
+    <p class="hero-sub">Atlyz Voice answers every call for your business — handles FAQs, takes messages, and notifies you instantly. Never send a customer to voicemail again.</p>
+    <div class="hero-btns">
+      <a href="contact.html?role=early-access" class="btn-primary">Join the waitlist</a>
+      <a href="chat-product.html" class="btn-ghost">Try Atlyz Chat now</a>
+    </div>
+    <div class="notice">⏳ Telephony integration in progress — launching soon</div>
   </div>
-  <div class="notice">⏳ Telephony integration in progress — launching soon</div>
+
+  <div class="hero-visual">
+    <div class="phone-card">
+      <div class="phone-card-inner">
+        <div class="call-status">Call in progress</div>
+        <div class="caller">Sarah Johnson</div>
+        <div class="caller-num">+1 (512) 555-0148</div>
+        <div class="waveform">
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="call-note"><strong>AI:</strong> "Thanks for calling QuickFix Plumbing! I can help with appointments, pricing, and emergencies. What do you need today?"</div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <section>
-  <div class="section-label">Features</div>
-  <div class="section-title">What Atlyz Voice<br>will do</div>
-  <p class="section-sub">The AI engine is built and tested. We're wiring up telephony now.</p>
-  <div class="features-grid">
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(124,58,237,.12);color:#a78bfa"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.72A2 2 0 012.18 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.15a16 16 0 006.29 6.29l1.51-1.51a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
-      <h3>Answers every call</h3>
-      <p>Never send a customer to voicemail. Atlyz Voice picks up and has a real conversation.</p>
+  <div class="section-label reveal">Features</div>
+  <div class="section-title reveal">What Atlyz Voice<br>will do</div>
+  <p class="section-sub reveal">The AI engine is built and tested. We're wiring up telephony now.</p>
+
+  <div class="bento">
+    <!-- Row 1: wide + narrow -->
+    <div class="feat-shell bento-wide reveal">
+      <div class="feat-core">
+        <div class="feat-icon" style="background:var(--accent-dim);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.72A2 2 0 012.18 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.15a16 16 0 006.29 6.29l1.51-1.51a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+        <h3>Answers every call</h3>
+        <p>Never send a customer to voicemail. Atlyz Voice picks up instantly and has a real, natural conversation — 24 hours a day, 7 days a week, even on holidays.</p>
+      </div>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(37,99,235,.12);color:#60a5fa"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/><rect x="4" y="4" width="16" height="16" rx="2"/></svg></div>
-      <h3>Knows your business</h3>
-      <p>Same knowledge base as Atlyz Chat — it knows your hours, services, and policies.</p>
+    <div class="feat-shell reveal">
+      <div class="feat-core">
+        <div class="feat-icon" style="background:rgba(108,146,235,0.1);color:var(--green)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
+        <h3>Natural voice</h3>
+        <p>Powered by OpenAI Whisper + TTS. Callers won't know it's AI.</p>
+      </div>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(52,211,153,.1);color:#34d399"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
-      <h3>Takes messages</h3>
-      <p>Collects caller name, number, and reason for calling. You get an instant notification.</p>
+
+    <!-- Row 2: narrow + wide -->
+    <div class="feat-shell reveal">
+      <div class="feat-core">
+        <div class="feat-icon" style="background:rgba(108,146,235,0.1);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+        <h3>Instant alerts</h3>
+        <p>Get emailed or WhatsApp'd the moment a call needs your attention.</p>
+      </div>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(251,191,36,.1);color:#fbbf24"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
-      <h3>Natural voice</h3>
-      <p>Powered by OpenAI Whisper and TTS. Sounds natural — callers won't know it's AI.</p>
+    <div class="feat-shell bento-wide reveal">
+      <div class="feat-core">
+        <div class="feat-icon" style="background:var(--accent-dim);color:var(--green)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/><rect x="4" y="4" width="16" height="16" rx="2"/></svg></div>
+        <h3>Knows your business</h3>
+        <p>Uses the same knowledge base as Atlyz Chat — your hours, services, pricing, and policies. One setup, two products. The bot already knows the answers before the call even starts.</p>
+      </div>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(74,222,128,.1);color:#4ade80"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-      <h3>Call transcripts</h3>
-      <p>Every call is recorded and transcribed. Review what customers are asking anytime.</p>
+
+    <!-- Row 3: narrow + wide -->
+    <div class="feat-shell reveal">
+      <div class="feat-core">
+        <div class="feat-icon" style="background:rgba(108,146,235,0.1);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+        <h3>Takes messages</h3>
+        <p>Collects caller name, number, and reason for calling.</p>
+      </div>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(248,113,113,.1);color:#f87171"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
-      <h3>Owner alerts</h3>
-      <p>Get emailed or WhatsApp'd the moment a call comes in that needs your attention.</p>
+    <div class="feat-shell bento-wide reveal">
+      <div class="feat-core">
+        <div class="feat-icon" style="background:var(--accent-dim);color:var(--green)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+        <h3>Call transcripts and analytics</h3>
+        <p>Every call is transcribed automatically. See what your customers ask most, when they call, and which questions your site doesn't answer — so you can improve your business.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<div class="cta-section">
+<div class="cta-section reveal">
+  <div class="cta-glow"></div>
   <h2>Want early access?</h2>
   <p>Join the waitlist and be first to know when Atlyz Voice goes live.</p>
-  <div class="hero-btns">
-    <a href="contact.html?role=early-access" class="btn-primary">Join waitlist →</a>
+  <div class="hero-btns" style="justify-content:center">
+    <a href="contact.html?role=early-access" class="btn-primary">Join the waitlist</a>
     <a href="chat-product.html" class="btn-ghost">Try Chat instead</a>
   </div>
 </div>
 
-<style>
-.site-footer{position:relative;z-index:1;display:block;padding:56px 24px 36px;max-width:1200px;margin:0 auto;border-top:1px solid var(--border)}
-.foot-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:48px;margin-bottom:48px}
-.foot-brand>p{font-size:13px;color:var(--muted);max-width:200px;line-height:1.65;margin-top:10px}
-.foot-logo{font-size:18px;font-weight:500;letter-spacing:-.5px;color:var(--text)}
-.foot-col h4{font-size:11px;font-weight:400;margin-bottom:16px;color:var(--text);letter-spacing:1.5px;text-transform:uppercase}
-.foot-col a{display:block;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:10px;margin-left:0;transition:.2s}
-.foot-col a:hover{color:var(--text)}
-.foot-social{display:flex;gap:8px;margin-top:16px}
-.foot-social-link{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);text-decoration:none;margin-left:0;transition:.2s}
-.foot-social-link:hover{border-color:rgba(255,255,255,.12);color:var(--text)}
-.foot-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding-top:24px;border-top:1px solid var(--border)}
-.foot-bottom p{font-size:12px;color:var(--muted)}
-.foot-mono{font-family:'JetBrains Mono',monospace;color:#2a2a38;font-size:11px}
-@media(max-width:768px){.foot-top{flex-direction:column;gap:32px}}
-</style>
-<footer class="site-footer">
+<footer>
   <div class="foot-top">
     <div class="foot-brand">
       <div class="foot-logo">Atlyz</div>
       <p>The Atlas Of Your Business.</p>
-      <div class="foot-social">
-        <a href="https://twitter.com/Atlyz_Ai" class="foot-social-link" aria-label="Twitter / X">
+      <div class="foot-newsletter">
+        <p>Get product updates:</p>
+        <div class="foot-nl-form">
+          <input type="email" class="foot-nl-input" placeholder="your@email.com">
+          <button class="foot-nl-btn" onclick="this.textContent='✓ Subscribed'">Subscribe</button>
+        </div>
+      </div>
+      <div class="social-links">
+        <a href="https://twitter.com/Atlyz_Ai" class="social-link" aria-label="Twitter / X">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         </a>
-        <a href="https://twitter.com/Atlyz_Ai?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @Atlyz_Ai</a>
       </div>
     </div>
     <div class="foot-col">
@@ -225,7 +304,7 @@ footer a:hover{color:var(--text)}
     </div>
   </div>
   <div class="foot-bottom">
-    <p>© 2026 Atlyz. All rights reserved.</p>
+    <p>© <span data-year>2026</span> Atlyz. All rights reserved.</p>
     <p class="foot-mono">v0.1.0-beta</p>
   </div>
 </footer>
@@ -241,31 +320,169 @@ document.querySelectorAll('.nav-links a').forEach(function(a){
     if(nl) nl.classList.remove('open');
   });
 });
+
+/* Scroll progress */
+var _prog = document.getElementById('scroll-prog');
+window.addEventListener('scroll', function(){
+  var s = window.scrollY, t = document.documentElement.scrollHeight - window.innerHeight;
+  _prog.style.width = (t > 0 ? Math.min(s / t * 100, 100) : 0) + '%';
+}, {passive:true});
+
+/* Reveal on scroll */
+var revealObs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); }
+  });
+}, {threshold:0.1, rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(function(el){ revealObs.observe(el); });
+
+/* Card tilt */
+document.querySelectorAll('.feat-shell').forEach(function(el){
+  el.addEventListener('mousemove', function(e){
+    var r = el.getBoundingClientRect();
+    var rx = ((e.clientY - r.top) / r.height - .5) * -6;
+    var ry = ((e.clientX - r.left) / r.width - .5) * 6;
+    el.style.transform = 'perspective(900px) rotateX('+rx+'deg) rotateY('+ry+'deg)';
+  });
+  el.addEventListener('mouseleave', function(){ el.style.transform = ''; });
+});
 </script>
 
+<!-- ATLYZ 3D constellation gate: pick WebGL only on desktop + motion-on + WebGL support -->
+<script>
+window.ATLYZ_USE_3D=(function(){
+  try{
+    if(window.matchMedia('(max-width:768px)').matches) return false;
+    if(window.matchMedia('(prefers-reduced-motion:reduce)').matches) return false;
+    var c=document.createElement('canvas');
+    return !!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl')));
+  }catch(e){ return false; }
+})();
+</script>
+<!-- ATLYZ 3D ambient node-network — Three.js via CDN, no build step. Falls back to 2D field on failure. -->
+<script type="module">
+(function(){
+  if(!window.ATLYZ_USE_3D) return;
+  var canvas=document.getElementById('webgl-canvas');
+  if(!canvas){ window.ATLYZ_USE_3D=false; if(window.__atlyzStart2D)window.__atlyzStart2D(); return; }
+  import('https://unpkg.com/three@0.160.0/build/three.module.js').then(function(THREE){
+    var scene=new THREE.Scene();
+    var camera=new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 200);
+    camera.position.z=30;
+    var renderer=new THREE.WebGLRenderer({canvas:canvas, alpha:true, antialias:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.setSize(innerWidth, innerHeight);
+
+    var COUNT=130, SX=52, SY=34, SZ=30;
+    var pos=new Float32Array(COUNT*3), col=new Float32Array(COUNT*3), vel=[];
+    var ACC=new THREE.Color(0xffb340), GRN=new THREE.Color(0x2fe0a8);
+    for(var i=0;i<COUNT;i++){
+      pos[i*3]=(Math.random()-.5)*SX; pos[i*3+1]=(Math.random()-.5)*SY; pos[i*3+2]=(Math.random()-.5)*SZ;
+      var cc=Math.random()<0.62?ACC:GRN; col[i*3]=cc.r; col[i*3+1]=cc.g; col[i*3+2]=cc.b;
+      vel.push({x:(Math.random()-.5)*0.015, y:(Math.random()-.5)*0.015, z:(Math.random()-.5)*0.015});
+    }
+    var pGeo=new THREE.BufferGeometry();
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    pGeo.setAttribute('color', new THREE.BufferAttribute(col,3));
+    var points=new THREE.Points(pGeo, new THREE.PointsMaterial({size:0.22, vertexColors:true, transparent:true, opacity:0.9, blending:THREE.AdditiveBlending, depthWrite:false}));
+
+    var lGeo=new THREE.BufferGeometry();
+    var lines=new THREE.LineSegments(lGeo, new THREE.LineBasicMaterial({color:0xa07bff, transparent:true, opacity:0.22, blending:THREE.AdditiveBlending, depthWrite:false}));
+
+    var group=new THREE.Group(); group.add(points); group.add(lines); scene.add(group);
+
+    var LINK=10, LINK2=LINK*LINK, MAXSEG=1600;
+    function rebuild(){
+      var s=[];
+      for(var a=0;a<COUNT;a++){
+        var ax=pos[a*3],ay=pos[a*3+1],az=pos[a*3+2];
+        for(var b=a+1;b<COUNT;b++){
+          var dx=ax-pos[b*3],dy=ay-pos[b*3+1],dz=az-pos[b*3+2];
+          if(dx*dx+dy*dy+dz*dz<LINK2){ s.push(ax,ay,az,pos[b*3],pos[b*3+1],pos[b*3+2]); if(s.length/6>=MAXSEG){a=COUNT;break;} }
+        }
+      }
+      lGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(s),3));
+    }
+
+    var tRX=0,tRY=0,cRX=0,cRY=0;
+    addEventListener('pointermove', function(e){ tRY=(e.clientX/innerWidth-.5)*0.24; tRX=(e.clientY/innerHeight-.5)*0.24; }, {passive:true});
+    addEventListener('resize', function(){ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight); }, {passive:true});
+
+    var fc=0, raf=null, running=false;
+    function tick(){
+      for(var i=0;i<COUNT;i++){
+        pos[i*3]+=vel[i].x; pos[i*3+1]+=vel[i].y; pos[i*3+2]+=vel[i].z;
+        if(pos[i*3]>SX/2||pos[i*3]<-SX/2)vel[i].x*=-1;
+        if(pos[i*3+1]>SY/2||pos[i*3+1]<-SY/2)vel[i].y*=-1;
+        if(pos[i*3+2]>SZ/2||pos[i*3+2]<-SZ/2)vel[i].z*=-1;
+      }
+      pGeo.attributes.position.needsUpdate=true;
+      if(fc%6===0) rebuild(); fc++;
+      group.rotation.y+=0.0008;
+      cRX+=(tRX-cRX)*0.05; cRY+=(tRY-cRY)*0.05;
+      group.rotation.x=cRX; camera.position.x=cRY*10; camera.lookAt(0,0,0);
+      renderer.render(scene,camera);
+      raf=requestAnimationFrame(tick);
+    }
+    function start(){ if(!running){ running=true; raf=requestAnimationFrame(tick); } }
+    function stop(){ running=false; if(raf)cancelAnimationFrame(raf); raf=null; }
+
+    rebuild(); renderer.render(scene,camera);
+    requestAnimationFrame(function(){ canvas.classList.add('ready'); });
+    start();
+
+    var hero=document.querySelector('.hero');
+    if(hero&&'IntersectionObserver' in window){
+      new IntersectionObserver(function(en){ en.forEach(function(x){ x.isIntersecting?start():stop(); }); }, {threshold:0}).observe(hero);
+    }
+    document.addEventListener('visibilitychange', function(){
+      if(document.hidden){ stop(); }
+      else { var h=document.querySelector('.hero'); if(!h||h.getBoundingClientRect().bottom>0) start(); }
+    });
+  }).catch(function(){
+    window.ATLYZ_USE_3D=false;
+    if(window.__atlyzStart2D) window.__atlyzStart2D();
+  });
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
-var _prog=document.getElementById('scroll-prog');
-window.addEventListener('scroll',function(){var s=window.scrollY,t=document.documentElement.scrollHeight-window.innerHeight;_prog.style.width=(t>0?Math.min(s/t*100,100):0)+'%'},{passive:true});
-var _nav=document.querySelector('nav');
-window.addEventListener('scroll',function(){_nav.style.padding=window.scrollY>60?'10px 48px':'16px 48px';},{passive:true});
-(function(){var c=document.getElementById('particles-canvas'),x=c.getContext('2d'),W,H,P=[];function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz,{passive:true});function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.4+.4,col:['rgba(96,165,250,','rgba(52,211,153,','rgba(167,139,250,'][Math.floor(Math.random()*3)],a:Math.random()*.45+.15}}for(var i=0;i<60;i++)P.push(mk());function draw(){x.clearRect(0,0,W,H);for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=p.col+p.a+')';x.fill();for(var j=i+1;j<P.length;j++){var q=P[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.strokeStyle='rgba(96,165,250,'+(0.15*(1-d/130))+')';x.lineWidth=.6;x.stroke()}}}requestAnimationFrame(draw)}draw();setTimeout(function(){c.classList.add('ready')},400)})();
 if(window.gsap){
   gsap.registerPlugin(ScrollTrigger);
-  gsap.from('.hero .badge',{duration:.7,y:20,opacity:0,ease:'power2.out'});
-  gsap.from('.hero h1',{duration:.9,y:44,opacity:0,delay:.1,ease:'power3.out'});
-  gsap.from('.hero .hero-sub',{duration:.7,y:24,opacity:0,delay:.25,ease:'power2.out'});
-  gsap.from('.hero .hero-btns',{duration:.6,y:20,opacity:0,delay:.4,ease:'power2.out'});
-  gsap.from('.cta-section h2',{scrollTrigger:{trigger:'.cta-section',start:'top 80%'},duration:.8,y:32,opacity:0,ease:'power3.out'});
+  gsap.from('.hero-content', {duration:.9, y:44, opacity:0, delay:.1, ease:'power3.out'});
+  gsap.from('.hero-visual', {duration:.8, y:24, opacity:0, delay:.35, ease:'power2.out'});
 }
-(function(){var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';obs.unobserve(e.target);}});},{threshold:0.08});document.querySelectorAll('.feat-card').forEach(function(c){c.style.opacity='0';c.style.transform='translateY(28px)';c.style.transition='opacity .6s ease, transform .6s ease';obs.observe(c);});})();
-document.querySelectorAll('.feat-card').forEach(function(el){
-  el.addEventListener('mousemove',function(e){var r=el.getBoundingClientRect(),rx=((e.clientY-r.top)/r.height-.5)*-7,ry=((e.clientX-r.left)/r.width-.5)*7;el.style.transform='perspective(900px) rotateX('+rx+'deg) rotateY('+ry+'deg) translateY(-2px)'});
-  el.addEventListener('mouseleave',function(){el.style.transform='';});
-});
-var gh=document.querySelector('.hero-glow');
-document.addEventListener('mousemove',function(e){if(gh){var mx=e.clientX/window.innerWidth-.5;var my=e.clientY/window.innerHeight-.5;gh.style.transform='translateX(calc(-50% + '+(mx*30)+'px)) translateY('+(my*20)+'px)'}},{passive:true});
+
+/* Particle canvas */
+window.__atlyzStart2D=function(){
+  var c = document.getElementById('particles-canvas'); if(!c||c.__started)return; c.__started=true;
+  var x = c.getContext('2d'), W, H, P = [];
+  function rsz(){ W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+  rsz();
+  window.addEventListener('resize', rsz, {passive:true});
+  function mk(){ return {x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*.35, vy:(Math.random()-.5)*.35, r:Math.random()*1.4+.4, col:['rgba(108,146,235,','rgba(108,235,197,','rgba(235,133,108,'][Math.floor(Math.random()*3)], a:Math.random()*.45+.15}; }
+  for(var i = 0; i < 60; i++) P.push(mk());
+  function draw(){
+    x.clearRect(0, 0, W, H);
+    for(var i = 0; i < P.length; i++){
+      var p = P[i]; p.x += p.vx; p.y += p.vy;
+      if(p.x < -5) p.x = W+5; if(p.x > W+5) p.x = -5;
+      if(p.y < -5) p.y = H+5; if(p.y > H+5) p.y = -5;
+      x.beginPath(); x.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      x.fillStyle = p.col + p.a + ')'; x.fill();
+      for(var j = i+1; j < P.length; j++){
+        var q = P[j], dx = p.x-q.x, dy = p.y-q.y, d = Math.sqrt(dx*dx+dy*dy);
+        if(d < 130){ x.beginPath(); x.moveTo(p.x, p.y); x.lineTo(q.x, q.y);
+          x.strokeStyle = 'rgba(255,255,255,'+(0.12*(1-d/130))+')'; x.lineWidth = .6; x.stroke(); }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+  setTimeout(function(){ c.classList.add('ready'); }, 400);
+};
+if(!window.ATLYZ_USE_3D) window.__atlyzStart2D();
 </script>
 <!-- Atlyz Chat Widget -->
 <!-- Atlyz Chat Widget — auto-detects local vs production -->
@@ -281,5 +498,6 @@ document.addEventListener('mousemove',function(e){if(gh){var mx=e.clientX/window
 })();
 </script>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<script src="atlyz.js"></script>
 </body>
 </html>

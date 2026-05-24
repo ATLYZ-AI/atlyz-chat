@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Add Your Chatbot — Atlyz</title>
+<meta name="description" content="Step-by-step guide to add the Atlyz chatbot to your website. No coding needed — works with WordPress, Wix, Squarespace, Shopify, Webflow and more.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="atlyz.css">
+<style>
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:130px 24px 100px}
+
+/* ── Hero ── */
+.guide-hero{text-align:center;margin-bottom:56px}
+.guide-hero .eyebrow{display:block;margin-bottom:14px}
+.guide-hero h1{font-size:clamp(32px,5vw,52px);margin-bottom:16px}
+.guide-hero p{font-size:17px;color:var(--muted);max-width:540px;margin:0 auto;line-height:1.7}
+
+/* ── Embed code box ── */
+.embed-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:56px}
+.embed-box .label{font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.code-line{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.code-line code{flex:1;font-family:'JetBrains Mono',monospace;font-size:13px;color:#e0e0e0;word-break:break-all;line-height:1.5}
+.copy-btn{background:rgba(108,146,235,.14);border:1px solid rgba(108,146,235,.3);color:#e8eefc;font-size:13px;padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:500;transition:.2s;white-space:nowrap}
+.copy-btn:hover{background:rgba(108,146,235,.24)}
+.copy-btn.copied{color:#6c92eb}
+.embed-hint{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
+
+/* ── Platform picker ── */
+.picker-label{font-size:13px;color:var(--muted);text-align:center;margin-bottom:18px}
+.tabs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:40px}
+.tab{display:flex;align-items:center;gap:8px;padding:11px 18px;background:var(--surface);border:1px solid var(--border);border-radius:100px;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s}
+.tab:hover{color:var(--text);border-color:var(--border-h)}
+.tab.active{background:rgba(108,146,235,.12);border-color:rgba(108,146,235,.45);color:var(--text)}
+.tab .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+
+/* ── Panel ── */
+.panel{display:none;animation:fade .3s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.panel-head{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.panel-head h2{font-size:24px;letter-spacing:-.5px}
+.panel-head .time{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--accent);background:rgba(108,146,235,.08);border:1px solid rgba(108,146,235,.2);padding:3px 12px;border-radius:100px}
+
+/* ── Steps ── */
+.steps{display:flex;flex-direction:column;gap:18px}
+.step-item{display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 22px}
+.step-num{width:30px;height:30px;border-radius:50%;background:rgba(108,146,235,.12);border:1px solid rgba(108,146,235,.3);color:var(--accent);font-size:14px;font-family:'JetBrains Mono',monospace;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-body{flex:1}
+.step-body p{font-size:15px;color:var(--text);line-height:1.6}
+.step-body .sub{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.6}
+.step-body strong{color:var(--text);font-weight:600}
+.step-body .path{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--surface2);border:1px solid var(--border);padding:2px 8px;border-radius:6px;color:#cdd6e6;white-space:nowrap}
+
+/* ── Callout ── */
+.callout{display:flex;gap:14px;align-items:flex-start;background:rgba(108,235,197,.06);border:1px solid rgba(108,235,197,.2);border-radius:14px;padding:18px 20px;margin-top:28px}
+.callout .ico{font-size:18px;flex-shrink:0}
+.callout p{font-size:14px;color:var(--muted);line-height:1.65}
+.callout strong{color:var(--text)}
+
+/* ── Done-for-you ── */
+.dfy{margin-top:64px;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:40px;text-align:center}
+.dfy h2{font-size:26px;letter-spacing:-.6px;margin-bottom:12px}
+.dfy p{font-size:15px;color:var(--muted);max-width:480px;margin:0 auto 24px;line-height:1.7}
+.dfy .btn-primary{text-decoration:none}
+
+@media(max-width:600px){
+  .wrap{padding:110px 18px 70px}
+  .step-item{padding:16px 18px}
+  .dfy{padding:28px 22px}
+}
+</style>
+</head>
+<body>
+<div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div><div class="orb orb4"></div><div class="orb orb5"></div></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="3"/>
+      <line x1="50" y1="73" x2="19" y2="31" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="34" y2="17" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="50" y2="11" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="66" y2="17" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="81" y2="31" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="34" cy="52" r="4" fill="#fff"/>
+      <circle cx="50" cy="42" r="4" fill="#fff"/>
+      <circle cx="66" cy="52" r="4" fill="#fff"/>
+      <circle cx="19" cy="31" r="5" fill="#fff"/>
+      <circle cx="34" cy="17" r="5" fill="#fff"/>
+      <circle cx="50" cy="11" r="5" fill="#fff"/>
+      <circle cx="66" cy="17" r="5" fill="#fff"/>
+      <circle cx="81" cy="31" r="5" fill="#fff"/>
+      <circle cx="50" cy="73" r="5.5" fill="#fff"/>
+    </svg>
+    <span class="logo-word">ATLYZ</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html#how-it-works">How it works</a>
+    <a href="index.html#features">Features</a>
+    <a href="demo.html">Live Demo</a>
+    <a href="index.html#pricing">Pricing</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <div class="nav-right">
+    <a href="contact.html" class="btn-nav-ghost">Log in</a>
+    <a href="setup.html" class="btn-nav-cta">Start free</a>
+  </div>
+  <button class="hamburger" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
+</nav>
+
+<div class="wrap">
+
+  <div class="guide-hero">
+    <span class="eyebrow">Installation guide</span>
+    <h1>Add your chatbot in 2 minutes</h1>
+    <p>You don't need to know how to code. Pick the platform your website is built on below and follow the simple steps. It's just copy and paste.</p>
+  </div>
+
+  <!-- Embed code -->
+  <div class="embed-box">
+    <div class="label">Your embed code</div>
+    <div class="code-line">
+      <code id="embed-code">&lt;script src="https://atlyz.com/widget.js?id=your_business_id"&gt;&lt;/script&gt;</code>
+      <button class="copy-btn" id="copy-btn" onclick="copyEmbed()">Copy</button>
+    </div>
+    <p class="embed-hint">This is the one line you'll paste. You'll find your personal code (with your business ID filled in) inside your Atlyz dashboard on the <strong>Install</strong> tab.</p>
+  </div>
+
+  <!-- Platform picker -->
+  <div class="picker-label">Which platform is your website built on?</div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-p="wordpress" onclick="pick('wordpress')">WordPress</button>
+    <button class="tab" data-p="wix" onclick="pick('wix')">Wix</button>
+    <button class="tab" data-p="squarespace" onclick="pick('squarespace')">Squarespace</button>
+    <button class="tab" data-p="shopify" onclick="pick('shopify')">Shopify</button>
+    <button class="tab" data-p="webflow" onclick="pick('webflow')">Webflow</button>
+    <button class="tab" data-p="html" onclick="pick('html')">Plain HTML</button>
+    <button class="tab" data-p="other" onclick="pick('other')">Other / Not sure</button>
+  </div>
+
+  <!-- WordPress -->
+  <div class="panel active" id="p-wordpress">
+    <div class="panel-head"><h2>WordPress</h2><span class="time">~2 min</span></div>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body"><p>In your WordPress admin, go to <strong>Plugins → Add New</strong> and install the free plugin <strong>"WPCode"</strong> (or "Insert Headers and Footers"). Click <strong>Activate</strong>.</p></div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-body"><p>Open <strong>Code Snippets → Header &amp; Footer</strong> from the left menu.</p></div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-body"><p>Paste your Atlyz code into the <strong>Footer</strong> box.</p><p class="sub">The footer box loads the code on every page — exactly what you want.</p></div></div>
+      <div class="step-item"><div class="step-num">4</div><div class="step-body"><p>Click <strong>Save</strong>. Visit your website — the chat button appears in the corner.</p></div></div>
+    </div>
+    <div class="callout"><span class="ico">💡</span><p><strong>No plugin allowed?</strong> Go to <strong>Appearance → Theme File Editor</strong>, open <span class="path">footer.php</span>, and paste the code right before <span class="path">&lt;/body&gt;</span>.</p></div>
+  </div>
+
+  <!-- Wix -->
+  <div class="panel" id="p-wix">
+    <div class="panel-head"><h2>Wix</h2><span class="time">~2 min</span></div>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body"><p>In your Wix dashboard, go to <strong>Settings → Custom Code</strong> (under "Advanced").</p></div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-body"><p>Click <strong>+ Add Custom Code</strong> in the top right.</p></div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-body"><p>Paste your Atlyz code into the box. Under "Add Code to Pages" choose <strong>All pages</strong>, and set placement to <strong>Body — end</strong>.</p></div></div>
+      <div class="step-item"><div class="step-num">4</div><div class="step-body"><p>Click <strong>Apply</strong>. Your chatbot is now live on every page.</p></div></div>
+    </div>
+    <div class="callout"><span class="ico">💡</span><p>Custom Code is available on Wix sites with a <strong>paid plan</strong> and a connected domain. On the free plan, email us and we'll help you find an alternative.</p></div>
+  </div>
+
+  <!-- Squarespace -->
+  <div class="panel" id="p-squarespace">
+    <div class="panel-head"><h2>Squarespace</h2><span class="time">~1 min</span></div>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body"><p>From your Squarespace dashboard, go to <strong>Settings → Advanced → Code Injection</strong>.</p></div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-body"><p>Paste your Atlyz code into the <strong>Footer</strong> box.</p></div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-body"><p>Click <strong>Save</strong>. Done — the chat button shows on your whole site.</p></div></div>
+    </div>
+    <div class="callout"><span class="ico">💡</span><p>Code Injection requires a <strong>Business plan or higher</strong> on Squarespace.</p></div>
+  </div>
+
+  <!-- Shopify -->
+  <div class="panel" id="p-shopify">
+    <div class="panel-head"><h2>Shopify</h2><span class="time">~3 min</span></div>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body"><p>In Shopify admin, go to <strong>Online Store → Themes</strong>.</p></div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-body"><p>On your current theme, click the <strong>⋯</strong> button and choose <strong>Edit code</strong>.</p></div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-body"><p>In the Layout folder, open <span class="path">theme.liquid</span>.</p></div></div>
+      <div class="step-item"><div class="step-num">4</div><div class="step-body"><p>Scroll to the bottom, paste your Atlyz code just before <span class="path">&lt;/body&gt;</span>, and click <strong>Save</strong>.</p></div></div>
+    </div>
+    <div class="callout"><span class="ico">💡</span><p>Tip: it's safest to <strong>duplicate your theme first</strong> (⋯ → Duplicate) so you always have a backup.</p></div>
+  </div>
+
+  <!-- Webflow -->
+  <div class="panel" id="p-webflow">
+    <div class="panel-head"><h2>Webflow</h2><span class="time">~2 min</span></div>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body"><p>Open your <strong>Project Settings</strong> and go to the <strong>Custom Code</strong> tab.</p></div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-body"><p>Paste your Atlyz code into the <strong>Footer Code</strong> box (labelled "Before &lt;/body&gt; tag").</p></div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-body"><p>Click <strong>Save Changes</strong>, then <strong>Publish</strong> your site.</p></div></div>
+    </div>
+    <div class="callout"><span class="ico">💡</span><p>Custom code only appears on the <strong>published</strong> site, not the Designer preview. Always hit Publish.</p></div>
+  </div>
+
+  <!-- Plain HTML -->
+  <div class="panel" id="p-html">
+    <div class="panel-head"><h2>Plain HTML website</h2><span class="time">~1 min</span></div>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body"><p>Open your website's HTML file (often <span class="path">index.html</span>) in any editor.</p></div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-body"><p>Find the closing <span class="path">&lt;/body&gt;</span> tag near the bottom.</p></div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-body"><p>Paste your Atlyz code on the line just before it, then save and upload the file to your server.</p><p class="sub">If your site has multiple pages, add the line to each page (or to your shared footer/template).</p></div></div>
+    </div>
+  </div>
+
+  <!-- Other -->
+  <div class="panel" id="p-other">
+    <div class="panel-head"><h2>Other platform / Not sure</h2></div>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body"><p>Almost every website platform has a setting called <strong>"Custom Code", "Header &amp; Footer", "Code Injection"</strong> or <strong>"Embed"</strong>. Look for it in your settings.</p></div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-body"><p>Paste your Atlyz code there and choose to load it on <strong>all pages</strong>, before the body ends. Save and publish.</p></div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-body"><p>Can't find it? <strong>We'll add it for you, free.</strong> See below.</p></div></div>
+    </div>
+  </div>
+
+  <!-- Done for you -->
+  <div class="dfy">
+    <h2>Want us to set it up for you?</h2>
+    <p>Not comfortable touching your website? No problem. Send us a message and a real person from Atlyz will add the chatbot to your site for you — at no extra cost.</p>
+    <a href="contact.html" class="btn-primary">Get free help →</a>
+  </div>
+
+</div><!-- end .wrap -->
+
+<footer>
+  <div class="foot-top">
+    <div class="foot-brand">
+      <div class="foot-logo">Atlyz</div>
+      <p>The Atlas Of Your Business.</p>
+      <div class="foot-newsletter">
+        <p>Get product updates:</p>
+        <div class="foot-nl-form">
+          <input type="email" class="foot-nl-input" placeholder="your@email.com">
+          <button class="foot-nl-btn" onclick="this.textContent='✓ Subscribed'">Subscribe</button>
+        </div>
+      </div>
+      <div class="social-links">
+        <a href="https://twitter.com/Atlyz_Ai" class="social-link" aria-label="Twitter / X">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="foot-col"><h4>Products</h4><a href="chat-product.html">Atlyz Chat</a><a href="voice-product.html">Atlyz Voice</a><a href="agent-product.html">Atlyz Agent</a></div>
+    <div class="foot-col"><h4>Company</h4><a href="about.html">About</a><a href="blog.html">Blog</a><a href="careers.html">Careers</a><a href="contact.html">Contact</a></div>
+    <div class="foot-col"><h4>Legal</h4><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a><a href="cookies.html">Cookie Policy</a></div>
+  </div>
+  <div class="foot-bottom">
+    <p>© <span data-year>2026</span> Atlyz. All rights reserved.</p>
+    <p class="foot-mono">v0.1.0-beta</p>
+  </div>
+</footer>
+
+<script>
+// Fill embed code from ?id= if present
+(function(){
+  var id = new URLSearchParams(window.location.search).get('id');
+  if(id){
+    var origin = window.location.protocol === 'file:' ? 'https://atlyz.com' : window.location.origin;
+    document.getElementById('embed-code').textContent =
+      '<script src="' + origin + '/widget.js?id=' + id + '"><\/script>';
+  }
+})();
+
+function copyEmbed(){
+  var text = document.getElementById('embed-code').textContent;
+  var btn = document.getElementById('copy-btn');
+  navigator.clipboard.writeText(text).then(function(){
+    btn.textContent = 'Copied!'; btn.classList.add('copied');
+    setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  }).catch(function(){
+    var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    btn.textContent='Copied!';btn.classList.add('copied');
+    setTimeout(function(){btn.textContent='Copy';btn.classList.remove('copied');},2000);
+  });
+}
+
+function pick(p){
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active', t.dataset.p===p); });
+  document.querySelectorAll('.panel').forEach(function(panel){ panel.classList.remove('active'); });
+  document.getElementById('p-'+p).classList.add('active');
+}
+</script>
+<script src="atlyz.js"></script>
+</body>
+</html>

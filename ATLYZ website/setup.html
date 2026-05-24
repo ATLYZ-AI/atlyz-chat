@@ -4,34 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Set Up Your Chatbot — Atlyz</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#09090b;--surface:#111113;--surface2:#18181b;
-  --border:rgba(255,255,255,0.07);--border-h:rgba(255,255,255,0.14);
-  --text:#fafafa;--muted:#71717a;--muted2:#52525b;
-  --purple:#8b5cf6;--blue:#3b82f6;--green:#22c55e;
-}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.05) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
 
 /* ── Orbs ── */
 .orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;animation:orb-drift 28s ease-in-out infinite alternate}
-.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.18),transparent 65%);top:-200px;left:-150px}
-.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,.14),transparent 65%);bottom:-100px;right:-200px;animation-direction:alternate-reverse;animation-delay:-12s}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(108,146,235,0.34),transparent 65%);top:-200px;left:-150px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(108,235,197,0.34),transparent 65%);bottom:-100px;right:-200px;animation-direction:alternate-reverse;animation-delay:-12s}
 @keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,-40px) scale(1.08)}}
 
 /* ── Nav ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(9,9,11,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;justify-content:space-between;gap:32px;padding:0 24px;height:52px;width:max-content;max-width:calc(100vw - 40px);min-width:320px;background:rgba(0,0,0,0.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:100px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.05)}
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-word{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f4}
+.logo-word{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f0}
 .nav-back{color:var(--muted);text-decoration:none;font-size:14px;display:flex;align-items:center;gap:6px;transition:.2s}
 .nav-back:hover{color:var(--text)}
 @media(max-width:768px){nav{padding:14px 20px}}
 
 /* ── Progress bar ── */
-.prog-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,#7c3aed,#2563eb);z-index:200;transition:width .4s ease;pointer-events:none}
+.prog-bar{position:fixed;top:0;left:0;height:2px;background:#6c92eb;z-index:200;transition:width .4s ease;pointer-events:none}
 
 /* ── Page wrapper ── */
 .wrapper{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:100px 24px 80px}
@@ -40,13 +34,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .step-indicator{display:flex;align-items:center;gap:0;margin-bottom:48px}
 .si-item{display:flex;align-items:center;gap:8px;font-size:13px}
 .si-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;transition:.3s}
-.si-dot.done{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff}
-.si-dot.active{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;box-shadow:0 0 16px rgba(124,58,237,.4)}
+.si-dot.done{background:#6c92eb;color:#04130d}
+.si-dot.active{background:#6c92eb;color:#04130d;box-shadow:0 0 16px rgba(108,146,235,.4)}
 .si-dot.pending{background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
 .si-label{color:var(--muted);transition:.3s}
 .si-label.active{color:var(--text)}
 .si-line{width:40px;height:1px;background:var(--border);margin:0 8px;transition:.3s}
-.si-line.done{background:rgba(124,58,237,.4)}
+.si-line.done{background:rgba(108,146,235,.4)}
 @media(max-width:600px){.si-label{display:none}.si-line{width:20px}}
 
 /* ── Steps ── */
@@ -56,7 +50,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 
 /* ── Step header ── */
 .step-head{text-align:center;margin-bottom:40px}
-.step-tag{display:inline-block;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:#a78bfa;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);padding:3px 12px;border-radius:100px;margin-bottom:16px}
+.step-tag{display:inline-block;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:rgba(108,146,235,.08);border:1px solid rgba(108,146,235,.2);padding:3px 12px;border-radius:100px;margin-bottom:16px}
 .step-head h1{font-size:clamp(28px,4vw,40px);font-weight:500;letter-spacing:-1.5px;margin-bottom:10px}
 .step-head p{font-size:15px;color:var(--muted);line-height:1.65;max-width:480px;margin:0 auto}
 
@@ -67,24 +61,25 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 /* ── Fields ── */
 .field{margin-bottom:20px}
 .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:7px;font-weight:400}
-.field input,.field textarea,.field select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--text);font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.field input,.field textarea,.field select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--text);font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s}
 .field input::placeholder,.field textarea::placeholder{color:var(--muted2)}
-.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(124,58,237,.5)}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(108,146,235,.5)}
 .field select{cursor:pointer}
-.field select option{background:#18181b}
+.field select option{background:#171717}
 .field-hint{font-size:12px;color:var(--muted2);margin-top:6px;line-height:1.5}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:500px){.field-row{grid-template-columns:1fr}}
 
 /* ── Buttons ── */
-.btn-primary{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:13px 28px;border-radius:10px;font-size:15px;font-weight:500;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s;width:100%;justify-content:center}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:#6c92eb;color:#04130d;padding:13px 28px;border-radius:10px;font-size:15px;font-weight:500;border:none;cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s;width:100%;justify-content:center}
 .btn-primary:hover{opacity:.9;transform:translateY(-1px)}
 .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);padding:11px 24px;border-radius:10px;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);padding:11px 24px;border-radius:10px;font-size:14px;cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s}
 .btn-ghost:hover{color:var(--text);border-color:var(--border-h)}
 
 /* ── Error ── */
-.error-msg{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:12px 16px;font-size:13px;color:#f87171;margin-bottom:16px;display:none}
+.error-msg{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:12px 16px;font-size:13px;color:#f87171;margin-bottom:16px;display:none}
+.error-msg.warn{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.3);color:#fbbf24}
 
 /* ── Scraping progress ── */
 #scraping-view{text-align:center}
@@ -96,11 +91,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .scrape-step.active{color:var(--text)}
 .ss-icon{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px}
 .ss-icon.pending{background:var(--surface2);border:1px solid var(--border)}
-.ss-icon.active{background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3)}
-.ss-icon.done{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25)}
-.ss-spin{width:12px;height:12px;border:2px solid rgba(124,58,237,.3);border-top-color:#8b5cf6;border-radius:50%;animation:spin .7s linear infinite}
+.ss-icon.active{background:rgba(108,146,235,.15);border:1px solid rgba(108,146,235,.3)}
+.ss-icon.done{background:rgba(108,146,235,.12);border:1px solid rgba(108,146,235,.25)}
+.ss-spin{width:12px;height:12px;border:2px solid rgba(108,146,235,.3);border-top-color:#6c92eb;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.ss-check{color:#22c55e;font-size:13px}
+.ss-check{color:#6c92eb;font-size:13px}
 .ss-dot{width:6px;height:6px;background:var(--muted2);border-radius:50%}
 
 /* ── Step 2 layout ── */
@@ -115,42 +110,42 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 
 /* ── Position toggle ── */
 .pos-toggle{display:flex;gap:8px}
-.pos-btn{flex:1;padding:9px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s;text-align:center}
-.pos-btn.active{background:rgba(124,58,237,.12);border-color:rgba(124,58,237,.4);color:var(--text)}
+.pos-btn{flex:1;padding:9px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:13px;cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s;text-align:center}
+.pos-btn.active{background:rgba(108,146,235,.12);border-color:rgba(108,146,235,.4);color:var(--text)}
 
 /* ── Mini widget preview ── */
 .preview-wrap{position:sticky;top:110px}
 .preview-label{font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
-.widget-preview{background:#0f0f11;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;font-family:'Inter',sans-serif;box-shadow:0 8px 40px rgba(0,0,0,.5)}
-.wp-head{padding:12px 14px;display:flex;align-items:center;gap:10px;background:rgba(124,58,237,.1);border-bottom:1px solid rgba(255,255,255,.06)}
+.widget-preview{background:#0f0f0f;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;font-family:'Outfit',sans-serif;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.wp-head{padding:12px 14px;display:flex;align-items:center;gap:10px;background:rgba(108,146,235,.1);border-bottom:1px solid rgba(255,255,255,.06)}
 .wp-logo{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.wp-name{font-size:13px;font-weight:600;color:#f4f4f5}
-.wp-status{font-size:10px;color:#4ade80;margin-top:1px}
-.wp-msgs{padding:12px;background:#09090b;min-height:120px;display:flex;flex-direction:column;gap:8px}
-.wp-bot{background:#18181b;border:1px solid rgba(255,255,255,.06);color:#d4d4d8;padding:8px 11px;border-radius:3px 10px 10px 10px;font-size:12px;line-height:1.5;max-width:85%;align-self:flex-start}
+.wp-name{font-size:13px;font-weight:600;color:#f4f4f4}
+.wp-status{font-size:10px;color:#b8b8b8;margin-top:1px}
+.wp-msgs{padding:12px;background:var(--bg);min-height:120px;display:flex;flex-direction:column;gap:8px}
+.wp-bot{background:#171717;border:1px solid rgba(255,255,255,.06);color:#d4d4d4;padding:8px 11px;border-radius:3px 10px 10px 10px;font-size:12px;line-height:1.5;max-width:85%;align-self:flex-start}
 .wp-user{padding:8px 11px;border-radius:10px 3px 10px 10px;font-size:12px;color:#fff;max-width:75%;align-self:flex-end}
-.wp-input{padding:10px 12px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;background:#0f0f11}
-.wp-inp-fake{flex:1;background:#18181b;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;font-size:11px;color:var(--muted)}
+.wp-input{padding:10px 12px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;background:#0f0f0f}
+.wp-inp-fake{flex:1;background:#171717;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;font-size:11px;color:var(--muted)}
 .wp-send{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.wp-btn-fake{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin:12px 12px 12px auto;box-shadow:0 4px 16px rgba(124,58,237,.4)}
+.wp-btn-fake{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin:12px 12px 12px auto;box-shadow:0 4px 16px rgba(108,146,235,.4)}
 
 /* ── Step 3 ── */
 .success-hero{text-align:center;margin-bottom:36px}
-.success-icon{width:64px;height:64px;border-radius:18px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px}
+.success-icon{width:64px;height:64px;border-radius:18px;background:rgba(108,146,235,.1);border:1px solid rgba(108,146,235,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px}
 .success-hero h2{font-size:28px;font-weight:500;letter-spacing:-.8px;margin-bottom:8px}
 .success-hero p{font-size:15px;color:var(--muted)}
 
-.code-block{background:#09090b;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px}
+.code-block{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px}
 .code-block-head{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
 .code-block-head span{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace}
-.copy-btn{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);color:#a78bfa;font-size:12px;padding:4px 12px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s}
-.copy-btn:hover{background:rgba(124,58,237,.2)}
-.copy-btn.copied{color:#4ade80;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
-.code-content{padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#a78bfa;line-height:1.6;word-break:break-all}
+.copy-btn{background:rgba(108,146,235,.12);border:1px solid rgba(108,146,235,.25);color:#e0e0e0;font-size:12px;padding:4px 12px;border-radius:6px;cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s}
+.copy-btn:hover{background:rgba(108,146,235,.2)}
+.copy-btn.copied{color:#6c92eb;border-color:rgba(108,146,235,.3);background:rgba(108,146,235,.08)}
+.code-content{padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#e0e0e0;line-height:1.6;word-break:break-all}
 
 .install-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
 .install-step{display:flex;gap:14px;align-items:flex-start}
-.is-num{width:24px;height:24px;border-radius:50%;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);color:#a78bfa;font-size:12px;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.is-num{width:24px;height:24px;border-radius:50%;background:rgba(108,146,235,.12);border:1px solid rgba(108,146,235,.25);color:var(--accent);font-size:12px;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
 .is-text{font-size:14px;color:var(--muted);line-height:1.6}
 .is-text strong{color:var(--text);font-weight:500}
 
@@ -159,23 +154,51 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 
 .stat-strip{display:flex;gap:16px;margin-bottom:32px}
 .stat-item{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
-.stat-num{font-size:24px;font-weight:500;letter-spacing:-1px;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-num{font-size:24px;font-weight:500;letter-spacing:-1px;background:#6c92eb;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .stat-lab{font-size:12px;color:var(--muted);margin-top:2px}
+
 </style>
+<link rel="stylesheet" href="atlyz.css">
 </head>
 <body>
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
+<div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div><div class="orb orb4"></div><div class="orb orb5"></div></div>
 
 <!-- Top progress bar -->
 <div class="prog-bar" id="prog-bar" style="width:0%"></div>
 
 <nav>
   <a href="index.html" class="nav-logo">
-    <svg width="28" height="28" viewBox="0 0 100 100" fill="none"><defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#ffffff"/></linearGradient></defs><circle cx="50" cy="50" r="44" stroke="url(#g)" stroke-width="3"/><line x1="50" y1="73" x2="19" y2="31" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="19" cy="31" r="5" fill="url(#g)"/><circle cx="34" cy="52" r="4" fill="url(#g)"/><line x1="50" y1="73" x2="34" y2="17" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="34" cy="17" r="5" fill="url(#g)"/><line x1="50" y1="73" x2="50" y2="11" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="50" cy="11" r="5" fill="url(#g)"/><circle cx="50" cy="42" r="4" fill="url(#g)"/><line x1="50" y1="73" x2="66" y2="17" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="66" cy="17" r="5" fill="url(#g)"/><line x1="50" y1="73" x2="81" y2="31" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round"/><circle cx="81" cy="31" r="5" fill="url(#g)"/><circle cx="66" cy="52" r="4" fill="url(#g)"/><circle cx="50" cy="73" r="5.5" fill="url(#g)"/></svg>
+    <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="3"/>
+      <line x1="50" y1="73" x2="19" y2="31" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="34" y2="17" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="50" y2="11" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="66" y2="17" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="81" y2="31" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="34" cy="52" r="4" fill="#fff"/>
+      <circle cx="50" cy="42" r="4" fill="#fff"/>
+      <circle cx="66" cy="52" r="4" fill="#fff"/>
+      <circle cx="19" cy="31" r="5" fill="#fff"/>
+      <circle cx="34" cy="17" r="5" fill="#fff"/>
+      <circle cx="50" cy="11" r="5" fill="#fff"/>
+      <circle cx="66" cy="17" r="5" fill="#fff"/>
+      <circle cx="81" cy="31" r="5" fill="#fff"/>
+      <circle cx="50" cy="73" r="5.5" fill="#fff"/>
+    </svg>
     <span class="logo-word">ATLYZ</span>
   </a>
-  <a href="index.html" class="nav-back">← Back to home</a>
+  <div class="nav-links">
+    <a href="index.html#how-it-works">How it works</a>
+    <a href="index.html#features">Features</a>
+    <a href="demo.html">Live Demo</a>
+    <a href="index.html#pricing">Pricing</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <div class="nav-right">
+    <a href="contact.html" class="btn-nav-ghost">Log in</a>
+    <a href="setup.html" class="btn-nav-cta">Start free</a>
+  </div>
+  <button class="hamburger" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
 </nav>
 
 <div class="wrapper">
@@ -217,7 +240,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
       <div class="field">
         <label>Website URL</label>
         <input type="url" id="biz-url" placeholder="https://yourbusiness.com">
-        <div class="field-hint">We'll read up to 15 pages from your site and build your chatbot's knowledge base automatically. No setup required from you.</div>
+        <div class="field-hint">We'll read up to 50 pages from your site and build your chatbot's knowledge base automatically. No setup required from you.</div>
       </div>
 
       <div class="field-row">
@@ -292,25 +315,30 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
       <!-- Settings -->
       <div class="card">
         <div class="field">
+          <label>Chatbot name</label>
+          <input type="text" id="cust-botname" value="Aria" oninput="onBotName(this.value)" placeholder="e.g. Aria, Max, Sofia">
+          <div class="field-hint">The name customers see at the top of the chat. Give your assistant a friendly name.</div>
+        </div>
+        <div class="field">
           <label>Greeting message</label>
-          <textarea id="cust-greeting" rows="3" style="resize:vertical" oninput="updatePreview()" placeholder="Hi! I'm the virtual assistant for..."></textarea>
+          <textarea id="cust-greeting" rows="3" style="resize:vertical" oninput="onGreetingInput()" placeholder="Hi! I'm the virtual assistant for..."></textarea>
           <div class="field-hint">This is the first message customers see when they open the chat.</div>
         </div>
 
         <div class="field">
           <label>Brand color</label>
           <div class="color-row">
-            <div class="color-swatch" id="swatch-bg" style="background:#7c3aed">
-              <input type="color" id="color-picker" value="#7c3aed" oninput="onColorChange(this.value)">
+            <div class="color-swatch" id="swatch-bg" style="background:#6c92eb">
+              <input type="color" id="color-picker" value="#6c92eb" oninput="onColorChange(this.value)">
             </div>
-            <input class="color-hex" id="color-hex" type="text" value="#7c3aed" maxlength="7" oninput="onHexInput(this.value)" spellcheck="false">
+            <input class="color-hex" id="color-hex" type="text" value="#6c92eb" maxlength="7" oninput="onHexInput(this.value)" spellcheck="false">
             <div style="display:flex;gap:6px;flex-wrap:wrap">
-              <div onclick="pickColor('#7c3aed')" style="width:22px;height:22px;border-radius:50%;background:#7c3aed;cursor:pointer;border:2px solid transparent" title="Purple"></div>
-              <div onclick="pickColor('#2563eb')" style="width:22px;height:22px;border-radius:50%;background:#2563eb;cursor:pointer;border:2px solid transparent" title="Blue"></div>
-              <div onclick="pickColor('#059669')" style="width:22px;height:22px;border-radius:50%;background:#059669;cursor:pointer;border:2px solid transparent" title="Green"></div>
-              <div onclick="pickColor('#dc2626')" style="width:22px;height:22px;border-radius:50%;background:#dc2626;cursor:pointer;border:2px solid transparent" title="Red"></div>
-              <div onclick="pickColor('#d97706')" style="width:22px;height:22px;border-radius:50%;background:#d97706;cursor:pointer;border:2px solid transparent" title="Amber"></div>
-              <div onclick="pickColor('#0891b2')" style="width:22px;height:22px;border-radius:50%;background:#0891b2;cursor:pointer;border:2px solid transparent" title="Cyan"></div>
+              <div onclick="pickColor('#6c92eb')" style="width:22px;height:22px;border-radius:50%;background:#6c92eb;cursor:pointer;border:2px solid transparent" title="Blue"></div>
+              <div onclick="pickColor('#6cebc5')" style="width:22px;height:22px;border-radius:50%;background:#6cebc5;cursor:pointer;border:2px solid transparent" title="Mint"></div>
+              <div onclick="pickColor('#eb856c')" style="width:22px;height:22px;border-radius:50%;background:#eb856c;cursor:pointer;border:2px solid transparent" title="Coral"></div>
+              <div onclick="pickColor('#a855f7')" style="width:22px;height:22px;border-radius:50%;background:#a855f7;cursor:pointer;border:2px solid transparent" title="Violet"></div>
+              <div onclick="pickColor('#f59e0b')" style="width:22px;height:22px;border-radius:50%;background:#f59e0b;cursor:pointer;border:2px solid transparent" title="Amber"></div>
+              <div onclick="pickColor('#ef4444')" style="width:22px;height:22px;border-radius:50%;background:#ef4444;cursor:pointer;border:2px solid transparent" title="Red"></div>
             </div>
           </div>
         </div>
@@ -332,8 +360,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
       <div class="preview-wrap">
         <div class="preview-label">Live preview</div>
         <div class="widget-preview">
-          <div class="wp-head" id="prev-head" style="background:rgba(124,58,237,.1)">
-            <div class="wp-logo" id="prev-logo" style="background:linear-gradient(135deg,#7c3aed,#2563eb)">
+          <div class="wp-head" id="prev-head" style="background:rgba(108,146,235,.1)">
+            <div class="wp-logo" id="prev-logo" style="background:#6c92eb">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
             </div>
             <div>
@@ -343,18 +371,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
           </div>
           <div class="wp-msgs">
             <div class="wp-bot" id="prev-greeting">Hi! I'm the virtual assistant. How can I help you today?</div>
-            <div class="wp-user" id="prev-usermsg" style="background:linear-gradient(135deg,#7c3aed,#2563eb)">What are your opening hours?</div>
+            <div class="wp-user" id="prev-usermsg" style="background:#6c92eb">What are your opening hours?</div>
             <div class="wp-bot">We're open Monday to Saturday, 9am – 6pm. How else can I help?</div>
           </div>
           <div class="wp-input">
             <div class="wp-inp-fake">Type a message...</div>
-            <div class="wp-send" id="prev-send" style="background:linear-gradient(135deg,#7c3aed,#2563eb)">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <div class="wp-send" id="prev-send" style="background:#6c92eb">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             </div>
           </div>
         </div>
         <div style="margin-top:10px">
-          <div class="wp-btn-fake" id="prev-fab" style="background:linear-gradient(135deg,#7c3aed,#2563eb)">
+          <div class="wp-btn-fake" id="prev-fab" style="background:#6c92eb">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
           </div>
         </div>
@@ -414,19 +442,23 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
         <a id="test-link" href="#" target="_blank" class="btn-primary" style="text-decoration:none">
           Test your chatbot →
         </a>
-        <button class="btn-ghost" onclick="startOver()">Set up another</button>
+        <a id="guide-btn" href="install-guide.html" target="_blank" class="btn-ghost" style="text-decoration:none">
+          How to install →
+        </a>
       </div>
     </div>
 
     <div style="text-align:center;font-size:13px;color:var(--muted)">
-      Need help? Email us at <a href="mailto:contact@atlyz.com" style="color:#a78bfa;text-decoration:none">contact@atlyz.com</a>
+      Need help installing? Open the <a id="guide-link" href="install-guide.html" target="_blank" style="color:#e0e0e0;text-decoration:none">step-by-step guide</a> for WordPress, Wix, Squarespace &amp; more ·
+      <a href="#" onclick="startOver();return false;" style="color:#e0e0e0;text-decoration:none">Set up another</a> ·
+      Email <a href="mailto:contact@atlyz.com" style="color:#e0e0e0;text-decoration:none">contact@atlyz.com</a>
     </div>
   </div>
 
 </div><!-- end .wrapper -->
 
 <script>
-var SERVER = window.location.origin.includes('file://')
+var SERVER = window.location.protocol === 'file:'
   ? 'http://localhost:5002'
   : window.location.origin;
 
@@ -447,7 +479,9 @@ if(emailParam){
 
 var bizName = '';
 var bizId   = '';
-var chosenColor = '#7c3aed';
+var botName = 'Aria';
+var greetingEdited = false;
+var chosenColor = '#6c92eb';
 var chosenPos   = 'bottom-right';
 var embedCode   = '';
 
@@ -491,12 +525,12 @@ function startAnalysis(){
   err.style.display = 'none';
   bizName = name;
 
-  // Pre-fill greeting
-  document.getElementById('cust-greeting').value =
-    'Hi! I\'m the virtual assistant for ' + name + '. How can I help you today?';
-  document.getElementById('prev-name').textContent = name;
-  document.getElementById('prev-greeting').textContent =
-    'Hi! I\'m the virtual assistant for ' + name + '. How can I help you today?';
+  // Pre-fill greeting using the chosen bot name
+  botName = (document.getElementById('cust-botname').value || '').trim() || 'Aria';
+  var g = 'Hi! I\'m ' + botName + ', the virtual assistant for ' + name + '. How can I help you today?';
+  document.getElementById('cust-greeting').value = g;
+  document.getElementById('prev-name').textContent = botName;
+  document.getElementById('prev-greeting').textContent = g;
 
   updateIndicator(1);
   setProgress(15);
@@ -514,7 +548,8 @@ function startAnalysis(){
       greeting: document.getElementById('cust-greeting').value,
       widget_position: chosenPos,
       plan: document.getElementById('biz-plan').value,
-      owner_email: email
+      owner_email: email,
+      bot_name: botName
     })
   })
   .then(function(r){ return r.json(); })
@@ -572,14 +607,30 @@ function runScrapeAnimation(){
 
 function finishScraping(pages){
   clearInterval(scrapeInterval);
+  window._pagesScraped = pages || 0;
   for(var i=0;i<6;i++) setSSIcon(i,'done');
   setProgress(65);
+  if(!pages || pages < 1){
+    setTimeout(scrapeWarning, 600);
+    return;
+  }
   setTimeout(function(){
     updateIndicator(2);
     setProgress(70);
     showStep('step-2');
     updatePreview();
   }, 800);
+}
+
+function scrapeWarning(){
+  showStep('step-1');
+  var err = document.getElementById('err-1');
+  err.className = 'error-msg warn';
+  err.innerHTML = "We couldn't read that website automatically — it looks like it blocks automated access (large sites behind Cloudflare often do this). Most small-business websites work fine. Double-check the URL or try your real site, and if it still won't read, email <a href=\"mailto:contact@atlyz.com\" style=\"color:#fbbf24;text-decoration:underline\">contact@atlyz.com</a> — we'll set it up for you.";
+  err.style.display = 'block';
+  err.scrollIntoView({behavior:'smooth',block:'nearest'});
+  setProgress(0);
+  updateIndicator(1);
 }
 
 function scrapeError(msg){
@@ -592,6 +643,21 @@ function scrapeError(msg){
 }
 
 // ── Step 2: Customize ─────────────────────────────────────────────────────────
+function onBotName(val){
+  botName = (val || '').trim() || 'Aria';
+  document.getElementById('prev-name').textContent = botName;
+  if(!greetingEdited){
+    document.getElementById('cust-greeting').value =
+      'Hi! I\'m ' + botName + ', the virtual assistant for ' + bizName + '. How can I help you today?';
+  }
+  updatePreview();
+}
+
+function onGreetingInput(){
+  greetingEdited = true;
+  updatePreview();
+}
+
 function onColorChange(val){
   chosenColor = val;
   document.getElementById('color-hex').value = val;
@@ -631,6 +697,7 @@ function updatePreview(){
   document.getElementById('prev-fab').style.background  = grad;
   document.getElementById('prev-usermsg').style.background = grad;
   document.getElementById('prev-greeting').textContent = greeting;
+  document.getElementById('prev-name').textContent = botName;
 }
 
 function shiftColor(hex){
@@ -652,7 +719,8 @@ function createChatbot(){
       primary_color: chosenColor,
       greeting: greeting,
       widget_position: chosenPos,
-      business_name: bizName
+      business_name: bizName,
+      bot_name: botName
     })
   }).catch(function(){});
 
@@ -661,6 +729,11 @@ function createChatbot(){
   document.getElementById('stat-pages').textContent = window._pagesScraped || '—';
   document.getElementById('stat-id').textContent = bizId;
   document.getElementById('test-link').href = SERVER + '/chat/test/' + bizId;
+  var guideHref = 'install-guide.html?id=' + encodeURIComponent(bizId);
+  var gl = document.getElementById('guide-link');
+  if(gl) gl.href = guideHref;
+  var gb = document.getElementById('guide-btn');
+  if(gb) gb.href = guideHref;
   updateIndicator(3);
   setProgress(100);
   showStep('step-3');
@@ -686,15 +759,18 @@ function copyCode(){
 
 function startOver(){
   bizId = ''; bizName = ''; embedCode = '';
+  botName = 'Aria'; greetingEdited = false;
   document.getElementById('biz-name').value = '';
   document.getElementById('biz-url').value  = '';
   document.getElementById('biz-email').value= '';
+  document.getElementById('cust-botname').value = 'Aria';
   setProgress(0);
   updateIndicator(1);
   showStep('step-1');
 }
 
 function showErr(el, msg){
+  el.className = 'error-msg';
   el.textContent = msg;
   el.style.display = 'block';
   el.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -708,5 +784,33 @@ document.getElementById('biz-name').addEventListener('keydown', function(e){
   if(e.key==='Enter') document.getElementById('biz-url').focus();
 });
 </script>
+<footer>
+  <div class="foot-top">
+    <div class="foot-brand">
+      <div class="foot-logo">Atlyz</div>
+      <p>The Atlas Of Your Business.</p>
+      <div class="foot-newsletter">
+        <p>Get product updates:</p>
+        <div class="foot-nl-form">
+          <input type="email" class="foot-nl-input" placeholder="your@email.com">
+          <button class="foot-nl-btn" onclick="this.textContent='✓ Subscribed'">Subscribe</button>
+        </div>
+      </div>
+      <div class="social-links">
+        <a href="https://twitter.com/Atlyz_Ai" class="social-link" aria-label="Twitter / X">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="foot-col"><h4>Products</h4><a href="chat-product.html">Atlyz Chat</a><a href="voice-product.html">Atlyz Voice</a><a href="agent-product.html">Atlyz Agent</a></div>
+    <div class="foot-col"><h4>Company</h4><a href="about.html">About</a><a href="blog.html">Blog</a><a href="careers.html">Careers</a><a href="contact.html">Contact</a></div>
+    <div class="foot-col"><h4>Legal</h4><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a><a href="cookies.html">Cookie Policy</a></div>
+  </div>
+  <div class="foot-bottom">
+    <p>© <span data-year>2026</span> Atlyz. All rights reserved.</p>
+    <p class="foot-mono">v0.1.0-beta</p>
+  </div>
+</footer>
+<script src="atlyz.js"></script>
 </body>
 </html>

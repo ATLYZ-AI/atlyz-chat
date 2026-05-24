@@ -1,4 +1,4 @@
 business_name = AIS
 owner_name = Atlyz Team
-owner_email = ansaaralishah91@gmail.com
+owner_email = founder@atlyz.com
 website = https://atlyz.com

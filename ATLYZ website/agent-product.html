@@ -4,113 +4,115 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Atlyz Agent — Full AI Automation</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#09090b;--surface:#111113;--surface2:#18181b;--border:rgba(255,255,255,0.06);--border-hover:rgba(255,255,255,0.12);--text:#fafafa;--muted:#71717a;--cyan:#06b6d4}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;line-height:1.6}
-body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(9,9,11,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;overflow-x:hidden;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.07) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;justify-content:space-between;gap:32px;padding:0 24px;height:52px;width:max-content;max-width:calc(100vw - 40px);min-width:320px;background:rgba(0,0,0,0.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:100px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.05)}
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-word{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;color:#f0f0f4}
-.logo-word{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f4}
+.logo-word{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;color:#f0f0f0}
+.logo-word{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f0}
 .nav-links{display:flex;gap:32px}
 .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;transition:.2s}
 .nav-links a:hover{color:var(--text)}
-.nav-cta{background:var(--text);color:var(--bg);padding:8px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:400;transition:.2s}
-.nav-cta:hover{background:#e4e4e7;transform:translateY(-1px)}
+.nav-cta{background:#6c92eb;color:#04130d;padding:8px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:400;transition:.2s}
+.nav-cta:hover{background:#ffffff;transform:translateY(-1px)}
 /* ── HAMBURGER MENU ── */
 .hamburger{display:none;background:none;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:4px;line-height:1}
 @media(max-width:768px){
   .hamburger{display:block}
-  .nav-links.open{display:flex !important;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(9,9,11,0.97);padding:20px 24px;gap:20px;border-bottom:1px solid rgba(255,255,255,0.06);z-index:99}
+  .nav-links.open{display:flex !important;flex-direction:column;position:fixed;top:72px;left:12px;right:12px;background:rgba(0,0,0,0.97);padding:20px;gap:16px;border:1px solid var(--border);border-radius:20px;z-index:199;backdrop-filter:blur(24px)}
 }
 .hero{position:relative;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:140px 24px 80px;z-index:1}
-.hero-glow{position:absolute;top:10%;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse at center,rgba(6,182,212,0.12) 0%,transparent 70%);pointer-events:none}
-.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:100px;border:1px solid rgba(6,182,212,0.2);background:rgba(6,182,212,0.06);font-size:13px;color:#67e8f9;font-family:'JetBrains Mono',monospace;margin-bottom:24px}
-h1{font-family:'Inter',sans-serif;font-size:64px;letter-spacing:-2px;line-height:1.05;margin-bottom:20px}
-.grad{background:linear-gradient(135deg,#67e8f9,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-glow{position:absolute;top:10%;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse at center,rgba(108,146,235,0.312) 0%,transparent 70%);pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:100px;border:1px solid rgba(108,146,235,0.2);background:rgba(108,146,235,0.06);font-size:13px;color:#cecece;font-family:'JetBrains Mono',monospace;margin-bottom:24px}
+h1{font-family:'Outfit',sans-serif;font-size:64px;letter-spacing:-2px;line-height:1.05;margin-bottom:20px}
+.grad{color:var(--accent)}
 .hero-sub{font-size:18px;color:var(--muted);max-width:560px;margin-bottom:40px}
 .hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
-.btn-primary{background:linear-gradient(135deg,#0e7490,#7c3aed);color:#fff;padding:13px 28px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:400;transition:.2s;box-shadow:0 0 40px rgba(6,182,212,0.2)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 60px rgba(6,182,212,0.3)}
+.btn-primary{background:#6c92eb;color:#04130d;padding:13px 28px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:400;transition:.2s;box-shadow:0 0 40px rgba(108,146,235,0.2)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 60px rgba(108,146,235,0.3)}
 .btn-ghost{background:transparent;color:var(--muted);padding:13px 28px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:500;border:1px solid var(--border);transition:.2s}
 .btn-ghost:hover{color:var(--text);border-color:var(--border-hover)}
-.notice{display:inline-flex;align-items:center;gap:10px;background:rgba(113,113,122,0.08);border:1px solid rgba(113,113,122,0.2);border-radius:10px;padding:12px 20px;font-size:14px;color:var(--muted);margin-top:24px}
+.notice{display:inline-flex;align-items:center;gap:10px;background:rgba(108,146,235,0.08);border:1px solid rgba(108,146,235,0.2);border-radius:10px;padding:12px 20px;font-size:14px;color:var(--muted);margin-top:24px}
 section{max-width:1100px;margin:0 auto;padding:80px 24px;position:relative;z-index:1}
 .section-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
-.section-title{font-family:'Inter',sans-serif;font-size:48px;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
+.section-title{font-family:'Outfit',sans-serif;font-size:48px;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
 .section-sub{font-size:17px;color:var(--muted);max-width:560px;margin-bottom:64px}
 .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.feat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;transition:.2s;opacity:.7}
-.feat-card h3{font-family:'Inter',sans-serif;font-size:20px;letter-spacing:-0.5px;margin-bottom:10px}
-.feat-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;margin-bottom:16px}
+.feat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;transition:.2s;opacity:1}
+.feat-card h3{font-family:'Outfit',sans-serif;font-size:20px;letter-spacing:-0.5px;margin-bottom:10px}
+.feat-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.32)}
+.feat-icon::before{content:'';position:absolute;inset:0;background:currentColor;opacity:.24;border-radius:inherit;pointer-events:none}
+.feat-icon>svg{position:relative;z-index:1;filter:drop-shadow(0 0 5px currentColor)}
 .feat-card p{font-size:14px;color:var(--muted);line-height:1.6}
 .roadmap-note{text-align:center;margin-top:40px;font-size:14px;color:var(--muted);font-family:'JetBrains Mono',monospace}
 .cta-section{position:relative;z-index:1;text-align:center;padding:80px 24px;max-width:700px;margin:0 auto}
-.cta-section h2{font-family:'Inter',sans-serif;font-size:44px;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
+.cta-section h2{font-family:'Outfit',sans-serif;font-size:44px;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
 .cta-section p{font-size:17px;color:var(--muted);margin-bottom:36px}
 footer{position:relative;z-index:1;padding:40px 24px;border-top:1px solid var(--border);max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
-.footer-logo{font-family:'Inter',sans-serif;font-size:18px;background:linear-gradient(135deg,#fff,#a1a1aa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.footer-logo{font-family:'Outfit',sans-serif;font-size:18px;background:#6c92eb;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 footer p{font-size:13px;color:var(--muted)}
 footer a{color:var(--muted);text-decoration:none;font-size:13px;margin-left:20px;transition:.2s}
 footer a:hover{color:var(--text)}
 @media(max-width:768px){nav{padding:14px 20px}.nav-links{display:none}h1{font-size:40px}.features-grid{grid-template-columns:1fr}}
 /* ── MOTION ── */
-#scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;background:linear-gradient(90deg,#0e7490,#67e8f9,#a78bfa);box-shadow:0 0 10px rgba(6,182,212,.8);pointer-events:none}
+#scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;background:linear-gradient(90deg, #6c92eb, #6cebc5, #eb856c);box-shadow:0 0 10px rgba(108,146,235,.8);pointer-events:none}
 .amb-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orb-drift 24s ease-in-out infinite alternate}
-.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(6,182,212,.18),transparent 65%);top:-280px;left:-200px;animation-duration:30s}
-.orb2{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.14),transparent 65%);top:30%;right:-220px;animation-duration:36s;animation-direction:alternate-reverse;animation-delay:-14s}
-.orb3{width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,.12),transparent 65%);bottom:0;left:0;animation-duration:26s;animation-delay:-8s}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(108,146,235,0.34),transparent 65%);top:-280px;left:-200px;animation-duration:30s}
+.orb2{width:600px;height:600px;background:radial-gradient(circle,rgba(108,235,197,0.34),transparent 65%);top:30%;right:-220px;animation-duration:36s;animation-direction:alternate-reverse;animation-delay:-14s}
+.orb3{width:500px;height:500px;background:radial-gradient(circle,rgba(235,133,108,0.336),transparent 65%);bottom:0;left:0;animation-duration:26s;animation-delay:-8s}
 @keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(70px,-50px) scale(1.08)}}
-#particles-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s}
-#particles-canvas.ready{opacity:1}
-.section-label{background:linear-gradient(90deg,#06b6d4,#67e8f9,#a78bfa,#06b6d4);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lbl-flow 5s linear infinite}
+#particles-canvas,#webgl-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s}
+#particles-canvas.ready,#webgl-canvas.ready{opacity:1}
+.section-label{background:linear-gradient(90deg, #6c92eb, #6cebc5, #eb856c, #6c92eb);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lbl-flow 5s linear infinite}
 @keyframes lbl-flow{to{background-position:-200% center}}
+
 </style>
+<link rel="stylesheet" href="atlyz.css">
 </head>
 <body>
 <div id="scroll-prog"></div>
 <canvas id="particles-canvas"></canvas>
-<div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+<canvas id="webgl-canvas"></canvas>
+<div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div><div class="orb orb4"></div><div class="orb orb5"></div></div>
 
 <nav>
   <a href="index.html" class="nav-logo">
-  <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="atlyz-g" x1="0" y1="1" x2="1" y2="0">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="100%" stop-color="#ffffff"/>
-      </linearGradient>
-    </defs>
-    <circle cx="50" cy="50" r="44" stroke="url(#atlyz-g)" stroke-width="3"/>
-    <line x1="50" y1="73" x2="19" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="19" cy="31" r="5" fill="url(#atlyz-g)"/>
-    <circle cx="34" cy="52" r="4" fill="url(#atlyz-g)"/>
-    <line x1="50" y1="73" x2="34" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="34" cy="17" r="5" fill="url(#atlyz-g)"/>
-    <line x1="50" y1="73" x2="50" y2="11" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="50" cy="11" r="5" fill="url(#atlyz-g)"/>
-    <circle cx="50" cy="42" r="4" fill="url(#atlyz-g)"/>
-    <line x1="50" y1="73" x2="66" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="66" cy="17" r="5" fill="url(#atlyz-g)"/>
-    <line x1="50" y1="73" x2="81" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="81" cy="31" r="5" fill="url(#atlyz-g)"/>
-    <circle cx="66" cy="52" r="4" fill="url(#atlyz-g)"/>
-    <circle cx="50" cy="73" r="5.5" fill="url(#atlyz-g)"/>
-  </svg>
-  <span class="logo-word">ATLYZ</span>
-</a>
+    <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="3"/>
+      <line x1="50" y1="73" x2="19" y2="31" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="34" y2="17" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="50" y2="11" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="66" y2="17" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="81" y2="31" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="34" cy="52" r="4" fill="#fff"/>
+      <circle cx="50" cy="42" r="4" fill="#fff"/>
+      <circle cx="66" cy="52" r="4" fill="#fff"/>
+      <circle cx="19" cy="31" r="5" fill="#fff"/>
+      <circle cx="34" cy="17" r="5" fill="#fff"/>
+      <circle cx="50" cy="11" r="5" fill="#fff"/>
+      <circle cx="66" cy="17" r="5" fill="#fff"/>
+      <circle cx="81" cy="31" r="5" fill="#fff"/>
+      <circle cx="50" cy="73" r="5.5" fill="#fff"/>
+    </svg>
+    <span class="logo-word">ATLYZ</span>
+  </a>
   <div class="nav-links">
+    <a href="index.html#how-it-works">How it works</a>
     <a href="index.html#features">Features</a>
-    <a href="index.html#products">Products</a>
+    <a href="demo.html">Live Demo</a>
     <a href="index.html#pricing">Pricing</a>
     <a href="contact.html">Contact</a>
   </div>
-  <a href="setup.html" class="nav-cta">Get Started</a>
-  <button class="hamburger" onclick="toggleMobileNav()" aria-label="Open menu">&#9776;</button>
+  <div class="nav-right">
+    <a href="contact.html" class="btn-nav-ghost">Log in</a>
+    <a href="setup.html" class="btn-nav-cta">Start free</a>
+  </div>
+  <button class="hamburger" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
 </nav>
 
 <div class="hero">
@@ -125,38 +127,38 @@ footer a:hover{color:var(--text)}
   <div class="notice">○ In design phase — not yet in development</div>
 </div>
 
-<section>
+<section class="reveal">
   <div class="section-label">Planned Features</div>
   <div class="section-title">What Atlyz Agent<br>will do</div>
   <p class="section-sub">This is the vision. Help shape it by joining the waitlist.</p>
   <div class="features-grid">
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(124,58,237,.12);color:#a78bfa"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:rgba(108,146,235,.12);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
       <h3>Book appointments</h3>
       <p>Connects to your calendar and books slots directly from a chat or phone conversation.</p>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(37,99,235,.12);color:#60a5fa"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:rgba(240,240,240,.12);color:var(--green)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></div>
       <h3>Automated follow-ups</h3>
       <p>Sends follow-up messages to leads after a conversation — without you lifting a finger.</p>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(52,211,153,.1);color:#34d399"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:rgba(108,146,235,.1);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
       <h3>CRM integration</h3>
       <p>Logs every interaction to your CRM automatically. No manual data entry.</p>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(251,191,36,.1);color:#fbbf24"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:rgba(108,146,235,.1);color:var(--green)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
       <h3>Multi-step workflows</h3>
       <p>Define rules and actions. Atlyz Agent executes them across chat, voice, and email.</p>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(74,222,128,.1);color:#4ade80"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg></div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:rgba(108,146,235,.1);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg></div>
       <h3>Order intake</h3>
       <p>Takes orders via chat or phone and routes them into your fulfilment system.</p>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(248,113,113,.1);color:#f87171"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:rgba(108,146,235,.1);color:var(--green)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
       <h3>Analytics</h3>
       <p>Full visibility into every action taken — what was automated, when, and the outcome.</p>
     </div>
@@ -186,19 +188,25 @@ footer a:hover{color:var(--text)}
 .foot-social-link:hover{border-color:rgba(255,255,255,.12);color:var(--text)}
 .foot-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding-top:24px;border-top:1px solid var(--border)}
 .foot-bottom p{font-size:12px;color:var(--muted)}
-.foot-mono{font-family:'JetBrains Mono',monospace;color:#2a2a38;font-size:11px}
+.foot-mono{font-family:'JetBrains Mono',monospace;color:#2b2b2b;font-size:11px}
 @media(max-width:768px){.foot-top{flex-direction:column;gap:32px}}
 </style>
-<footer class="site-footer">
+<footer>
   <div class="foot-top">
     <div class="foot-brand">
       <div class="foot-logo">Atlyz</div>
       <p>The Atlas Of Your Business.</p>
-      <div class="foot-social">
-        <a href="https://twitter.com/Atlyz_Ai" class="foot-social-link" aria-label="Twitter / X">
+      <div class="foot-newsletter">
+        <p>Get product updates:</p>
+        <div class="foot-nl-form">
+          <input type="email" class="foot-nl-input" placeholder="your@email.com">
+          <button class="foot-nl-btn" onclick="this.textContent='✓ Subscribed'">Subscribe</button>
+        </div>
+      </div>
+      <div class="social-links">
+        <a href="https://twitter.com/Atlyz_Ai" class="social-link" aria-label="Twitter / X">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         </a>
-        <a href="https://twitter.com/Atlyz_Ai?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @Atlyz_Ai</a>
       </div>
     </div>
     <div class="foot-col">
@@ -222,7 +230,7 @@ footer a:hover{color:var(--text)}
     </div>
   </div>
   <div class="foot-bottom">
-    <p>© 2026 Atlyz. All rights reserved.</p>
+    <p>© <span data-year>2026</span> Atlyz. All rights reserved.</p>
     <p class="foot-mono">v0.1.0-beta</p>
   </div>
 </footer>
@@ -240,14 +248,109 @@ document.querySelectorAll('.nav-links a').forEach(function(a){
 });
 </script>
 
+<!-- ATLYZ 3D constellation gate: pick WebGL only on desktop + motion-on + WebGL support -->
+<script>
+window.ATLYZ_USE_3D=(function(){
+  try{
+    if(window.matchMedia('(max-width:768px)').matches) return false;
+    if(window.matchMedia('(prefers-reduced-motion:reduce)').matches) return false;
+    var c=document.createElement('canvas');
+    return !!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl')));
+  }catch(e){ return false; }
+})();
+</script>
+<!-- ATLYZ 3D ambient node-network — Three.js via CDN, no build step. Falls back to 2D field on failure. -->
+<script type="module">
+(function(){
+  if(!window.ATLYZ_USE_3D) return;
+  var canvas=document.getElementById('webgl-canvas');
+  if(!canvas){ window.ATLYZ_USE_3D=false; if(window.__atlyzStart2D)window.__atlyzStart2D(); return; }
+  import('https://unpkg.com/three@0.160.0/build/three.module.js').then(function(THREE){
+    var scene=new THREE.Scene();
+    var camera=new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 200);
+    camera.position.z=30;
+    var renderer=new THREE.WebGLRenderer({canvas:canvas, alpha:true, antialias:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.setSize(innerWidth, innerHeight);
+
+    var COUNT=130, SX=52, SY=34, SZ=30;
+    var pos=new Float32Array(COUNT*3), col=new Float32Array(COUNT*3), vel=[];
+    var ACC=new THREE.Color(0xffb340), GRN=new THREE.Color(0x2fe0a8);
+    for(var i=0;i<COUNT;i++){
+      pos[i*3]=(Math.random()-.5)*SX; pos[i*3+1]=(Math.random()-.5)*SY; pos[i*3+2]=(Math.random()-.5)*SZ;
+      var cc=Math.random()<0.62?ACC:GRN; col[i*3]=cc.r; col[i*3+1]=cc.g; col[i*3+2]=cc.b;
+      vel.push({x:(Math.random()-.5)*0.015, y:(Math.random()-.5)*0.015, z:(Math.random()-.5)*0.015});
+    }
+    var pGeo=new THREE.BufferGeometry();
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    pGeo.setAttribute('color', new THREE.BufferAttribute(col,3));
+    var points=new THREE.Points(pGeo, new THREE.PointsMaterial({size:0.22, vertexColors:true, transparent:true, opacity:0.9, blending:THREE.AdditiveBlending, depthWrite:false}));
+
+    var lGeo=new THREE.BufferGeometry();
+    var lines=new THREE.LineSegments(lGeo, new THREE.LineBasicMaterial({color:0xa07bff, transparent:true, opacity:0.22, blending:THREE.AdditiveBlending, depthWrite:false}));
+
+    var group=new THREE.Group(); group.add(points); group.add(lines); scene.add(group);
+
+    var LINK=10, LINK2=LINK*LINK, MAXSEG=1600;
+    function rebuild(){
+      var s=[];
+      for(var a=0;a<COUNT;a++){
+        var ax=pos[a*3],ay=pos[a*3+1],az=pos[a*3+2];
+        for(var b=a+1;b<COUNT;b++){
+          var dx=ax-pos[b*3],dy=ay-pos[b*3+1],dz=az-pos[b*3+2];
+          if(dx*dx+dy*dy+dz*dz<LINK2){ s.push(ax,ay,az,pos[b*3],pos[b*3+1],pos[b*3+2]); if(s.length/6>=MAXSEG){a=COUNT;break;} }
+        }
+      }
+      lGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(s),3));
+    }
+
+    var tRX=0,tRY=0,cRX=0,cRY=0;
+    addEventListener('pointermove', function(e){ tRY=(e.clientX/innerWidth-.5)*0.24; tRX=(e.clientY/innerHeight-.5)*0.24; }, {passive:true});
+    addEventListener('resize', function(){ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight); }, {passive:true});
+
+    var fc=0, raf=null, running=false;
+    function tick(){
+      for(var i=0;i<COUNT;i++){
+        pos[i*3]+=vel[i].x; pos[i*3+1]+=vel[i].y; pos[i*3+2]+=vel[i].z;
+        if(pos[i*3]>SX/2||pos[i*3]<-SX/2)vel[i].x*=-1;
+        if(pos[i*3+1]>SY/2||pos[i*3+1]<-SY/2)vel[i].y*=-1;
+        if(pos[i*3+2]>SZ/2||pos[i*3+2]<-SZ/2)vel[i].z*=-1;
+      }
+      pGeo.attributes.position.needsUpdate=true;
+      if(fc%6===0) rebuild(); fc++;
+      group.rotation.y+=0.0008;
+      cRX+=(tRX-cRX)*0.05; cRY+=(tRY-cRY)*0.05;
+      group.rotation.x=cRX; camera.position.x=cRY*10; camera.lookAt(0,0,0);
+      renderer.render(scene,camera);
+      raf=requestAnimationFrame(tick);
+    }
+    function start(){ if(!running){ running=true; raf=requestAnimationFrame(tick); } }
+    function stop(){ running=false; if(raf)cancelAnimationFrame(raf); raf=null; }
+
+    rebuild(); renderer.render(scene,camera);
+    requestAnimationFrame(function(){ canvas.classList.add('ready'); });
+    start();
+
+    var hero=document.querySelector('.hero');
+    if(hero&&'IntersectionObserver' in window){
+      new IntersectionObserver(function(en){ en.forEach(function(x){ x.isIntersecting?start():stop(); }); }, {threshold:0}).observe(hero);
+    }
+    document.addEventListener('visibilitychange', function(){
+      if(document.hidden){ stop(); }
+      else { var h=document.querySelector('.hero'); if(!h||h.getBoundingClientRect().bottom>0) start(); }
+    });
+  }).catch(function(){
+    window.ATLYZ_USE_3D=false;
+    if(window.__atlyzStart2D) window.__atlyzStart2D();
+  });
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
 var _prog=document.getElementById('scroll-prog');
 window.addEventListener('scroll',function(){var s=window.scrollY,t=document.documentElement.scrollHeight-window.innerHeight;_prog.style.width=(t>0?Math.min(s/t*100,100):0)+'%'},{passive:true});
-var _nav=document.querySelector('nav');
-window.addEventListener('scroll',function(){_nav.style.padding=window.scrollY>60?'10px 48px':'16px 48px';},{passive:true});
-(function(){var c=document.getElementById('particles-canvas'),x=c.getContext('2d'),W,H,P=[];function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz,{passive:true});function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.4+.4,col:['rgba(103,232,249,','rgba(167,139,250,','rgba(96,165,250,'][Math.floor(Math.random()*3)],a:Math.random()*.45+.15}}for(var i=0;i<60;i++)P.push(mk());function draw(){x.clearRect(0,0,W,H);for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=p.col+p.a+')';x.fill();for(var j=i+1;j<P.length;j++){var q=P[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.strokeStyle='rgba(103,232,249,'+(0.14*(1-d/130))+')';x.lineWidth=.6;x.stroke()}}}requestAnimationFrame(draw)}draw();setTimeout(function(){c.classList.add('ready')},400)})();
+window.__atlyzStart2D=function(){var c=document.getElementById('particles-canvas');if(!c||c.__started)return;c.__started=true;var x=c.getContext('2d'),W,H,P=[];function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz,{passive:true});function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.4+.4,col:['rgba(108,146,235,','rgba(108,235,197,'][Math.floor(Math.random()*3)],a:Math.random()*.45+.15}}for(var i=0;i<60;i++)P.push(mk());function draw(){x.clearRect(0,0,W,H);for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=p.col+p.a+')';x.fill();for(var j=i+1;j<P.length;j++){var q=P[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.strokeStyle='rgba(108,146,235,'+(0.14*(1-d/130))+')';x.lineWidth=.6;x.stroke()}}}requestAnimationFrame(draw)}draw();setTimeout(function(){c.classList.add('ready')},400)};if(!window.ATLYZ_USE_3D)window.__atlyzStart2D();
 if(window.gsap){
   gsap.registerPlugin(ScrollTrigger);
   gsap.from('.hero .badge',{duration:.7,y:20,opacity:0,ease:'power2.out'});
@@ -273,5 +376,6 @@ document.addEventListener('mousemove',function(e){if(gh){var mx=e.clientX/window
 })();
 </script>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<script src="atlyz.js"></script>
 </body>
 </html>

@@ -4,97 +4,95 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Terms of Service — Atlyz</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#09090b;--surface:#111113;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#71717a;--purple:#8b5cf6;--blue:#3b82f6}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;line-height:1.6}
-body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(9,9,11,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;overflow-x:hidden;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.07) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;justify-content:space-between;gap:32px;padding:0 24px;height:52px;width:max-content;max-width:calc(100vw - 40px);min-width:320px;background:rgba(0,0,0,0.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:100px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.05)}
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-word{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;color:#f0f0f4}
-.logo-word{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f4}
+.logo-word{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;color:#f0f0f0}
+.logo-word{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f0}
 .nav-links{display:flex;gap:32px}
 .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;transition:.2s}
 .nav-links a:hover{color:var(--text)}
-.nav-cta{background:var(--text);color:var(--bg);padding:8px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:400}
+.nav-cta{background:#6c92eb;color:#04130d;padding:8px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:400}
 .page{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:140px 24px 100px}
 .page-label{font-size:12px;color:var(--blue);letter-spacing:2px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:12px}
-h1{font-family:'Inter',sans-serif;font-size:clamp(36px,5vw,52px);letter-spacing:-1.5px;margin-bottom:12px}
+h1{font-family:'Outfit',sans-serif;font-size:clamp(36px,5vw,52px);letter-spacing:-1.5px;margin-bottom:12px}
 .last-updated{font-size:13px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border)}
 .legal-section{margin-bottom:48px;scroll-margin-top:100px}
-.legal-section h2{font-family:'Inter',sans-serif;font-size:24px;letter-spacing:-0.5px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.legal-section h2{font-family:'Outfit',sans-serif;font-size:24px;letter-spacing:-0.5px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
 .legal-section p{font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:14px}
 .legal-section ul{padding-left:20px;margin-bottom:14px;display:flex;flex-direction:column;gap:8px}
 .legal-section li{font-size:15px;color:var(--muted);line-height:1.7}
 .legal-section li::marker{color:var(--blue)}
 .legal-section strong{color:var(--text);font-weight:400}
-.highlight-box{background:var(--surface);border:1px solid rgba(59,130,246,0.2);border-radius:12px;padding:20px 24px;margin-bottom:32px;border-left:3px solid var(--blue)}
+.highlight-box{background:var(--surface);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:20px 24px;margin-bottom:32px;border-left:3px solid var(--blue)}
 .highlight-box p{font-size:14px;color:var(--muted);margin:0;line-height:1.7}
 footer{position:relative;z-index:1;padding:40px 24px;border-top:1px solid var(--border);max-width:780px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 footer p{font-size:13px;color:var(--muted)}
 .footer-links{display:flex;gap:24px}
 .footer-links a{color:var(--muted);text-decoration:none;font-size:13px}
 .footer-links a:hover{color:var(--text)}
-@media(max-width:768px){nav{padding:14px 20px}.nav-links{display:none}}
+@media(max-width:768px){nav{top:12px;padding:0 16px;height:48px;gap:16px;max-width:calc(100vw - 24px)}.nav-links{display:none}}
 
 /* ── HAMBURGER MENU ── */
 .hamburger{display:none;background:none;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:4px;line-height:1}
 @media(max-width:768px){
   .hamburger{display:block}
-  .nav-links.open{display:flex !important;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(9,9,11,0.97);padding:20px 24px;gap:20px;border-bottom:1px solid rgba(255,255,255,0.06);z-index:99}
+  .nav-links.open{display:flex !important;flex-direction:column;position:fixed;top:72px;left:12px;right:12px;background:rgba(0,0,0,0.97);padding:20px;gap:16px;border:1px solid var(--border);border-radius:20px;z-index:199;backdrop-filter:blur(24px)}
 }
 /* ── MOTION ── */
-#scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;background:linear-gradient(90deg,#7c3aed,#60a5fa,#34d399);box-shadow:0 0 10px rgba(124,58,237,.8);pointer-events:none}
+#scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;background:linear-gradient(90deg, #6c92eb, #6cebc5, #eb856c);box-shadow:0 0 10px rgba(108,146,235,.8);pointer-events:none}
 .amb-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orb-drift 24s ease-in-out infinite alternate}
-.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.15),transparent 65%);top:-200px;left:-150px;animation-duration:30s}
-.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,.12),transparent 65%);bottom:10%;right:-150px;animation-duration:28s;animation-direction:alternate-reverse;animation-delay:-12s}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(108,146,235,0.34),transparent 65%);top:-200px;left:-150px;animation-duration:30s}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(108,235,197,0.336),transparent 65%);bottom:10%;right:-150px;animation-duration:28s;animation-direction:alternate-reverse;animation-delay:-12s}
 @keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,-40px) scale(1.07)}}
 #particles-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s}
 #particles-canvas.ready{opacity:1}
+
 </style>
+<link rel="stylesheet" href="atlyz.css">
 </head>
 <body>
 <div id="scroll-prog"></div>
 <canvas id="particles-canvas"></canvas>
-<div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+<div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div><div class="orb orb4"></div><div class="orb orb5"></div></div>
 <nav>
   <a href="index.html" class="nav-logo">
-  <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="atlyz-g" x1="0" y1="1" x2="1" y2="0">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="100%" stop-color="#ffffff"/>
-      </linearGradient>
-    </defs>
-    <circle cx="50" cy="50" r="44" stroke="url(#atlyz-g)" stroke-width="3"/>
-    <line x1="50" y1="73" x2="19" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="19" cy="31" r="5" fill="url(#atlyz-g)"/>
-    <circle cx="34" cy="52" r="4" fill="url(#atlyz-g)"/>
-    <line x1="50" y1="73" x2="34" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="34" cy="17" r="5" fill="url(#atlyz-g)"/>
-    <line x1="50" y1="73" x2="50" y2="11" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="50" cy="11" r="5" fill="url(#atlyz-g)"/>
-    <circle cx="50" cy="42" r="4" fill="url(#atlyz-g)"/>
-    <line x1="50" y1="73" x2="66" y2="17" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="66" cy="17" r="5" fill="url(#atlyz-g)"/>
-    <line x1="50" y1="73" x2="81" y2="31" stroke="url(#atlyz-g)" stroke-width="2.8" stroke-linecap="round"/>
-    <circle cx="81" cy="31" r="5" fill="url(#atlyz-g)"/>
-    <circle cx="66" cy="52" r="4" fill="url(#atlyz-g)"/>
-    <circle cx="50" cy="73" r="5.5" fill="url(#atlyz-g)"/>
-  </svg>
-  <span class="logo-word">ATLYZ</span>
-</a>
+    <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="3"/>
+      <line x1="50" y1="73" x2="19" y2="31" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="34" y2="17" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="50" y2="11" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="66" y2="17" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="81" y2="31" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="34" cy="52" r="4" fill="#fff"/>
+      <circle cx="50" cy="42" r="4" fill="#fff"/>
+      <circle cx="66" cy="52" r="4" fill="#fff"/>
+      <circle cx="19" cy="31" r="5" fill="#fff"/>
+      <circle cx="34" cy="17" r="5" fill="#fff"/>
+      <circle cx="50" cy="11" r="5" fill="#fff"/>
+      <circle cx="66" cy="17" r="5" fill="#fff"/>
+      <circle cx="81" cy="31" r="5" fill="#fff"/>
+      <circle cx="50" cy="73" r="5.5" fill="#fff"/>
+    </svg>
+    <span class="logo-word">ATLYZ</span>
+  </a>
   <div class="nav-links">
+    <a href="index.html#how-it-works">How it works</a>
     <a href="index.html#features">Features</a>
-    <a href="index.html#products">Products</a>
+    <a href="demo.html">Live Demo</a>
     <a href="index.html#pricing">Pricing</a>
     <a href="contact.html">Contact</a>
   </div>
-  <a href="index.html#pricing" class="nav-cta">Get Started</a>
-
-  <button class="hamburger" onclick="toggleMobileNav()" aria-label="Open menu">&#9776;</button>
+  <div class="nav-right">
+    <a href="contact.html" class="btn-nav-ghost">Log in</a>
+    <a href="setup.html" class="btn-nav-cta">Start free</a>
+  </div>
+  <button class="hamburger" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
 </nav>
 
 <div class="page">
@@ -197,19 +195,25 @@ footer p{font-size:13px;color:var(--muted)}
 .foot-social-link:hover{border-color:rgba(255,255,255,.12);color:var(--text)}
 .foot-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding-top:24px;border-top:1px solid var(--border)}
 .foot-bottom p{font-size:12px;color:var(--muted)}
-.foot-mono{font-family:'JetBrains Mono',monospace;color:#2a2a38;font-size:11px}
+.foot-mono{font-family:'JetBrains Mono',monospace;color:#2b2b2b;font-size:11px}
 @media(max-width:768px){.foot-top{flex-direction:column;gap:32px}}
 </style>
-<footer class="site-footer">
+<footer>
   <div class="foot-top">
     <div class="foot-brand">
       <div class="foot-logo">Atlyz</div>
       <p>The Atlas Of Your Business.</p>
-      <div class="foot-social">
-        <a href="https://twitter.com/Atlyz_Ai" class="foot-social-link" aria-label="Twitter / X">
+      <div class="foot-newsletter">
+        <p>Get product updates:</p>
+        <div class="foot-nl-form">
+          <input type="email" class="foot-nl-input" placeholder="your@email.com">
+          <button class="foot-nl-btn" onclick="this.textContent='✓ Subscribed'">Subscribe</button>
+        </div>
+      </div>
+      <div class="social-links">
+        <a href="https://twitter.com/Atlyz_Ai" class="social-link" aria-label="Twitter / X">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         </a>
-        <a href="https://twitter.com/Atlyz_Ai?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @Atlyz_Ai</a>
       </div>
     </div>
     <div class="foot-col">
@@ -233,7 +237,7 @@ footer p{font-size:13px;color:var(--muted)}
     </div>
   </div>
   <div class="foot-bottom">
-    <p>© 2026 Atlyz. All rights reserved.</p>
+    <p>© <span data-year>2026</span> Atlyz. All rights reserved.</p>
     <p class="foot-mono">v0.1.0-beta</p>
   </div>
 </footer>
@@ -255,9 +259,7 @@ document.querySelectorAll('.nav-links a').forEach(function(a){
 <script>
 var _prog=document.getElementById('scroll-prog');
 window.addEventListener('scroll',function(){var s=window.scrollY,t=document.documentElement.scrollHeight-window.innerHeight;_prog.style.width=(t>0?Math.min(s/t*100,100):0)+'%'},{passive:true});
-var _nav=document.querySelector('nav');
-window.addEventListener('scroll',function(){_nav.style.padding=window.scrollY>60?'10px 48px':'16px 48px';},{passive:true});
-(function(){var c=document.getElementById('particles-canvas'),x=c.getContext('2d'),W,H,P=[];function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz,{passive:true});function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.2+.4,col:['rgba(167,139,250,','rgba(96,165,250,'][Math.floor(Math.random()*2)],a:Math.random()*.35+.1}}for(var i=0;i<40;i++)P.push(mk());function draw(){x.clearRect(0,0,W,H);for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=p.col+p.a+')';x.fill();for(var j=i+1;j<P.length;j++){var q=P[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.strokeStyle='rgba(167,139,250,'+(0.12*(1-d/120))+')';x.lineWidth=.5;x.stroke()}}}requestAnimationFrame(draw)}draw();setTimeout(function(){c.classList.add('ready')},400)})();
+(function(){var c=document.getElementById('particles-canvas'),x=c.getContext('2d'),W,H,P=[];function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz,{passive:true});function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.2+.4,col:['rgba(108,146,235,','rgba(108,235,197,'][Math.floor(Math.random()*2)],a:Math.random()*.35+.1}}for(var i=0;i<40;i++)P.push(mk());function draw(){x.clearRect(0,0,W,H);for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=p.col+p.a+')';x.fill();for(var j=i+1;j<P.length;j++){var q=P[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.strokeStyle='rgba(108,146,235,'+(0.12*(1-d/120))+')';x.lineWidth=.5;x.stroke()}}}requestAnimationFrame(draw)}draw();setTimeout(function(){c.classList.add('ready')},400)})();
 if(window.gsap){
   gsap.from('.page h1',{duration:.9,y:36,opacity:0,ease:'power3.out'});
   gsap.from('.page .last-updated',{duration:.6,y:16,opacity:0,delay:.2,ease:'power2.out'});
@@ -278,5 +280,6 @@ if(window.gsap){
 })();
 </script>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<script src="atlyz.js"></script>
 </body>
 </html>

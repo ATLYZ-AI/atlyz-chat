@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Atlyz — Logo Animation</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Outfit:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{
-  width:100%;height:100%;min-height:100vh;
-  background:#09090b;
+  width:100%;height:100%;min-height:100dvh;
+  background:var(--bg);
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;
 }
@@ -34,7 +34,7 @@ body::before{
   content:'';
   position:absolute;
   width:320px;height:320px;border-radius:50%;
-  background:radial-gradient(circle,rgba(14,165,233,0.14) 0%,rgba(14,165,233,0.04) 50%,transparent 70%);
+  background:radial-gradient(circle,rgba(108,146,235,0.14) 0%,rgba(108,146,235,0.04) 50%,transparent 70%);
   pointer-events:none;
   opacity:0;
   transition:opacity 1s ease;
@@ -52,9 +52,9 @@ body::before{
 .logo-svg{
   width:280px;height:280px;overflow:visible;
   filter:
-    drop-shadow(0 0 4px rgba(14,165,233,0.95))
-    drop-shadow(0 0 14px rgba(14,165,233,0.6))
-    drop-shadow(0 0 40px rgba(14,165,233,0.25));
+    drop-shadow(0 0 4px rgba(108,146,235,0.95))
+    drop-shadow(0 0 14px rgba(108,146,235,0.6))
+    drop-shadow(0 0 40px rgba(108,146,235,0.25));
 }
 
 /* ══════════════════════════════════════════════════
@@ -94,35 +94,33 @@ body::before{
 }
 .brand.visible{opacity:1;}
 .brand-name{
-  font-family:'Syne',sans-serif;
+  font-family:'Space Grotesk',sans-serif;
   font-size:42px;font-weight:700;letter-spacing:6px;
-  background:linear-gradient(135deg,#67e8f9,#0ea5e9);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
+  color:var(--text);
 }
 .brand-tag{
   font-family:'JetBrains Mono',monospace;
   font-size:12px;letter-spacing:3px;text-transform:uppercase;
-  color:rgba(14,165,233,0.55);
+  color:rgba(108,146,235,0.55);
 }
 
 /* ── REPLAY BUTTON ── */
 .replay-btn{
   position:fixed;bottom:28px;right:28px;
-  background:rgba(14,165,233,0.08);
-  border:1px solid rgba(14,165,233,0.25);
-  color:rgba(14,165,233,0.7);
+  background:rgba(108,146,235,0.08);
+  border:1px solid rgba(108,146,235,0.25);
+  color:rgba(108,146,235,0.7);
   font-family:'JetBrains Mono',monospace;
   font-size:12px;letter-spacing:1px;
   padding:10px 18px;border-radius:8px;cursor:pointer;
   transition:.2s;z-index:10;
 }
 .replay-btn:hover{
-  background:rgba(14,165,233,0.14);
-  border-color:rgba(14,165,233,0.5);
-  color:rgba(14,165,233,1);
+  background:rgba(108,146,235,0.14);
+  border-color:rgba(108,146,235,0.5);
+  color:rgba(108,146,235,1);
   transform:translateY(-1px);
-  box-shadow:0 4px 20px rgba(14,165,233,0.2);
+  box-shadow:0 4px 20px rgba(108,146,235,0.2);
 }
 
 /* ── PHASE LABEL ── */
@@ -131,7 +129,9 @@ body::before{
   font-family:'JetBrains Mono',monospace;font-size:11px;
   color:rgba(255,255,255,0.15);letter-spacing:.5px;
 }
+
 </style>
+<link rel="stylesheet" href="atlyz.css">
 </head>
 <body>
 
@@ -141,12 +141,12 @@ body::before{
     <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="lg" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0%" stop-color="#0ea5e9"/>
-          <stop offset="100%" stop-color="#67e8f9"/>
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#e8e8e8"/>
         </linearGradient>
         <radialGradient id="disc-g" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="rgba(14,165,233,0.06)"/>
-          <stop offset="100%" stop-color="rgba(14,165,233,0)"/>
+          <stop offset="0%" stop-color="rgba(108,146,235,0.06)"/>
+          <stop offset="100%" stop-color="rgba(108,146,235,0)"/>
         </radialGradient>
       </defs>
 
