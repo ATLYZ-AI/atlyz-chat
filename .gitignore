@@ -12,6 +12,9 @@ __pycache__/
 # Client data — leads/personal info never committed
 clients/*/data/
 
+# Atlyz chat live app — keep ALL client data (leads, emails, knowledge) private
+Atlyz chat/clients/
+
 # test_shop is dev-only, not needed in production
 clients/test_shop/
 
