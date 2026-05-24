@@ -253,14 +253,14 @@
   </div>
 </footer>
 
+<script src="atlyz-config.js"></script>
 <script>
 // Fill embed code from ?id= if present
 (function(){
   var id = new URLSearchParams(window.location.search).get('id');
   if(id){
-    var origin = window.location.protocol === 'file:' ? 'https://atlyz.com' : window.location.origin;
     document.getElementById('embed-code').textContent =
-      '<script src="' + origin + '/widget.js?id=' + id + '"><\/script>';
+      '<script src="' + window.ATLYZ_API + '/widget.js?id=' + id + '"><\/script>';
   }
 })();
 

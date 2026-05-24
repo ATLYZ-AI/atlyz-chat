@@ -498,10 +498,9 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
 
 </div><!-- end .wrapper -->
 
+<script src="atlyz-config.js"></script>
 <script>
-var SERVER = window.location.protocol === 'file:'
-  ? 'http://localhost:5002'
-  : window.location.origin;
+var SERVER = window.ATLYZ_API;
 
 // ── Require a signed-in account ────────────────────────────────────────────────
 var ATLYZ_TOKEN = localStorage.getItem('atlyz_token') || '';
