@@ -19,7 +19,7 @@ The company has three products planned:
 
 **Target market:** Small service businesses in USA, UK, Europe — plumbers, salons, clinics, e-commerce shops.
 
-**Pricing:** $49/month Starter, $99/month Growth, $149/month Pro.
+**Pricing:** Standard $55/$99/$149 per month (Starter/Growth/Pro). Founding-member rates for the first 10 clients (locked forever): $45/$85/$130 — these are the rates shown on the live site and in setup.html.
 
 **Tech stack:** Python, Flask, Flask-SocketIO, OpenAI API (GPT-4.1-nano, Whisper, TTS nova voice), vanilla JS widget, HTML/CSS dashboard.
 
@@ -276,7 +276,7 @@ __pycache__/
 - Budget: ~Rs.9,000 PKR for infrastructure
 - Goal: First paying client ASAP
 - Monthly costs when live: Claude Pro $20 + Railway $5 + Domain $1 + Email $1 = ~$27/month
-- Break-even: 1 client at $49/month covers everything
+- Break-even: 1 client at $45/month (founding rate) covers everything
 
 ---
 
