@@ -1,9 +1,0 @@
-.env
-venv/
-clients/
-__pycache__/
-*.pyc
-*.pyo
-.DS_Store
-*.log
-scrape_meta.jsonx
