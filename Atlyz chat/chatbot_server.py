@@ -17,13 +17,15 @@ from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 import plans
 
-load_dotenv()
+BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT   = os.path.dirname(BASE_DIR)   # parent of Atlyz chat/ — where .env lives
+
+# Load .env from repo root (one level up) — handles running from inside Atlyz chat/
+load_dotenv(os.path.join(REPO_ROOT, ".env"))
 
 LOGO_EXTS    = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg",
                 "gif": "image/gif", "svg": "image/svg+xml", "webp": "image/webp"}
 MAX_LOGO_BYTES = 512 * 1024  # 512 KB
-
-BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
 # DATA_DIR: on Railway set to /data (mounted volume) so data survives deploys.
 DATA_DIR    = os.getenv("DATA_DIR", BASE_DIR)
 CLIENTS_DIR = os.path.join(DATA_DIR, "clients")
@@ -179,9 +181,17 @@ def save_accounts(accounts: dict):
 
 
 def is_owner_of(bid: str) -> bool:
-    """True if the request is admin or an authenticated owner of this business."""
-    if check_admin_key():
-        return True
+    """True if the request carries a valid admin key OR is an authenticated owner.
+    Never bypasses auth via DEV_MODE — owner routes contain customer data."""
+    required = os.getenv("ATLYZ_ADMIN_KEY", "")
+    if required:
+        provided = (
+            request.headers.get("X-Admin-Key", "") or
+            request.args.get("key", "") or
+            (request.get_json(silent=True) or {}).get("admin_key", "")
+        )
+        if provided and provided == required:
+            return True
     email = request_account_email()
     if not email:
         return False
@@ -532,7 +542,7 @@ action must be: chat, collect_lead, or end"""
         response = client.chat.completions.create(
             model="gpt-5-nano",
             messages=messages,
-            max_completion_tokens=600,
+            max_completion_tokens=1500,
             response_format={"type": "json_object"}
         )
 
@@ -1261,7 +1271,7 @@ def contact_form():
 @app.route("/site/")
 @app.route("/site/<path:filename>")
 def serve_atlyz_site(filename="index.html"):
-    site_dir = os.path.join(BASE_DIR, "ATLYZ website")
+    site_dir = os.path.join(REPO_ROOT, "ATLYZ website")
     return send_from_directory(site_dir, filename)
 
 
@@ -1304,7 +1314,7 @@ def auto_scrape_atlyz_website():
                     print("[AIS] Manually-curated knowledge found — skipping auto-scrape")
                     return
 
-            website_dir = os.path.join(BASE_DIR, "ATLYZ website")
+            website_dir = os.path.join(REPO_ROOT, "ATLYZ website")
             if not os.path.exists(website_dir):
                 print("[AIS] ATLYZ website folder not found — skipping auto-scrape")
                 return
