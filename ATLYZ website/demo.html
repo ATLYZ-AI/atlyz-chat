@@ -204,7 +204,7 @@ footer p{font-size:13px;color:var(--muted)}
     </svg>
     <span class="logo-word">ATLYZ</span>
   </a>
-  <div class="nav-links">
+  <div class="nav-links" id="nav-links">
     <a href="index.html#how-it-works">How it works</a>
     <a href="index.html#features">Features</a>
     <a href="demo.html">Live Demo</a>
@@ -216,6 +216,7 @@ footer p{font-size:13px;color:var(--muted)}
   </div>
   <button class="hamburger" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
 </nav>
+<script src="atlyz-config.js"></script>
 
 <!-- HERO -->
 <div class="hero">
@@ -456,7 +457,7 @@ reveals.forEach(function(r) { observer.observe(r); });
    DEMO CHATBOT — powered by Atlyz Chat API
    ══════════════════════════════════════════════════════ */
 
-var SERVER_URL = location.protocol === 'file:' ? 'http://localhost:5002' : '';
+var SERVER_URL = (typeof window.ATLYZ_API !== 'undefined') ? window.ATLYZ_API : (location.protocol === 'file:' ? 'http://localhost:5002' : '');
 var demoState = { sessionId: null, leadMode: false, busy: false };
 
 function addMsg(text, fromUser) {
