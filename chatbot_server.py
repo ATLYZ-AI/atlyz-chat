@@ -49,6 +49,7 @@ def handle_options():
 sessions       = {}  # session_id → session data
 knowledge_cache = {} # business_id → knowledge text
 rate_limits    = {}  # session_id → [timestamps]
+_ais_ready     = False  # True once the startup auto-scrape thread finishes
 
 RATE_LIMIT_MAX    = 20  # messages per window
 RATE_LIMIT_WINDOW = 60  # seconds
@@ -237,24 +238,28 @@ def ai_chat_response(message: str, business_id: str, session: dict, knowledge: s
 
     knowledge_section = knowledge if knowledge else "(No business information provided yet.)"
 
-    system_prompt = f"""You are a sharp AI assistant for {business_name}. Always respond with valid JSON only.
+    history_lines = []
+    for h in session.get("history", [])[-6:]:
+        history_lines.append(f"Customer: {h['customer']}")
+        history_lines.append(f"Assistant: {h['atlyz']}")
+    history_text = "\n".join(history_lines) if history_lines else "(new conversation)"
 
-OUTPUT FORMAT (required): {{"reply": "...", "action": "chat", "language": "English"}}
-- "reply": your answer to the customer
-- "action": one of chat | collect_lead | end  (always in English)
-- "language": the English name of the language you are replying in
+    system_prompt = f"""You are a friendly, helpful AI assistant for {business_name}. You have deep knowledge about this business and genuinely care about helping customers.
 
-BUSINESS KNOWLEDGE:
+PERSONALITY: Warm, natural, conversational. Never corporate or robotic. Use the customer's name if you know it. Give concise answers — no walls of text. Use 1 emoji max per message only when it feels natural.
+
+KNOWLEDGE:
 {knowledge_section}
 
-RULES:
-- Answer from the knowledge above. If not in knowledge, say you don't have that info and give the contact if available.
-- Never make up prices, hours, or policies.
-- Keep replies to 1-3 sentences. Never greet with Hi/Hello.
-- If customer asks to speak to someone or be contacted: action = collect_lead
-- If customer says bye and is done: action = end
+WHEN YOU DON'T KNOW SOMETHING: Never say you're having technical issues. Say: 'That's a great question — let me flag that for the team and they'll get back to you shortly!'
 
-{language_instruction}"""
+CONVERSATION HISTORY:
+{history_text}
+
+{language_instruction}
+
+Always respond with valid JSON: {{"reply": "...", "action": "chat", "language": "English"}}
+action must be: chat, collect_lead, or end"""
 
     try:
         from openai import OpenAI
@@ -269,7 +274,7 @@ RULES:
         response = client.chat.completions.create(
             model="gpt-5-nano",
             messages=messages,
-            max_completion_tokens=400,
+            max_completion_tokens=600,
             response_format={"type": "json_object"}
         )
 
@@ -329,6 +334,11 @@ def chat_start():
 
     if not business_id:
         return jsonify({"error": "business_id required"}), 400
+
+    # Wait up to 10 s for the startup auto-scrape to finish before serving the first session.
+    deadline = time.time() + 10
+    while not _ais_ready and time.time() < deadline:
+        time.sleep(0.5)
 
     session_id = str(uuid.uuid4())
     config = load_chatbot_config(business_id)
@@ -872,6 +882,9 @@ Keep it factual and concise."""
 
         except Exception as e:
             print(f"[AIS] Auto-scrape failed: {e}")
+        finally:
+            global _ais_ready
+            _ais_ready = True
 
     t = threading.Thread(target=run, daemon=True, name="ais-auto-scrape")
     t.start()
