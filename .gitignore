@@ -1,36 +1,3 @@
-# Environment
-.env
-
-# Virtual environments
 venv/
-aria-env/
-atlyz-env/
 __pycache__/
-*.pyc
-*.pyo
-
-# Owner accounts — email + hashed passwords, never committed
-accounts/
-
-# Client data — leads/personal info never committed
-clients/*/data/
-
-# Atlyz chat live app — keep ALL client data (leads, emails, knowledge) private
-Atlyz chat/clients/
-
-# test_shop is dev-only, not needed in production
-clients/test_shop/
-
-# Logs
-*.log
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-
-# Other
-*.zip
+.env

@@ -1,0 +1,4 @@
+lead_id,timestamp,name,email,phone,question,session_id
+1a065dde,2026-05-07 17:08:43,aaa,asa,,can you tell me the price of earbuds,26d64d8f-2724-4058-9178-38d0f14ce9bf
+282df281,2026-05-16 22:47:50,Test User,testuser@example.com,123-456-7890,I want to talk to the owner,8500b88c-8929-4c0f-948a-d1ca23beb6f1
+d38442c2,2026-05-21 05:19:12,Test User,test@test.com,0300-1234567,,690ff955-dfb9-4f31-be9f-2e8d26d72d37

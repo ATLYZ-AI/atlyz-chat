@@ -1,0 +1,13 @@
+{
+  "primary_color": "#7c3aed",
+  "secondary_color": "#f3f4f6",
+  "icon": "default",
+  "greeting": "Hi! I'm AIS — Atlyz's AI assistant. Ask me anything about our products, pricing, or how to get started.",
+  "language_lock": null,
+  "business_name": "AIS",
+  "bot_name": "AIS",
+  "bot_tagline": "Atlyz's AI Assistant",
+  "collect_leads": true,
+  "widget_position": "bottom-right",
+  "white_label": true
+}

@@ -1,0 +1,4 @@
+business_name = Test Shop
+owner_email = ansaaralishah91@gmail.com
+website = https://example.com
+plan = starter
