@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlyz — Logo Animation</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Outfit:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  width:100%;height:100%;min-height:100dvh;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,0.04) 1px,transparent 1px);
+  background-size:36px 36px;pointer-events:none;z-index:0;
+}
+
+/* ── STAGE ── */
+.stage{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;gap:40px;
+}
+
+/* ── AMBIENT GLOW ── */
+.logo-wrap{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.logo-wrap::before{
+  content:'';
+  position:absolute;
+  width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,194,255,0.06) 0%,rgba(255,255,255,0.04) 50%,transparent 70%);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 1s ease;
+}
+.logo-wrap.glow-on::before{
+  opacity:0.8;
+  animation:ambient-pulse 3s ease-in-out infinite;
+}
+@keyframes ambient-pulse{
+  0%,100%{opacity:0.7;transform:scale(0.95)}
+  50%{opacity:1;transform:scale(1.08)}
+}
+
+/* ── SVG ── */
+.logo-svg{
+  width:280px;height:280px;overflow:visible;
+  filter:
+    drop-shadow(0 0 4px rgba(255,255,255,0.95))
+    drop-shadow(0 0 14px rgba(255,255,255,0.6))
+    drop-shadow(0 0 40px rgba(255,255,255,0.25));
+}
+
+/* ══════════════════════════════════════════════════
+   BASE HIDDEN STATES — JS drives all animations
+   ══════════════════════════════════════════════════ */
+.line-l  {stroke-dasharray:52.2;  stroke-dashoffset:52.2; }
+.line-lc {stroke-dasharray:58.26; stroke-dashoffset:58.26;}
+.line-c  {stroke-dasharray:62;    stroke-dashoffset:62;   }
+.line-rc {stroke-dasharray:58.26; stroke-dashoffset:58.26;}
+.line-r  {stroke-dasharray:52.2;  stroke-dashoffset:52.2; }
+
+.dot{transform-box:fill-box;transform-origin:center;transform:scale(0);}
+
+.svg-circle{
+  stroke-dasharray:276.46;
+  stroke-dashoffset:276.46;
+  transform:rotate(-90deg);
+  transform-origin:50px 50px;
+}
+
+/* ── KEYFRAMES ── */
+@keyframes draw        { to{stroke-dashoffset:0} }
+@keyframes draw-ring   { from{stroke-dashoffset:276.46} to{stroke-dashoffset:0} }
+@keyframes pop         { from{transform:scale(0)} 60%{transform:scale(1.25)} to{transform:scale(1)} }
+@keyframes unpop       { from{transform:scale(1)} to{transform:scale(0)} }
+/* explicit undraw keyframes — avoids browser snap when reversing same-named animation */
+@keyframes undraw-ring { from{stroke-dashoffset:0} to{stroke-dashoffset:276.46} }
+@keyframes undraw-52   { from{stroke-dashoffset:0} to{stroke-dashoffset:52.2}   }
+@keyframes undraw-58   { from{stroke-dashoffset:0} to{stroke-dashoffset:58.26}  }
+@keyframes undraw-62   { from{stroke-dashoffset:0} to{stroke-dashoffset:62}     }
+
+/* ── BRAND TEXT ── */
+.brand{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  opacity:0;
+  transition:opacity 0.8s ease;
+}
+.brand.visible{opacity:1;}
+.brand-name{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:42px;font-weight:700;letter-spacing:6px;
+  color:var(--text);
+}
+.brand-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,255,255,0.55);
+}
+
+/* ── REPLAY BUTTON ── */
+.replay-btn{
+  position:fixed;bottom:28px;right:28px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.25);
+  color:rgba(255,255,255,0.7);
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;letter-spacing:1px;
+  padding:10px 18px;border-radius:8px;cursor:pointer;
+  transition:.2s;z-index:10;
+}
+.replay-btn:hover{
+  background:rgba(255,255,255,0.14);
+  border-color:rgba(255,255,255,0.5);
+  color:rgba(255,255,255,1);
+  transform:translateY(-1px);
+  box-shadow:0 4px 20px rgba(255,255,255,0.2);
+}
+
+/* ── PHASE LABEL ── */
+.phase-label{
+  position:fixed;bottom:28px;left:28px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:rgba(255,255,255,0.15);letter-spacing:.5px;
+}
+
+</style>
+<link rel="stylesheet" href="atlyz.css">
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="logo-wrap" id="logo-wrap">
+    <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="lg" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#e8e8e8"/>
+        </linearGradient>
+        <radialGradient id="disc-g" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.06)"/>
+          <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Subtle background disc (always visible) -->
+      <circle cx="50" cy="50" r="43" fill="url(#disc-g)"/>
+
+      <!-- ══ MAIN CIRCLE ══ -->
+      <circle class="svg-circle" cx="50" cy="50" r="44"
+        stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/>
+
+      <!-- ══ 5 LINES from root (50,73) ══ -->
+      <line class="line-l"  x1="50" y1="73" x2="19" y2="31" stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+      <line class="line-lc" x1="50" y1="73" x2="34" y2="17" stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+      <line class="line-c"  x1="50" y1="73" x2="50" y2="11" stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+      <line class="line-rc" x1="50" y1="73" x2="66" y2="17" stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+      <line class="line-r"  x1="50" y1="73" x2="81" y2="31" stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+
+      <!-- ══ MID DOTS ══ -->
+      <circle class="dot dot-mid-l"  cx="34" cy="52" r="4"   fill="url(#lg)"/>
+      <circle class="dot dot-mid-c"  cx="50" cy="42" r="4"   fill="url(#lg)"/>
+      <circle class="dot dot-mid-r"  cx="66" cy="52" r="4"   fill="url(#lg)"/>
+
+      <!-- ══ TIP DOTS ══ -->
+      <circle class="dot dot-tip-l"  cx="19" cy="31" r="5"   fill="url(#lg)"/>
+      <circle class="dot dot-tip-lc" cx="34" cy="17" r="5"   fill="url(#lg)"/>
+      <circle class="dot dot-tip-c"  cx="50" cy="11" r="5"   fill="url(#lg)"/>
+      <circle class="dot dot-tip-rc" cx="66" cy="17" r="5"   fill="url(#lg)"/>
+      <circle class="dot dot-tip-r"  cx="81" cy="31" r="5"   fill="url(#lg)"/>
+
+      <!-- ══ ROOT DOT ══ -->
+      <circle class="dot dot-root"   cx="50" cy="73" r="5.5" fill="url(#lg)"/>
+    </svg>
+  </div>
+
+  <div class="brand" id="brand">
+    <span class="brand-name">ATLYZ</span>
+    <span class="brand-tag">The Atlas Of Your Business</span>
+  </div>
+
+</div>
+
+<button class="replay-btn" onclick="restartCycle()">&#8635; Replay</button>
+<div class="phase-label" id="phase-lbl">◆ Initializing</div>
+
+<script>
+/* ── ELEMENT REFS ──────────────────────────────────────── */
+var brandEl = document.getElementById('brand');
+var wrapEl  = document.getElementById('logo-wrap');
+var lbl     = document.getElementById('phase-lbl');
+
+/* ── TIMER POOL (clearable all at once) ────────────────── */
+var timers = [];
+function after(fn, ms) { timers.push(setTimeout(fn, ms)); }
+function clearAll() { timers.forEach(clearTimeout); timers = []; }
+
+/* ── FORWARD TIMING (formation) — slowed ~1.6× original ─ */
+var F = {
+  dotRoot:  { dur:720,  delay:130  },
+  lineL:    { dur:1280, delay:560  },
+  lineLc:   { dur:1200, delay:560  },
+  lineC:    { dur:1120, delay:560  },
+  lineRc:   { dur:1200, delay:560  },
+  lineR:    { dur:1280, delay:560  },
+  dotMidL:  { dur:560,  delay:1170 },
+  dotMidC:  { dur:560,  delay:1220 },
+  dotMidR:  { dur:560,  delay:1170 },
+  dotTipL:  { dur:640,  delay:1730 },
+  dotTipLc: { dur:640,  delay:1790 },
+  dotTipC:  { dur:640,  delay:1840 },
+  dotTipRc: { dur:640,  delay:1790 },
+  dotTipR:  { dur:640,  delay:1730 },
+  circle:   { dur:2240, delay:2160 },
+};
+/* circle.delay + circle.dur = 4400 ms until fully formed */
+var FORM_DONE  = 4400;
+var HOLD_FWD   = 900;   /* pause while fully visible */
+
+/* ── REVERSE TIMING (dissolution) — reverse order ───────── */
+var R = {
+  circle:   { dur:1800, delay:0    },
+  dotTipL:  { dur:500,  delay:380  },
+  dotTipLc: { dur:500,  delay:400  },
+  dotTipC:  { dur:500,  delay:420  },
+  dotTipRc: { dur:500,  delay:400  },
+  dotTipR:  { dur:500,  delay:380  },
+  dotMidL:  { dur:500,  delay:760  },
+  dotMidC:  { dur:500,  delay:780  },
+  dotMidR:  { dur:500,  delay:760  },
+  lineL:    { dur:950,  delay:980  },
+  lineLc:   { dur:900,  delay:980  },
+  lineC:    { dur:850,  delay:980  },
+  lineRc:   { dur:900,  delay:980  },
+  lineR:    { dur:950,  delay:980  },
+  dotRoot:  { dur:600,  delay:1820 },
+};
+/* dotRoot.delay + dotRoot.dur = 2420 ms until fully gone */
+var REV_DONE  = 2420;
+var HOLD_REV  = 500;   /* pause while fully invisible */
+
+/* ── HELPERS ────────────────────────────────────────────── */
+function q(sel) { return document.querySelector(sel); }
+
+function anim(el, kf, dur, delay, dir, ease) {
+  ease = ease || 'cubic-bezier(.4,0,.2,1)';
+  dir  = dir  || 'normal';
+  el.style.animation = kf+' '+dur+'ms '+ease+' '+delay+'ms '+dir+' both';
+}
+
+function resetElements() {
+  var sel = '.svg-circle,.line-l,.line-lc,.line-c,.line-rc,.line-r,' +
+            '.dot-root,.dot-mid-l,.dot-mid-c,.dot-mid-r,' +
+            '.dot-tip-l,.dot-tip-lc,.dot-tip-c,.dot-tip-rc,.dot-tip-r';
+  document.querySelectorAll(sel).forEach(function(el){ el.style.animation = 'none'; });
+  q('.logo-svg').getBoundingClientRect(); /* force reflow */
+}
+
+/* ── FORWARD PHASE ──────────────────────────────────────── */
+function animateForward() {
+  var be = 'cubic-bezier(.34,1.56,.64,1)';
+  var le = 'cubic-bezier(.4,0,.2,1)';
+  var ce = 'cubic-bezier(.4,0,.15,1)';
+
+  anim(q('.dot-root'),   'pop',       F.dotRoot.dur,  F.dotRoot.delay,  'normal', be);
+  anim(q('.line-l'),     'draw',      F.lineL.dur,    F.lineL.delay,    'normal', le);
+  anim(q('.line-lc'),    'draw',      F.lineLc.dur,   F.lineLc.delay,   'normal', le);
+  anim(q('.line-c'),     'draw',      F.lineC.dur,    F.lineC.delay,    'normal', le);
+  anim(q('.line-rc'),    'draw',      F.lineRc.dur,   F.lineRc.delay,   'normal', le);
+  anim(q('.line-r'),     'draw',      F.lineR.dur,    F.lineR.delay,    'normal', le);
+  anim(q('.dot-mid-l'),  'pop',       F.dotMidL.dur,  F.dotMidL.delay,  'normal', be);
+  anim(q('.dot-mid-c'),  'pop',       F.dotMidC.dur,  F.dotMidC.delay,  'normal', be);
+  anim(q('.dot-mid-r'),  'pop',       F.dotMidR.dur,  F.dotMidR.delay,  'normal', be);
+  anim(q('.dot-tip-l'),  'pop',       F.dotTipL.dur,  F.dotTipL.delay,  'normal', be);
+  anim(q('.dot-tip-lc'), 'pop',       F.dotTipLc.dur, F.dotTipLc.delay, 'normal', be);
+  anim(q('.dot-tip-c'),  'pop',       F.dotTipC.dur,  F.dotTipC.delay,  'normal', be);
+  anim(q('.dot-tip-rc'), 'pop',       F.dotTipRc.dur, F.dotTipRc.delay, 'normal', be);
+  anim(q('.dot-tip-r'),  'pop',       F.dotTipR.dur,  F.dotTipR.delay,  'normal', be);
+  anim(q('.svg-circle'), 'draw-ring', F.circle.dur,   F.circle.delay,   'normal', ce);
+}
+
+/* ── REVERSE PHASE ──────────────────────────────────────── */
+function animateReverse() {
+  /* Clear all animations + force reflow so browser treats new anims as fresh.
+     fill-mode:backwards on undraw-* keyframes (from:0) keeps elements visually
+     drawn during their individual delays — no flash to hidden state. */
+  var sel = '.svg-circle,.line-l,.line-lc,.line-c,.line-rc,.line-r,' +
+            '.dot-root,.dot-mid-l,.dot-mid-c,.dot-mid-r,' +
+            '.dot-tip-l,.dot-tip-lc,.dot-tip-c,.dot-tip-rc,.dot-tip-r';
+  document.querySelectorAll(sel).forEach(function(el){ el.style.animation = 'none'; });
+  q('.logo-svg').getBoundingClientRect(); /* commit animation:none before setting new anims */
+
+  var ei = 'ease-in';
+  var ce = 'cubic-bezier(.6,0,.8,1)';
+
+  /* circle: undraw-ring traces back the path from end to start */
+  anim(q('.svg-circle'), 'undraw-ring', R.circle.dur,   R.circle.delay,   'normal', ce);
+  /* tip dots */
+  anim(q('.dot-tip-l'),  'unpop', R.dotTipL.dur,  R.dotTipL.delay,  'normal', ei);
+  anim(q('.dot-tip-lc'), 'unpop', R.dotTipLc.dur, R.dotTipLc.delay, 'normal', ei);
+  anim(q('.dot-tip-c'),  'unpop', R.dotTipC.dur,  R.dotTipC.delay,  'normal', ei);
+  anim(q('.dot-tip-rc'), 'unpop', R.dotTipRc.dur, R.dotTipRc.delay, 'normal', ei);
+  anim(q('.dot-tip-r'),  'unpop', R.dotTipR.dur,  R.dotTipR.delay,  'normal', ei);
+  /* mid dots */
+  anim(q('.dot-mid-l'),  'unpop', R.dotMidL.dur,  R.dotMidL.delay,  'normal', ei);
+  anim(q('.dot-mid-c'),  'unpop', R.dotMidC.dur,  R.dotMidC.delay,  'normal', ei);
+  anim(q('.dot-mid-r'),  'unpop', R.dotMidR.dur,  R.dotMidR.delay,  'normal', ei);
+  /* lines: explicit undraw keyframes per dasharray length */
+  anim(q('.line-l'),  'undraw-52', R.lineL.dur,  R.lineL.delay,  'normal', ei);
+  anim(q('.line-lc'), 'undraw-58', R.lineLc.dur, R.lineLc.delay, 'normal', ei);
+  anim(q('.line-c'),  'undraw-62', R.lineC.dur,  R.lineC.delay,  'normal', ei);
+  anim(q('.line-rc'), 'undraw-58', R.lineRc.dur, R.lineRc.delay, 'normal', ei);
+  anim(q('.line-r'),  'undraw-52', R.lineR.dur,  R.lineR.delay,  'normal', ei);
+  /* root dot — last to disappear */
+  anim(q('.dot-root'), 'unpop', R.dotRoot.dur, R.dotRoot.delay, 'normal', ei);
+}
+
+/* ── CYCLE CONTROLLER ───────────────────────────────────── */
+function runCycle() {
+  /* reset visual state */
+  resetElements();
+  brandEl.classList.remove('visible');
+  wrapEl.classList.remove('glow-on');
+  lbl.textContent = '◆ Root';
+
+  /* — FORMATION — */
+  animateForward();
+
+  after(function(){ lbl.textContent = '↑ Lines growing…'; },     560);
+  after(function(){ lbl.textContent = '• Mid dots'; },           1170);
+  after(function(){ lbl.textContent = '• Tip dots'; },           1730);
+  after(function(){ lbl.textContent = '○ Circle completing…'; }, 2160);
+
+  /* brand + glow appear as circle finishes */
+  after(function(){ brandEl.classList.add('visible'); },  FORM_DONE - 400);
+  after(function(){ wrapEl.classList.add('glow-on'); },   FORM_DONE - 300);
+  after(function(){ lbl.textContent = '✦ Complete'; },    FORM_DONE);
+
+  /* — HOLD → REVERSE — */
+  after(function(){
+    lbl.textContent = '↓ Dissolving…';
+    brandEl.classList.remove('visible');
+    wrapEl.classList.remove('glow-on');
+
+    /* slight pause so brand fade starts before lines undraw */
+    after(function(){
+      animateReverse();
+
+      /* — HOLD → NEXT CYCLE — */
+      after(runCycle, REV_DONE + HOLD_REV);
+
+    }, 350);
+
+  }, FORM_DONE + HOLD_FWD);
+}
+
+function restartCycle() {
+  clearAll();
+  runCycle();
+}
+
+/* kick off */
+runCycle();
+</script>
+
+</body>
+</html>

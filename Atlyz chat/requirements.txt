@@ -1,0 +1,19 @@
+# Atlyz Chat — Requirements
+# Install with: pip install -r requirements.txt
+
+# Core
+flask>=3.0.0
+werkzeug>=3.0.0
+python-dotenv>=1.0.0
+
+# Production server
+gunicorn>=21.2.0
+
+# AI
+openai>=1.30.0
+
+# Web scraping
+requests>=2.31.0
+
+# PDF knowledge support
+pdfplumber>=0.10.0
