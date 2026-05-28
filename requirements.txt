@@ -17,3 +17,6 @@ requests>=2.31.0
 
 # PDF knowledge support
 pdfplumber>=0.10.0
+
+bcrypt>=4.0.0
+itsdangerous>=2.1.0

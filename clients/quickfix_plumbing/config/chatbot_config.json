@@ -9,5 +9,7 @@
   "bot_tagline": "QuickFix Plumbing Assistant",
   "collect_leads": true,
   "widget_position": "bottom-right",
-  "white_label": false
+  "white_label": false,
+  "color_mode": "manual",
+  "logo_mode": "default"
 }

@@ -1,3 +1,10 @@
 venv/
 __pycache__/
 .env
+accounts/
+Atlyz chat/accounts/
+clients/*/data/
+clients/test-biz/
+*.pyc
+*.pyo
+.DS_Store
