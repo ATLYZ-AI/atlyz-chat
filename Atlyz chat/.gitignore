@@ -1,0 +1,21 @@
+# Environment / secrets
+.env
+
+# Virtual environments
+venv/
+atlyz-env/
+__pycache__/
+*.pyc
+*.pyo
+
+# Client data — leads, conversations, stats (personal info, never committed)
+clients/*/data/
+
+# Logs
+*.log
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

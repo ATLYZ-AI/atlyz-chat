@@ -1,0 +1,5 @@
+business_name = QuickFix Plumbing
+owner_email = ansaaralishah91@gmail.com
+website = https://www.quickfixplumbing.com
+plan = starter
+owner_password_hash = scrypt:32768:8:1$bkjacRsEIHAM7jkL$dc94230c13f3a487543fc0d114e3cde9693caa60c4f4a81be8c1170057224271e7227e6e0858d64fb3d3ea7e6683ddeae6cf95bebfdd6ccb4152ee1bb1f86e38
