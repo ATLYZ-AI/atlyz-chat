@@ -21,9 +21,9 @@
 .embed-box .label{font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
 .code-line{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
 .code-line code{flex:1;font-family:'JetBrains Mono',monospace;font-size:13px;color:#e0e0e0;word-break:break-all;line-height:1.5}
-.copy-btn{background:rgba(108,146,235,.14);border:1px solid rgba(108,146,235,.3);color:#e8eefc;font-size:13px;padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:500;transition:.2s;white-space:nowrap}
-.copy-btn:hover{background:rgba(108,146,235,.24)}
-.copy-btn.copied{color:#6c92eb}
+.copy-btn{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#e8eefc;font-size:13px;padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:500;transition:.2s;white-space:nowrap}
+.copy-btn:hover{background:rgba(255,255,255,.24)}
+.copy-btn.copied{color:#F3F4F6}
 .embed-hint{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
 
 /* ── Platform picker ── */
@@ -31,7 +31,7 @@
 .tabs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:40px}
 .tab{display:flex;align-items:center;gap:8px;padding:11px 18px;background:var(--surface);border:1px solid var(--border);border-radius:100px;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s}
 .tab:hover{color:var(--text);border-color:var(--border-h)}
-.tab.active{background:rgba(108,146,235,.12);border-color:rgba(108,146,235,.45);color:var(--text)}
+.tab.active{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.45);color:var(--text)}
 .tab .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
 
 /* ── Panel ── */
@@ -40,12 +40,12 @@
 @keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .panel-head{display:flex;align-items:center;gap:14px;margin-bottom:28px}
 .panel-head h2{font-size:24px;letter-spacing:-.5px}
-.panel-head .time{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--accent);background:rgba(108,146,235,.08);border:1px solid rgba(108,146,235,.2);padding:3px 12px;border-radius:100px}
+.panel-head .time{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--accent);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);padding:3px 12px;border-radius:100px}
 
 /* ── Steps ── */
 .steps{display:flex;flex-direction:column;gap:18px}
 .step-item{display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 22px}
-.step-num{width:30px;height:30px;border-radius:50%;background:rgba(108,146,235,.12);border:1px solid rgba(108,146,235,.3);color:var(--accent);font-size:14px;font-family:'JetBrains Mono',monospace;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-num{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:var(--accent);font-size:14px;font-family:'JetBrains Mono',monospace;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
 .step-body{flex:1}
 .step-body p{font-size:15px;color:var(--text);line-height:1.6}
 .step-body .sub{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.6}
@@ -53,7 +53,7 @@
 .step-body .path{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--surface2);border:1px solid var(--border);padding:2px 8px;border-radius:6px;color:#cdd6e6;white-space:nowrap}
 
 /* ── Callout ── */
-.callout{display:flex;gap:14px;align-items:flex-start;background:rgba(108,235,197,.06);border:1px solid rgba(108,235,197,.2);border-radius:14px;padding:18px 20px;margin-top:28px}
+.callout{display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:18px 20px;margin-top:28px}
 .callout .ico{font-size:18px;flex-shrink:0}
 .callout p{font-size:14px;color:var(--muted);line-height:1.65}
 .callout strong{color:var(--text)}

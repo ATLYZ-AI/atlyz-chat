@@ -31,9 +31,9 @@ body{
   top:-80px;left:0;right:0;
   width:100%;height:700px;
   background:
-    radial-gradient(ellipse 45% 45% at 28% 38%, rgba(108,146,235,0.32) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 45% at 68% 30%, rgba(108,235,197,0.26) 0%, transparent 70%),
-    radial-gradient(ellipse 38% 40% at 50% 62%, rgba(235,133,108,0.22) 0%, transparent 72%);
+    radial-gradient(ellipse 50% 50% at 50% 40%, rgba(0,194,255,0.06) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 45% at 68% 30%, rgba(0,194,255,0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 38% 40% at 30% 60%, rgba(0,194,255,0.04) 0%, transparent 72%);
   pointer-events:none;animation:glow-breathe 8s ease-in-out infinite;
 }
 @keyframes glow-breathe{
@@ -65,7 +65,7 @@ nav{
   gap:32px;
 }
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-word{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f0}
+.logo-word{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#F3F4F6}
 .nav-links{display:flex;gap:28px;align-items:center}
 .nav-links a{
   color:var(--muted);text-decoration:none;
@@ -80,12 +80,12 @@ nav{
 }
 .btn-nav-ghost:hover{color:var(--text);border-color:var(--border-h)}
 .btn-nav-cta{
-  background:#6c92eb;color:#04130d;
+  background:#00C2FF;color:#000000;
   padding:7px 18px;border-radius:100px;text-decoration:none;
   font-size:13px;font-weight:700;transition:.2s;font-family:'Outfit',sans-serif;
-  box-shadow:0 4px 16px rgba(108,146,235,0.4);
+  box-shadow:0 4px 16px rgba(255,255,255,0.4);
 }
-.btn-nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(108,146,235,0.55)}
+.btn-nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(255,255,255,0.55)}
 .hamburger{
   display:none;background:none;border:none;
   color:var(--text);font-size:22px;cursor:pointer;padding:4px;
@@ -93,7 +93,6 @@ nav{
 
 /* ─────────────── HERO ─────────────── */
 .hero{
-  --accent:#b7dce4;
   position:relative;z-index:1;
   min-height:100dvh;
   display:grid;grid-template-columns:1fr 1fr;
@@ -157,15 +156,15 @@ nav{
 .btn-primary{
   display:inline-flex;align-items:center;gap:10px;
   padding:13px 28px;border-radius:100px;
-  background:#6c92eb;
-  color:#04130d;text-decoration:none;font-weight:700;font-size:15px;
+  background:#00C2FF;
+  color:#FFFFFF;text-decoration:none;font-weight:700;font-size:15px;
   font-family:'Outfit',sans-serif;
   border:none;cursor:pointer;
   transition:transform .25s cubic-bezier(0.32,0.72,0,1),box-shadow .25s cubic-bezier(0.32,0.72,0,1);
-  box-shadow:0 8px 28px rgba(108,146,235,0.40);
+  box-shadow:0 8px 28px rgba(0,194,255,0.40);
 }
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 44px rgba(108,146,235,0.6)}
-.btn-primary:active{transform:translateY(0) scale(0.98);box-shadow:0 4px 14px rgba(108,146,235,0.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 44px rgba(0,194,255,0.6)}
+.btn-primary:active{transform:translateY(0) scale(0.98);box-shadow:0 4px 14px rgba(0,194,255,0.35)}
 .btn-outline{
   display:inline-flex;align-items:center;gap:10px;
   padding:13px 28px;border-radius:100px;
@@ -257,7 +256,7 @@ nav{
 }
 .trust-item:hover{
   color:var(--accent);
-  filter:drop-shadow(0 0 10px rgba(255,255,255,0.6));
+  filter:drop-shadow(0 0 10px rgba(0,194,255,0.6));
 }
 .trust-item svg{
   width:40px;height:40px;flex-shrink:0;opacity:.8;
@@ -312,8 +311,8 @@ nav{
 .step-tag{
   display:inline-block;font-size:10px;
   font-family:'JetBrains Mono',monospace;
-  color:#6c92eb;background:rgba(108,146,235,.08);
-  border:1px solid rgba(108,146,235,.15);
+  color:#F3F4F6;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
   padding:3px 10px;border-radius:100px;margin-top:12px;
 }
 
@@ -325,7 +324,7 @@ section{
 .section-label{
   font-size:11px;font-family:'JetBrains Mono',monospace;
   letter-spacing:2.5px;text-transform:uppercase;
-  color:var(--accent);margin-bottom:12px;
+  color:#00C2FF;margin-bottom:12px;
 }
 .section-title{
   font-family:'Space Grotesk',sans-serif;
@@ -421,14 +420,14 @@ section{
 /* lang */
 .lang-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
 .pill{padding:3px 10px;border-radius:100px;font-size:11px;font-family:'JetBrains Mono',monospace;background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
-.pill.on{background:rgba(108,146,235,.08);border-color:rgba(108,146,235,.2);color:#6c92eb}
+.pill.on{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#F3F4F6}
 
 /* scrape */
 .scrape-steps{display:flex;flex-direction:column;gap:7px;margin-top:16px}
 .s-step{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;background:var(--surface2);font-size:13px;color:var(--muted)}
 .s-step.done{color:var(--text)}
 .s-dot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0}
-.s-step.done .s-dot{background:#6c92eb;box-shadow:0 0 8px rgba(108,146,235,.4)}
+.s-step.done .s-dot{background:#F3F4F6;box-shadow:0 0 8px rgba(255,255,255,.4)}
 
 /* embed */
 .embed-box{
@@ -469,9 +468,9 @@ section{
   font-size:10px;font-weight:400;letter-spacing:1.5px;text-transform:uppercase;
   font-family:'JetBrains Mono',monospace;margin-bottom:20px;
 }
-.tag-live{background:rgba(108,146,235,.08);color:var(--green);border:1px solid rgba(108,146,235,.18)}
+.tag-live{background:rgba(255,255,255,.08);color:var(--green);border:1px solid rgba(255,255,255,.18)}
 .tag-soon{background:rgba(255,255,255,.08);color:var(--accent);border:1px solid rgba(255,255,255,.18)}
-.tag-road{background:rgba(108,146,235,.08);color:var(--muted);border:1px solid var(--border)}
+.tag-road{background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--border)}
 
 .prod-card-inner h3{
   font-family:'Space Grotesk',sans-serif;
@@ -518,8 +517,8 @@ section{
   margin-top:18px;
   display:inline-flex;align-items:center;gap:6px;
   font-size:11px;font-family:'JetBrains Mono',monospace;
-  color:#6c92eb;background:rgba(108,146,235,.06);
-  border:1px solid rgba(108,146,235,.15);
+  color:#F3F4F6;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.15);
   padding:5px 12px;border-radius:100px;
 }
 
@@ -529,24 +528,24 @@ section{
   gap:14px;margin-top:64px;
 }
 .price-card{
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:20px;padding:32px;position:relative;
+  background:#1A1D26;border:0.5px solid rgba(255,255,255,0.07);
+  border-radius:12px;padding:32px;position:relative;
   transition:border-color .3s cubic-bezier(0.32,0.72,0,1);
 }
-.price-card:hover{border-color:var(--border-h)}
+.price-card:hover{border-color:rgba(255,255,255,0.14)}
 .price-card.featured{
-  border-color:rgba(108,146,235,.45);
-  background:linear-gradient(160deg,rgba(108,146,235,.10),rgba(108,235,197,.04));
-  box-shadow:0 0 0 1px rgba(108,146,235,.20),0 0 70px rgba(108,146,235,.16);
+  border:1px solid rgba(255,255,255,0.2);
+  background:#1A1D26;
+  box-shadow:none;
 }
 .price-badge{
   position:absolute;top:-13px;left:50%;transform:translateX(-50%);
-  background:#6c92eb;
-  color:#04130d;font-size:10px;font-weight:700;
+  background:rgba(255,255,255,0.08);
+  color:#fff;font-size:10px;font-weight:700;
   padding:4px 18px;border-radius:100px;letter-spacing:2px;
   text-transform:uppercase;white-space:nowrap;
   font-family:'JetBrains Mono',monospace;
-  box-shadow:0 4px 14px rgba(108,146,235,0.5);
+  box-shadow:none;
 }
 .price-tier{font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:400;letter-spacing:.5px;text-transform:uppercase}
 .price-amount{
@@ -556,45 +555,44 @@ section{
 .price-period{font-size:13px;color:var(--muted);margin-bottom:28px}
 .price-feats{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
 .pf{display:flex;align-items:flex-start;gap:10px;font-size:13px}
-.pf .ck{color:#6c92eb;flex-shrink:0;font-size:15px;margin-top:1px}
+.pf .ck{color:rgba(255,255,255,0.5);flex-shrink:0;font-size:15px;margin-top:1px}
 .pf .no{color:#3c3c3c;flex-shrink:0;font-size:15px;margin-top:1px}
 .pf span{color:var(--muted)}
 .pf.has span{color:var(--text)}
 .price-btn{
-  width:100%;padding:12px;border-radius:100px;font-size:13px;
-  font-weight:600;cursor:pointer;
-  transition:transform .2s cubic-bezier(0.32,0.72,0,1),box-shadow .2s cubic-bezier(0.32,0.72,0,1),background .2s;
+  width:100%;padding:12px;border-radius:100px;font-size:12px;
+  font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.8px;
+  transition:transform .2s cubic-bezier(0.32,0.72,0,1),border-color .2s,color .2s,background .2s;
   text-decoration:none;display:block;text-align:center;
   font-family:'Outfit',sans-serif;
 }
-.price-btn.outline{background:transparent;border:1px solid var(--border-h);color:var(--text)}
-.price-btn.outline:hover{background:var(--surface3);transform:translateY(-1px)}
+.price-btn.outline{background:transparent;border:1px solid rgba(255,255,255,0.22);color:rgba(255,255,255,0.6)}
+.price-btn.outline:hover{border-color:rgba(255,255,255,0.4);color:#fff;transform:scale(1.02)}
 .price-btn.solid{
-  background:#6c92eb;
-  border:none;color:#04130d;
-  box-shadow:0 6px 20px rgba(108,146,235,0.45);
+  background:#fff;
+  border:none;color:#000;
+  box-shadow:none;
 }
 .price-btn.solid:hover{
-  box-shadow:0 10px 34px rgba(108,146,235,0.6);
-  transform:translateY(-1px);
+  transform:scale(1.02);
 }
 
 /* ─────────────── FOUNDING MEMBER PRICING ─────────────── */
 .founding-banner{
   display:inline-flex;align-items:center;gap:8px;
-  background:linear-gradient(135deg,rgba(108,146,235,.12),rgba(108,146,235,.06));
-  border:1px solid rgba(108,146,235,.3);
+  background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.06));
+  border:1px solid rgba(255,255,255,.3);
   border-radius:100px;padding:8px 20px;margin:0 auto 40px;
-  font-size:12px;font-weight:500;color:#6c92eb;
+  font-size:12px;font-weight:500;color:#F3F4F6;
   letter-spacing:.3px;font-family:'JetBrains Mono',monospace;
 }
 .founding-banner::before{
   content:'';width:6px;height:6px;border-radius:50%;
-  background:#6c92eb;box-shadow:0 0 6px #6c92eb;
+  background:#F3F4F6;box-shadow:0 0 6px #F3F4F6;
   animation:pulse 1.8s ease-in-out infinite;
 }
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
-.founding-banner span{color:rgba(108,146,235,.6);margin-left:2px}
+.founding-banner span{color:rgba(255,255,255,.6);margin-left:2px}
 
 .price-original{
   font-size:18px;font-weight:400;color:var(--muted);
@@ -603,9 +601,9 @@ section{
 }
 .price-discount-tag{
   display:inline-block;
-  background:linear-gradient(135deg,rgba(108,146,235,.15),rgba(108,146,235,.08));
-  border:1px solid rgba(108,146,235,.25);
-  color:#6c92eb;font-size:10px;font-weight:600;
+  background:rgba(255,255,255,0.06);
+  border:none;
+  color:rgba(255,255,255,0.5);font-size:10px;font-weight:600;
   padding:3px 10px;border-radius:100px;margin-bottom:6px;
   font-family:'JetBrains Mono',monospace;letter-spacing:.5px;
 }
@@ -614,17 +612,17 @@ section{
   color:var(--text);
 }
 .price-founding-note{
-  font-size:10px;color:rgba(108,146,235,.5);margin-top:-20px;
+  font-size:10px;color:rgba(255,255,255,.5);margin-top:-20px;
   margin-bottom:22px;letter-spacing:.3px;font-family:'JetBrains Mono',monospace;
 }
 .founder-badge{
   position:absolute;top:-13px;left:50%;transform:translateX(-50%);
-  background:#6c92eb;
-  color:#04130d;font-size:10px;font-weight:500;
+  background:rgba(255,255,255,0.08);
+  color:#fff;font-size:10px;font-weight:500;
   padding:4px 18px;border-radius:100px;letter-spacing:1.5px;
   text-transform:uppercase;white-space:nowrap;
   font-family:'JetBrains Mono',monospace;
-  box-shadow:0 4px 12px rgba(108,146,235,.3);
+  box-shadow:none;
 }
 
 /* ─────────────── FAQ ─────────────── */
@@ -678,28 +676,28 @@ section{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
   width:800px;height:500px;
   background:
-    radial-gradient(ellipse 60% 60% at 40% 50%,rgba(108,146,235,.18) 0%,transparent 65%),
-    radial-gradient(ellipse 55% 55% at 65% 55%,rgba(108,235,197,.14) 0%,transparent 68%),
-    radial-gradient(ellipse 45% 50% at 50% 45%,rgba(235,133,108,.10) 0%,transparent 70%);
+    radial-gradient(ellipse 60% 60% at 50% 50%,rgba(0,100,200,0.07) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 55% at 62% 55%,rgba(0,100,200,0.04) 0%,transparent 70%);
   pointer-events:none;
 }
 .urgency-bar{
   display:inline-flex;align-items:center;gap:8px;
   font-size:12px;font-family:'JetBrains Mono',monospace;
-  color:#6c92eb;background:rgba(108,146,235,.07);
-  border:1px solid rgba(108,146,235,.15);
+  color:#F3F4F6;background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.15);
   padding:6px 16px;border-radius:100px;
   margin-bottom:28px;position:relative;
 }
 .urgency-dot{
   width:6px;height:6px;border-radius:50%;
-  background:#6c92eb;animation:blink 1.5s infinite;
+  background:#F3F4F6;animation:blink 1.5s infinite;
 }
 .cta-wrap h2{
   font-size:clamp(34px,5vw,60px);font-weight:500;
   letter-spacing:-3px;line-height:1.04;
   margin-bottom:16px;position:relative;
 }
+.cta-wrap h2 em{font-style:italic;font-weight:400;color:rgba(255,255,255,0.4)}
 .cta-wrap>p{font-size:17px;color:var(--muted);margin-bottom:36px;position:relative}
 .cta-email-form{
   display:flex;gap:8px;justify-content:center;
@@ -721,7 +719,7 @@ section{
   gap:20px;flex-wrap:wrap;position:relative;
 }
 .cta-risk span{display:flex;align-items:center;gap:5px}
-.risk-check{color:#6c92eb}
+.risk-check{color:#F3F4F6}
 
 /* ─────────────── FOOTER ─────────────── */
 footer{
@@ -758,7 +756,7 @@ footer{
 .foot-nl-input:focus{border-color:rgba(255,255,255,.4)}
 .foot-nl-btn{
   padding:8px 14px;border-radius:100px;border:none;
-  background:#6c92eb;color:#04130d;
+  background:#00C2FF;color:#000000;
   font-size:12px;font-family:'Outfit',sans-serif;
   cursor:pointer;white-space:nowrap;transition:background .2s,box-shadow .2s;
 }
@@ -807,7 +805,7 @@ footer{
 #scroll-prog{
   position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;
   background:linear-gradient(90deg,var(--brand),var(--brand2));
-  box-shadow:0 0 8px rgba(108,146,235,.6);
+  box-shadow:0 0 8px rgba(255,255,255,.6);
   pointer-events:none;
   transition:width .08s linear;
 }
@@ -815,11 +813,11 @@ footer{
 /* ─────────────── AMBIENT ORBS ─────────────── */
 .amb-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orb-drift 24s ease-in-out infinite alternate}
-.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(108,146,235,0.28),transparent 65%);top:-240px;left:-200px;animation-duration:30s}
-.orb2{width:580px;height:580px;background:radial-gradient(circle,rgba(108,235,197,0.26),transparent 65%);top:28%;right:-200px;animation-duration:36s;animation-direction:alternate-reverse;animation-delay:-14s}
-.orb3{width:520px;height:520px;background:radial-gradient(circle,rgba(235,133,108,0.24),transparent 65%);bottom:-40px;left:-40px;animation-duration:26s;animation-delay:-8s}
-.orb4{width:380px;height:380px;background:radial-gradient(circle,rgba(235,133,108,0.22),transparent 65%);bottom:-120px;right:10%;animation-duration:20s;animation-direction:alternate-reverse;animation-delay:-20s}
-.orb5{width:300px;height:300px;background:radial-gradient(circle,rgba(108,146,235,0.24),transparent 65%);top:42%;left:32%;animation-duration:33s;animation-delay:-5s}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(0,194,255,0.06),transparent 65%);top:-240px;left:-200px;animation-duration:30s}
+.orb2{width:580px;height:580px;background:radial-gradient(circle,rgba(0,100,200,0.06),transparent 65%);top:28%;right:-200px;animation-duration:36s;animation-direction:alternate-reverse;animation-delay:-14s}
+.orb3{width:520px;height:520px;background:radial-gradient(circle,rgba(0,194,255,0.05),transparent 65%);bottom:-40px;left:-40px;animation-duration:26s;animation-delay:-8s}
+.orb4{width:380px;height:380px;background:radial-gradient(circle,rgba(0,100,200,0.05),transparent 65%);bottom:-120px;right:10%;animation-duration:20s;animation-direction:alternate-reverse;animation-delay:-20s}
+.orb5{width:300px;height:300px;background:radial-gradient(circle,rgba(0,194,255,0.04),transparent 65%);top:42%;left:32%;animation-duration:33s;animation-delay:-5s}
 @keyframes orb-drift{
   from{transform:translate(0,0) scale(1)}
   to{transform:translate(80px,-60px) scale(1.1)}
@@ -843,14 +841,7 @@ footer{
   color:var(--accent);
 }
 
-/* ─────────────── FEATURED CARD BORDER PULSE ─────────────── */
-.price-card.featured{
-  animation:feat-pulse 3.5s ease-in-out infinite;
-}
-@keyframes feat-pulse{
-  0%,100%{box-shadow:0 0 0 1px rgba(108,146,235,.20),0 0 60px rgba(108,146,235,.12)}
-  50%{box-shadow:0 0 0 1px rgba(108,146,235,.50),0 0 90px rgba(108,146,235,.28),0 0 40px rgba(108,235,197,.18)}
-}
+/* Featured card uses a static brighter border only — no glow (see .price-card.featured above) */
 
 /* ─────────────── STAT NUM HOVER ─────────────── */
 .stat-item{cursor:default}
@@ -952,7 +943,7 @@ footer{
 .la-section-glow{
   position:absolute;top:0;left:50%;transform:translateX(-50%);
   width:600px;height:320px;pointer-events:none;
-  background:radial-gradient(ellipse,rgba(108,146,235,0.08) 0%,transparent 70%);
+  background:radial-gradient(ellipse,rgba(0,194,255,0.06) 0%,transparent 70%);
 }
 .la-section-tag{
   font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;
@@ -1075,7 +1066,7 @@ footer{
       Atlyz Chat — available now →
     </div>
 
-    <h1>Answer every customer<br>question <span class="word-accent">in 0.8 seconds</span> — while you sleep.</h1>
+    <h1>Answer every customer<br>question <span class="word-accent">in 0.8 seconds —</span> while you sleep.</h1>
 
     <p class="hero-sub">
       The AI chatbot that reads your website, speaks 50+ languages, and captures leads 24/7. Up and running in 5 minutes — no developer needed.
@@ -1091,7 +1082,7 @@ footer{
 
   <div class="hero-visual">
     <div style="position:relative;display:flex;align-items:center;justify-content:center;">
-      <div style="position:absolute;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.12),transparent 70%);pointer-events:none;"></div>
+      <div style="position:absolute;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(0,194,255,0.07),transparent 70%);pointer-events:none;"></div>
       <div style="background:rgba(255,255,255,0.025);border:1px solid var(--border);border-radius:24px;padding:3px;width:340px;box-shadow:0 40px 100px rgba(0,0,0,0.5);">
         <div style="background:var(--surface3);border-radius:21px;padding:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border);">
@@ -1392,9 +1383,9 @@ footer{
     <div class="price-card reveal" style="position:relative">
       <div class="founder-badge">Founding Member</div>
       <div class="price-tier" style="margin-top:10px">Starter</div>
-      <div class="price-original">$55</div>
-      <div class="price-discount-tag">18% Off — First 10 Clients</div>
-      <div class="price-amount founder-price">$45</div>
+      <div class="price-original">$69</div>
+      <div class="price-discount-tag">14% Off — First 10 Clients</div>
+      <div class="price-amount founder-price">$59</div>
       <div class="price-period">per month</div>
       <div class="price-founding-note">Lock in this rate forever</div>
       <div class="price-feats">
@@ -1411,9 +1402,9 @@ footer{
     <div class="price-card featured reveal">
       <div class="price-badge">Most Popular</div>
       <div class="price-tier" style="margin-top:10px">Growth</div>
-      <div class="price-original">$99</div>
-      <div class="price-discount-tag">14% Off — First 10 Clients</div>
-      <div class="price-amount founder-price">$85</div>
+      <div class="price-original">$129</div>
+      <div class="price-discount-tag">15% Off — First 10 Clients</div>
+      <div class="price-amount founder-price">$109</div>
       <div class="price-period">per month</div>
       <div class="price-founding-note">Lock in this rate forever</div>
       <div class="price-feats">
@@ -1430,9 +1421,9 @@ footer{
     <div class="price-card reveal" style="position:relative">
       <div class="founder-badge">Founding Member</div>
       <div class="price-tier" style="margin-top:10px">Pro</div>
-      <div class="price-original">$149</div>
-      <div class="price-discount-tag">13% Off — First 10 Clients</div>
-      <div class="price-amount founder-price">$130</div>
+      <div class="price-original">$189</div>
+      <div class="price-discount-tag">16% Off — First 10 Clients</div>
+      <div class="price-amount founder-price">$159</div>
       <div class="price-period">per month</div>
       <div class="price-founding-note">Lock in this rate forever</div>
       <div class="price-feats">
@@ -1509,7 +1500,7 @@ footer{
     <span class="urgency-dot"></span>
     Be among the first businesses to try Atlyz
   </div>
-  <h2>Start answering customers<br>tonight — for free.</h2>
+  <h2>Start answering customers<br>tonight — <em>for free.</em></h2>
   <p>We're in beta — onboarding founding customers with personal setup and support.</p>
   <div class="cta-email-form">
     <input type="email" class="cta-email-input" placeholder="your@email.com">
@@ -1533,8 +1524,8 @@ footer{
         <stop offset="100%" stop-color="#ffffff"/>
       </linearGradient>
       <radialGradient id="bot-disc" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="rgba(108,146,235,0.07)"/>
-        <stop offset="100%" stop-color="rgba(108,146,235,0)"/>
+        <stop offset="0%" stop-color="rgba(255,255,255,0.07)"/>
+        <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
       </radialGradient>
     </defs>
     <circle cx="50" cy="50" r="43" fill="url(#bot-disc)"/>
@@ -1908,9 +1899,9 @@ window.ATLYZ_USE_3D=(function(){
     renderer.setPixelRatio(Math.min(devicePixelRatio,2));
     renderer.setSize(innerWidth, innerHeight);
 
-    var COUNT=130, SX=52, SY=34, SZ=30;
+    var COUNT=90, SX=52, SY=34, SZ=30;
     var pos=new Float32Array(COUNT*3), col=new Float32Array(COUNT*3), vel=[];
-    var PALETTE=[new THREE.Color(0xffffff),new THREE.Color(0xffffff),new THREE.Color(0xffffff),new THREE.Color(0xffffff),new THREE.Color(0xffffff)];
+    var PALETTE=[new THREE.Color(0xffffff),new THREE.Color(0xdfe6f0),new THREE.Color(0xc2ccda),new THREE.Color(0xffffff),new THREE.Color(0xd2dae6)];
     for(var i=0;i<COUNT;i++){
       pos[i*3]=(Math.random()-.5)*SX; pos[i*3+1]=(Math.random()-.5)*SY; pos[i*3+2]=(Math.random()-.5)*SZ;
       var cc=PALETTE[Math.floor(Math.random()*PALETTE.length)]; col[i*3]=cc.r; col[i*3+1]=cc.g; col[i*3+2]=cc.b;
@@ -1919,10 +1910,10 @@ window.ATLYZ_USE_3D=(function(){
     var pGeo=new THREE.BufferGeometry();
     pGeo.setAttribute('position', new THREE.BufferAttribute(pos,3));
     pGeo.setAttribute('color', new THREE.BufferAttribute(col,3));
-    var points=new THREE.Points(pGeo, new THREE.PointsMaterial({size:0.22, vertexColors:true, transparent:true, opacity:0.9, blending:THREE.AdditiveBlending, depthWrite:false}));
+    var points=new THREE.Points(pGeo, new THREE.PointsMaterial({size:0.2, vertexColors:true, transparent:true, opacity:0.6, depthWrite:false}));
 
     var lGeo=new THREE.BufferGeometry();
-    var lines=new THREE.LineSegments(lGeo, new THREE.LineBasicMaterial({color:0xffffff, transparent:true, opacity:0.22, blending:THREE.AdditiveBlending, depthWrite:false}));
+    var lines=new THREE.LineSegments(lGeo, new THREE.LineBasicMaterial({color:0xc2ccda, transparent:true, opacity:0.16, depthWrite:false}));
 
     var group=new THREE.Group(); group.add(points); group.add(lines); scene.add(group);
 
@@ -2007,9 +1998,9 @@ window.__atlyzStart2D=function(){
     this.vx=(Math.random()-.5)*.4;
     this.vy=(Math.random()-.5)*.4;
     this.r=Math.random()*1.5+.5;
-    var palette=['rgba(255,255,255,','rgba(255,255,255,','rgba(255,255,255,','rgba(255,255,255,','rgba(255,255,255,'];
+    var palette=['rgba(255,255,255,','rgba(255,255,255,','rgba(255,255,255,'];
     this.color=palette[Math.floor(Math.random()*palette.length)];
-    this.alpha=Math.random()*.5+.3;
+    this.alpha=Math.random()*.5+.2;
   };
   Particle.prototype.update=function(){
     this.x+=this.vx;

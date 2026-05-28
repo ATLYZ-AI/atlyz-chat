@@ -21,13 +21,13 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
 .nav-links{display:flex;gap:28px}
 .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s;font-family:'Outfit',sans-serif}
 .nav-links a:hover{color:var(--text)}
-.nav-cta{background:#6c92eb;color:#04130d;padding:7px 18px;border-radius:100px;text-decoration:none;font-size:13px;font-weight:600;font-family:'Outfit',sans-serif;transition:.2s;box-shadow:0 4px 16px rgba(108,146,235,0.3);white-space:nowrap}
-.nav-cta:hover{background:#ffffff;transform:translateY(-1px);box-shadow:0 6px 20px rgba(108,146,235,0.4)}
+.nav-cta{background:#00C2FF;color:#000000;padding:7px 18px;border-radius:100px;text-decoration:none;font-size:13px;font-weight:700;font-family:'Outfit',sans-serif;transition:.2s;box-shadow:0 4px 16px rgba(0,194,255,0.3);white-space:nowrap}
+.nav-cta:hover{background:#ffffff;transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,255,255,0.4)}
 .hamburger{display:none;background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;padding:4px;line-height:1}
 
 /* ── HERO ── */
 .hero{position:relative;min-height:100dvh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:4rem;padding:120px 80px 80px;max-width:1320px;margin:0 auto;z-index:1;overflow:hidden}
-.hero-glow{position:absolute;top:0;left:0;right:0;height:100%;background:radial-gradient(ellipse 55% 60% at 30% 40%,rgba(108,146,235,0.34) 0%,rgba(108,146,235,0.13) 55%,transparent 100%);pointer-events:none}
+.hero-glow{position:absolute;top:0;left:0;right:0;height:100%;background:radial-gradient(ellipse 55% 60% at 30% 40%,rgba(0,194,255,0.06) 0%,rgba(255,255,255,0.13) 55%,transparent 100%);pointer-events:none}
 .badge{display:inline-flex;align-items:center;gap:8px;padding:5px 14px 5px 6px;border-radius:100px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.07);font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:28px}
 .badge-inner{background:rgba(255,255,255,0.22);border-radius:100px;padding:2px 10px;font-size:11px;color:#d0d0d0;display:flex;align-items:center;gap:5px}
 .badge-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.8s infinite}
@@ -36,15 +36,15 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
 .word-accent{color:var(--accent)}
 .hero-sub{font-size:17px;color:var(--muted);max-width:440px;margin-bottom:36px;line-height:1.75}
 .hero-btns{display:flex;gap:12px;flex-wrap:wrap}
-.btn-primary{display:inline-flex;align-items:center;gap:10px;padding:13px 28px;border-radius:100px;background:#6c92eb;color:#04130d;text-decoration:none;font-size:15px;font-weight:600;font-family:'Outfit',sans-serif;border:none;cursor:pointer;transition:transform .25s cubic-bezier(0.32,0.72,0,1),box-shadow .25s cubic-bezier(0.32,0.72,0,1);box-shadow:0 8px 28px rgba(108,146,235,0.35)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(108,146,235,0.45)}
-.btn-primary:active{transform:scale(0.98);box-shadow:0 4px 12px rgba(108,146,235,0.25)}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;padding:13px 28px;border-radius:100px;background:#00C2FF;color:#000000;text-decoration:none;font-size:15px;font-weight:700;font-family:'Outfit',sans-serif;border:none;cursor:pointer;transition:transform .25s cubic-bezier(0.32,0.72,0,1),box-shadow .25s cubic-bezier(0.32,0.72,0,1);box-shadow:0 8px 28px rgba(0,194,255,0.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(0,194,255,0.45)}
+.btn-primary:active{transform:scale(0.98);box-shadow:0 4px 12px rgba(0,194,255,0.25)}
 .btn-ghost{display:inline-flex;align-items:center;gap:10px;padding:13px 28px;border-radius:100px;border:1px solid var(--border-h);color:var(--text);text-decoration:none;font-size:15px;font-weight:500;font-family:'Outfit',sans-serif;background:rgba(255,255,255,.03);cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
 .btn-ghost:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.24);transform:translateY(-1px)}
 
 /* ── SECTIONS ── */
 section{max-width:1200px;margin:0 auto;padding:100px 24px;position:relative;z-index:1}
-.section-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:12px}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:#00C2FF;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:12px}
 .section-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,48px);font-weight:800;letter-spacing:-0.03em;line-height:1.05;margin-bottom:16px;text-wrap:balance}
 .section-sub{font-size:17px;color:var(--muted);max-width:520px;margin-bottom:60px;line-height:1.7}
 
@@ -70,7 +70,7 @@ section{max-width:1200px;margin:0 auto;padding:100px 24px;position:relative;z-in
 .step-row:hover .step-num{border-color:rgba(255,255,255,0.4);box-shadow:0 0 20px rgba(255,255,255,0.15)}
 .step-content h4{font-family:'Outfit',sans-serif;font-size:17px;font-weight:600;margin-bottom:6px}
 .step-content p{font-size:15px;color:var(--muted);line-height:1.7}
-.step-tag{display:inline-block;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green);background:rgba(108,146,235,.08);border:1px solid rgba(108,146,235,.15);padding:3px 10px;border-radius:100px;margin-top:10px}
+.step-tag{display:inline-block;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);padding:3px 10px;border-radius:100px;margin-top:10px}
 .code-block{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:14px 18px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-top:14px;line-height:1.8}
 
 /* ── STATS ROW ── */
@@ -89,9 +89,9 @@ section{max-width:1200px;margin:0 auto;padding:100px 24px;position:relative;z-in
 #scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;background:linear-gradient(90deg,var(--accent),var(--green));box-shadow:0 0 8px rgba(255,255,255,.6);pointer-events:none}
 .amb-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orb-drift 24s ease-in-out infinite alternate}
-.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(108,146,235,0.34),transparent 65%);top:-280px;left:-200px;animation-duration:30s}
-.orb2{width:580px;height:580px;background:radial-gradient(circle,rgba(108,235,197,0.224),transparent 65%);top:30%;right:-200px;animation-duration:36s;animation-direction:alternate-reverse;animation-delay:-14s}
-.orb3{width:460px;height:460px;background:radial-gradient(circle,rgba(235,133,108,0.196),transparent 65%);bottom:0;left:0;animation-duration:26s;animation-delay:-8s}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(0,194,255,0.06),transparent 65%);top:-280px;left:-200px;animation-duration:30s}
+.orb2{width:580px;height:580px;background:radial-gradient(circle,rgba(0,194,255,0.06),transparent 65%);top:30%;right:-200px;animation-duration:36s;animation-direction:alternate-reverse;animation-delay:-14s}
+.orb3{width:460px;height:460px;background:radial-gradient(circle,rgba(0,194,255,0.06),transparent 65%);bottom:0;left:0;animation-duration:26s;animation-delay:-8s}
 @keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(70px,-50px) scale(1.08)}}
 #particles-canvas,#webgl-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s}
 #particles-canvas.ready,#webgl-canvas.ready{opacity:1}
@@ -192,7 +192,7 @@ section{max-width:1200px;margin:0 auto;padding:100px 24px;position:relative;z-in
   </div>
 
   <div class="hero-visual-side" style="display:flex;align-items:center;justify-content:center;position:relative;">
-    <div style="position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.1),transparent 70%);pointer-events:none;"></div>
+    <div style="position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(0,194,255,0.06),transparent 70%);pointer-events:none;"></div>
     <div style="background:rgba(255,255,255,0.025);border:1px solid var(--border);border-radius:24px;padding:3px;width:340px;box-shadow:0 40px 100px rgba(0,0,0,0.5);">
       <div style="background:var(--surface3);border-radius:21px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);">
         <div style="background:var(--surface2);padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
@@ -286,15 +286,15 @@ section{max-width:1200px;margin:0 auto;padding:100px 24px;position:relative;z-in
 
     <div class="feat-card fc-narrow reveal">
       <div class="feat-card-inner">
-        <div class="feat-icon" style="background:rgba(108,146,235,0.12);border:1px solid rgba(108,146,235,0.2);color:var(--green)">
+        <div class="feat-icon" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:var(--green)">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         </div>
         <h3>50+ languages, zero config</h3>
         <p>Auto-detects what language the customer writes in and responds in it. Serve global customers without hiring multilingual staff.</p>
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;">
-          <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-family:'JetBrains Mono',monospace;background:rgba(108,146,235,0.08);border:1px solid rgba(108,146,235,0.2);color:var(--green)">English</span>
-          <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-family:'JetBrains Mono',monospace;background:rgba(108,146,235,0.08);border:1px solid rgba(108,146,235,0.2);color:var(--green)">Spanish</span>
-          <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-family:'JetBrains Mono',monospace;background:rgba(108,146,235,0.08);border:1px solid rgba(108,146,235,0.2);color:var(--green)">Arabic</span>
+          <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:var(--green)">English</span>
+          <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:var(--green)">Spanish</span>
+          <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:var(--green)">Arabic</span>
           <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-family:'JetBrains Mono',monospace;background:var(--surface2);border:1px solid var(--border);color:var(--muted)">Urdu</span>
           <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-family:'JetBrains Mono',monospace;background:var(--surface2);border:1px solid var(--border);color:var(--muted)">+46 more</span>
         </div>
@@ -313,7 +313,7 @@ section{max-width:1200px;margin:0 auto;padding:100px 24px;position:relative;z-in
 
     <div class="feat-card fc-third reveal">
       <div class="feat-card-inner">
-        <div class="feat-icon" style="background:rgba(108,146,235,0.12);border:1px solid rgba(108,146,235,0.2);color:var(--green)">
+        <div class="feat-icon" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:var(--green)">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         </div>
         <h3>0.8s response time</h3>
@@ -454,7 +454,7 @@ window.ATLYZ_USE_3D=(function(){
 
     var COUNT=130, SX=52, SY=34, SZ=30;
     var pos=new Float32Array(COUNT*3), col=new Float32Array(COUNT*3), vel=[];
-    var ACC=new THREE.Color(0xffb340), GRN=new THREE.Color(0x2fe0a8);
+    var ACC=new THREE.Color(0xffffff), GRN=new THREE.Color(0xd2dae6);
     for(var i=0;i<COUNT;i++){
       pos[i*3]=(Math.random()-.5)*SX; pos[i*3+1]=(Math.random()-.5)*SY; pos[i*3+2]=(Math.random()-.5)*SZ;
       var cc=Math.random()<0.62?ACC:GRN; col[i*3]=cc.r; col[i*3+1]=cc.g; col[i*3+2]=cc.b;
@@ -466,7 +466,7 @@ window.ATLYZ_USE_3D=(function(){
     var points=new THREE.Points(pGeo, new THREE.PointsMaterial({size:0.22, vertexColors:true, transparent:true, opacity:0.9, blending:THREE.AdditiveBlending, depthWrite:false}));
 
     var lGeo=new THREE.BufferGeometry();
-    var lines=new THREE.LineSegments(lGeo, new THREE.LineBasicMaterial({color:0xa07bff, transparent:true, opacity:0.22, blending:THREE.AdditiveBlending, depthWrite:false}));
+    var lines=new THREE.LineSegments(lGeo, new THREE.LineBasicMaterial({color:0xc2ccda, transparent:true, opacity:0.22, blending:THREE.AdditiveBlending, depthWrite:false}));
 
     var group=new THREE.Group(); group.add(points); group.add(lines); scene.add(group);
 
@@ -553,7 +553,7 @@ window.__atlyzStart2D=function(){
   var x=c.getContext('2d'),W,H,P=[];
   function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
   rsz();window.addEventListener('resize',rsz,{passive:true});
-  function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.4+.4,col:['rgba(108,146,235,','rgba(108,235,197,','rgba(235,133,108,'][Math.floor(Math.random()*3)],a:Math.random()*.4+.15}}
+  function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.4+.4,col:['rgba(255,255,255,','rgba(255,255,255,','rgba(255,255,255,'][Math.floor(Math.random()*3)],a:Math.random()*.4+.15}}
   for(var i=0;i<55;i++)P.push(mk());
   function draw(){
     x.clearRect(0,0,W,H);

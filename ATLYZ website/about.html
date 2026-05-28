@@ -11,21 +11,21 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;over
 body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.07) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
 nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;justify-content:space-between;gap:32px;padding:0 24px;height:52px;width:max-content;max-width:calc(100vw - 40px);min-width:320px;background:rgba(0,0,0,0.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:100px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.05)}
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-word{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;color:#f0f0f0}
-.logo-word{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f0}
+.logo-word{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;color:#F3F4F6}
+.logo-word{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#F3F4F6}
 .nav-links{display:flex;gap:32px;align-items:center}
 .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:.2s}
 .nav-links a:hover{color:var(--text)}
-.nav-cta{background:#6c92eb;color:#04130d;padding:8px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:400;transition:.2s}
+.nav-cta{background:#00C2FF;color:#000000;padding:8px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:700;transition:.2s}
 .nav-cta:hover{background:#ffffff}
 .page-hero{position:relative;z-index:1;padding:140px 24px 80px;text-align:center}
-.page-hero-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(108,146,235,0.26),transparent 70%);pointer-events:none}
-.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:100px;border:1px solid rgba(108,146,235,0.3);background:rgba(108,146,235,0.08);font-size:13px;color:#e0e0e0;font-family:'JetBrains Mono',monospace;margin-bottom:24px}
+.page-hero-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(0,194,255,0.06),transparent 70%);pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:100px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);font-size:13px;color:#e0e0e0;font-family:'JetBrains Mono',monospace;margin-bottom:24px}
 h1{font-family:'Outfit',sans-serif;font-size:clamp(40px,6vw,72px);letter-spacing:-2px;margin-bottom:20px;line-height:1.05}
 .hero-sub{font-size:18px;color:var(--muted);max-width:520px;margin:0 auto}
 .content{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px 100px}
 .section{margin-bottom:80px}
-.section-label{font-size:12px;color:var(--purple);letter-spacing:2px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:12px}
+.section-label{font-size:12px;color:#00C2FF;letter-spacing:2px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:12px}
 .section-title{font-family:'Outfit',sans-serif;font-size:clamp(28px,4vw,42px);letter-spacing:-1px;margin-bottom:20px}
 .section-body{font-size:16px;color:var(--muted);line-height:1.8;max-width:620px}
 .section-body p{margin-bottom:16px}
@@ -40,7 +40,7 @@ h1{font-family:'Outfit',sans-serif;font-size:clamp(40px,6vw,72px);letter-spacing
 .team-note h3{font-family:'Outfit',sans-serif;font-size:24px;margin-bottom:12px}
 .team-note p{font-size:15px;color:var(--muted);line-height:1.7}
 .stat-row{display:flex;gap:48px;flex-wrap:wrap;margin-top:48px}
-.stat h2{font-family:'Space Grotesk',sans-serif;font-size:48px;letter-spacing:-2px;background:#6c92eb;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat h2{font-family:'Space Grotesk',sans-serif;font-size:48px;letter-spacing:-2px;color:#F3F4F6}
 .stat p{font-size:14px;color:var(--muted);margin-top:4px}
 footer{position:relative;z-index:1;padding:40px 24px;border-top:1px solid var(--border);max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 footer p{font-size:13px;color:var(--muted)}
@@ -58,16 +58,16 @@ footer a:hover{color:var(--text)}
   .nav-links.open{display:flex !important;flex-direction:column;position:fixed;top:72px;left:12px;right:12px;background:rgba(0,0,0,0.97);padding:20px;gap:16px;border:1px solid var(--border);border-radius:20px;z-index:199;backdrop-filter:blur(24px)}
 }
 /* ── MOTION ── */
-#scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;background:linear-gradient(90deg, #6c92eb, #6cebc5, #eb856c);box-shadow:0 0 10px rgba(108,146,235,.8);pointer-events:none}
+#scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;background:linear-gradient(90deg,#00C2FF,#00C2FF);box-shadow:0 0 10px rgba(0,194,255,.8);pointer-events:none}
 .amb-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orb-drift 24s ease-in-out infinite alternate}
-.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(108,146,235,0.34),transparent 65%);top:-280px;left:-200px;animation-duration:30s}
-.orb2{width:600px;height:600px;background:radial-gradient(circle,rgba(108,235,197,0.34),transparent 65%);top:30%;right:-220px;animation-duration:36s;animation-direction:alternate-reverse;animation-delay:-14s}
-.orb3{width:500px;height:500px;background:radial-gradient(circle,rgba(235,133,108,0.336),transparent 65%);bottom:0;left:0;animation-duration:26s;animation-delay:-8s}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(0,194,255,0.06),transparent 65%);top:-280px;left:-200px;animation-duration:30s}
+.orb2{width:600px;height:600px;background:radial-gradient(circle,rgba(0,194,255,0.06),transparent 65%);top:30%;right:-220px;animation-duration:36s;animation-direction:alternate-reverse;animation-delay:-14s}
+.orb3{width:500px;height:500px;background:radial-gradient(circle,rgba(0,194,255,0.06),transparent 65%);bottom:0;left:0;animation-duration:26s;animation-delay:-8s}
 @keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(70px,-50px) scale(1.08)}}
 #particles-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1s}
 #particles-canvas.ready{opacity:1}
-.section-label{background:linear-gradient(90deg, #6c92eb, #6cebc5, #eb856c, #6c92eb);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lbl-flow 5s linear infinite}
+.section-label{animation:lbl-flow 5s linear infinite}
 @keyframes lbl-flow{to{background-position:-200% center}}
 .value-card::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(108deg,transparent 28%,rgba(255,255,255,.055) 50%,transparent 72%);transform:translateX(-140%);transition:transform .9s ease;pointer-events:none;border-radius:inherit}
 .value-card{position:relative;overflow:hidden}
@@ -145,22 +145,22 @@ footer a:hover{color:var(--text)}
     <div class="section-title">What we stand for</div>
     <div class="values-grid">
       <div class="value-card">
-        <div class="value-icon-svg" style="background:rgba(108,146,235,.12);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <div class="value-icon-svg" style="background:rgba(255,255,255,.12);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
         <h3>Simplicity first</h3>
         <p>If a business owner can't use it in five minutes, it's not done. Complexity is our problem, not yours.</p>
       </div>
       <div class="value-card">
-        <div class="value-icon-svg" style="background:rgba(108,146,235,.12);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+        <div class="value-icon-svg" style="background:rgba(255,255,255,.12);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
         <h3>Privacy by default</h3>
         <p>Your customer data belongs to you. We never train on your conversations or sell your data. Ever.</p>
       </div>
       <div class="value-card">
-        <div class="value-icon-svg" style="background:rgba(108,146,235,.10);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <div class="value-icon-svg" style="background:rgba(255,255,255,.10);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
         <h3>Speed matters</h3>
         <p>A slow AI is a bad AI. We obsess over latency because your customers are impatient and that's okay.</p>
       </div>
       <div class="value-card">
-        <div class="value-icon-svg" style="background:rgba(108,146,235,.10);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg></div>
+        <div class="value-icon-svg" style="background:rgba(255,255,255,.10);color:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg></div>
         <h3>Globally inclusive</h3>
         <p>Your customers speak many languages. Atlyz speaks all of them — because good service has no language barrier.</p>
       </div>
@@ -267,7 +267,7 @@ setTimeout(function(){document.querySelectorAll('.reveal:not(.visible)').forEach
 <script>
 var _prog=document.getElementById('scroll-prog');
 window.addEventListener('scroll',function(){var s=window.scrollY,t=document.documentElement.scrollHeight-window.innerHeight;_prog.style.width=(t>0?Math.min(s/t*100,100):0)+'%'},{passive:true});
-(function(){var c=document.getElementById('particles-canvas'),x=c.getContext('2d'),W,H,P=[];function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz,{passive:true});function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.4+.4,col:['rgba(108,146,235,','rgba(108,235,197,'][Math.floor(Math.random()*3)],a:Math.random()*.45+.15}}for(var i=0;i<60;i++)P.push(mk());function draw(){x.clearRect(0,0,W,H);for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=p.col+p.a+')';x.fill();for(var j=i+1;j<P.length;j++){var q=P[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.strokeStyle='rgba(108,146,235,'+(0.15*(1-d/130))+')';x.lineWidth=.6;x.stroke()}}}requestAnimationFrame(draw)}draw();setTimeout(function(){c.classList.add('ready')},400)})();
+(function(){var c=document.getElementById('particles-canvas'),x=c.getContext('2d'),W,H,P=[];function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz,{passive:true});function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.4+.4,col:['rgba(255,255,255,','rgba(255,255,255,'][Math.floor(Math.random()*3)],a:Math.random()*.45+.15}}for(var i=0;i<60;i++)P.push(mk());function draw(){x.clearRect(0,0,W,H);for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=p.col+p.a+')';x.fill();for(var j=i+1;j<P.length;j++){var q=P[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.strokeStyle='rgba(255,255,255,'+(0.15*(1-d/130))+')';x.lineWidth=.6;x.stroke()}}}requestAnimationFrame(draw)}draw();setTimeout(function(){c.classList.add('ready')},400)})();
 if(window.gsap){
   gsap.from('.page-hero h1',{duration:.9,y:44,opacity:0,ease:'power3.out'});
   gsap.from('.page-hero .badge',{duration:.7,y:20,opacity:0,delay:.1,ease:'power2.out'});

@@ -13,14 +13,14 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 
 /* ── Orbs ── */
 .orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;animation:orb-drift 28s ease-in-out infinite alternate}
-.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(108,146,235,0.34),transparent 65%);top:-200px;left:-150px}
-.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(108,235,197,0.30),transparent 65%);bottom:-100px;right:-200px;animation-direction:alternate-reverse;animation-delay:-12s}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(0,194,255,0.06),transparent 65%);top:-200px;left:-150px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(0,194,255,0.06),transparent 65%);bottom:-100px;right:-200px;animation-direction:alternate-reverse;animation-delay:-12s}
 @keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,-40px) scale(1.08)}}
 
 /* ── Nav ── */
 nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;justify-content:space-between;gap:32px;padding:0 24px;height:52px;width:max-content;max-width:calc(100vw - 40px);min-width:320px;background:rgba(0,0,0,0.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:100px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.05)}
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-word{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#f0f0f0}
+.logo-word{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#F3F4F6}
 .nav-back{color:var(--muted);text-decoration:none;font-size:14px;display:flex;align-items:center;gap:6px;transition:.2s}
 .nav-back:hover{color:var(--text)}
 
@@ -31,7 +31,7 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
 @media(max-width:480px){.auth-card{padding:26px}}
 
 .auth-head{text-align:center;margin-bottom:28px}
-.auth-tag{display:inline-block;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:rgba(108,146,235,.08);border:1px solid rgba(108,146,235,.2);padding:3px 12px;border-radius:100px;margin-bottom:16px}
+.auth-tag{display:inline-block;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);padding:3px 12px;border-radius:100px;margin-bottom:16px}
 .auth-head h1{font-size:clamp(24px,4vw,30px);font-weight:500;letter-spacing:-1px;margin-bottom:8px}
 .auth-head p{font-size:14px;color:var(--muted);line-height:1.6}
 
@@ -40,11 +40,11 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
 .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:7px;font-weight:400}
 .field input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--text);font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s}
 .field input::placeholder{color:var(--muted2)}
-.field input:focus{border-color:rgba(108,146,235,.5)}
+.field input:focus{border-color:rgba(255,255,255,.5)}
 .field-hint{font-size:12px;color:var(--muted2);margin-top:6px;line-height:1.5}
 
 /* ── Button ── */
-.btn-primary{display:inline-flex;align-items:center;gap:8px;background:#6c92eb;color:#04130d;padding:13px 28px;border-radius:10px;font-size:15px;font-weight:500;border:none;cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s;width:100%;justify-content:center;margin-top:6px}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:#00C2FF;color:#000000;padding:13px 28px;border-radius:10px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s;width:100%;justify-content:center;margin-top:6px}
 .btn-primary:hover{opacity:.92;transform:translateY(-1px)}
 .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
@@ -66,15 +66,12 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
 .pass-toggle{position:absolute;top:50%;right:8px;transform:translateY(-50%);background:none;border:none;padding:6px;cursor:pointer;color:var(--muted2);display:flex;align-items:center;justify-content:center;border-radius:6px;transition:color .15s}
 .pass-toggle:hover{color:var(--text)}
 
-/* ── Divider + social sign-in ── */
-.auth-divider{display:flex;align-items:center;gap:12px;margin:22px 0 16px;color:var(--muted2);font-size:12px}
-.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.social-row{display:flex;gap:10px}
-.social-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;font-family:'Outfit',sans-serif;cursor:pointer;transition:border-color .2s,background .2s}
-.social-btn:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.03)}
-.social-btn svg{width:18px;height:18px;flex-shrink:0}
-.social-note{font-size:12.5px;color:var(--accent);text-align:center;margin-top:14px;line-height:1.5}
-@media(max-width:420px){.social-btn span{display:none}}
+/* ── Terms checkbox ── */
+.terms-field{margin-bottom:18px}
+.terms-label{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:var(--muted);line-height:1.55}
+.terms-label input[type="checkbox"]{width:16px;height:16px;flex-shrink:0;margin-top:2px;accent-color:#F3F4F6;cursor:pointer}
+.terms-label a{color:var(--accent);text-decoration:none}
+.terms-label a:hover{text-decoration:underline}
 </style>
 <link rel="stylesheet" href="atlyz.css">
 </head>
@@ -144,23 +141,18 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
       </div>
     </div>
 
-    <button class="btn-primary" id="auth-submit" onclick="submitAuth()">Create account →</button>
-
-    <div class="auth-divider"><span>or continue with</span></div>
-    <div class="social-row">
-      <button type="button" class="social-btn" onclick="socialSoon('Google')" aria-label="Continue with Google"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38z"/></svg><span>Google</span></button>
-      <button type="button" class="social-btn" onclick="socialSoon('Microsoft')" aria-label="Continue with Microsoft"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F25022" d="M3 3h8.5v8.5H3z"/><path fill="#7FBA00" d="M12.5 3H21v8.5h-8.5z"/><path fill="#00A4EF" d="M3 12.5h8.5V21H3z"/><path fill="#FFB900" d="M12.5 12.5H21V21h-8.5z"/></svg><span>Microsoft</span></button>
+    <div class="terms-field" id="field-terms">
+      <label class="terms-label">
+        <input type="checkbox" id="su-terms">
+        <span>I agree to Atlyz's <a href="terms.html" target="_blank">Terms of Service</a> and <a href="privacy.html" target="_blank">Privacy Policy</a></span>
+      </label>
     </div>
-    <p class="social-note" id="social-note" style="display:none"></p>
+
+    <button class="btn-primary" id="auth-submit" onclick="submitAuth()">Create account →</button>
 
     <p class="auth-toggle">
       <span id="toggle-text">Already have an account?</span>
       <a href="#" id="toggle-link" onclick="toggleMode();return false;">Log in</a>
-    </p>
-
-    <p class="auth-legal">
-      By continuing you agree to our
-      <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.
     </p>
   </div>
 
@@ -215,6 +207,7 @@ function toggleMode(){
   document.getElementById('auth-sub').textContent      = s ? 'Sign up to set up your AI chatbot — free to start, no card needed.' : 'Log in to continue setting up your chatbot.';
   document.getElementById('field-name').style.display    = s ? '' : 'none';
   document.getElementById('field-confirm').style.display = s ? '' : 'none';
+  document.getElementById('field-terms').style.display   = s ? '' : 'none';
   document.getElementById('su-pass').setAttribute('autocomplete', s ? 'new-password' : 'current-password');
   document.getElementById('auth-submit').textContent   = s ? 'Create account →' : 'Log in →';
   document.getElementById('toggle-text').textContent   = s ? 'Already have an account?' : 'New to Atlyz?';
@@ -241,8 +234,10 @@ function submitAuth(){
   if(mode === 'signup'){
     var name  = document.getElementById('su-name').value.trim();
     var pass2 = document.getElementById('su-pass2').value;
+    var terms = document.getElementById('su-terms');
     if(pass.length < 8){ showErr('Password must be at least 8 characters.'); return; }
     if(pass !== pass2){ showErr('Those passwords don\'t match.'); return; }
+    if(!terms.checked){ showErr('Please agree to the Terms of Service to continue.'); return; }
     body.name = name;
     path = '/auth/signup';
   }
