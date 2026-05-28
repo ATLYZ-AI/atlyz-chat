@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlyz Chat — Owner Dashboard</title>
+<style>
+  :root{
+    --bg:#0D0E12; --bg2:#111219; --panel:#1A1D26; --line:rgba(255,255,255,.08);
+    --txt:#F3F4F6; --muted:#8B90A3; --dim:#5B6072;
+    --pri:#4F8EF7; --pri2:#3D7EF5; --mint:#10B981; --coral:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.5}
+  a{color:var(--pri)}
+  button{font-family:inherit;cursor:pointer}
+  input,textarea,select{font-family:inherit}
+
+  /* ── Login ── */
+  #login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .login-card{width:100%;max-width:380px;background:var(--panel);border:1px solid var(--line);
+    border-radius:16px;padding:32px}
+  .login-card h1{font-size:20px;margin:0 0 4px}
+  .login-card p{color:var(--muted);margin:0 0 22px;font-size:13px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .inp{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:10px;
+    padding:11px 13px;color:var(--txt);font-size:14px;outline:none;transition:border-color .15s}
+  .inp:focus{border-color:var(--pri)}
+  textarea.inp{resize:vertical;min-height:120px;line-height:1.55}
+  .btn{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border:none;
+    border-radius:10px;padding:11px 16px;font-size:14px;font-weight:600;width:100%;
+    transition:opacity .15s,transform .1s}
+  .btn:hover{opacity:.92}
+  .btn:active{transform:translateY(1px)}
+  .btn.sm{width:auto;padding:8px 14px;font-size:13px}
+  .btn.ghost{background:none;border:1px solid var(--line);color:var(--txt)}
+  .btn.danger{background:none;border:1px solid rgba(239,68,68,.5);color:var(--coral)}
+  .err{color:var(--coral);font-size:12.5px;margin-top:10px;min-height:16px}
+
+  /* ── App shell ── */
+  #app{display:none}
+  .topbar{display:flex;align-items:center;gap:14px;padding:12px 20px;
+    border-bottom:1px solid var(--line);background:var(--bg2);position:sticky;top:0;z-index:5}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:.5px}
+  .brand svg{width:26px;height:26px}
+  .topbar .spacer{flex:1}
+  .biz-select{background:var(--panel);border:1px solid var(--line);border-radius:9px;
+    padding:7px 11px;color:var(--txt);font-size:13px;outline:none}
+  .plan-pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;
+    background:rgba(79,142,247,.15);color:var(--pri);border:1px solid rgba(79,142,247,.3);text-transform:uppercase;letter-spacing:.5px}
+
+  .wrap{display:flex;min-height:calc(100vh - 53px)}
+  .side{width:210px;flex-shrink:0;border-right:1px solid var(--line);padding:16px 12px;background:var(--bg2)}
+  .navbtn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;
+    border:none;color:var(--muted);padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:500;margin-bottom:2px}
+  .navbtn:hover{background:var(--panel);color:var(--txt)}
+  .navbtn.active{background:rgba(79,142,247,.12);color:var(--pri)}
+  .main{flex:1;padding:26px 30px;max-width:980px}
+  .sec{display:none}
+  .sec.active{display:block;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  h2.sec-h{font-size:19px;margin:0 0 4px}
+  .sec-sub{color:var(--muted);font-size:13px;margin:0 0 20px}
+
+  /* ── Cards / panels ── */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:22px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .stat .n{font-size:26px;font-weight:700;letter-spacing:-.5px}
+  .stat .l{color:var(--muted);font-size:12px;margin-top:3px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px}
+  .panel h3{margin:0 0 14px;font-size:15px}
+  .meter{height:8px;background:var(--bg2);border-radius:6px;overflow:hidden;margin:8px 0 4px}
+  .meter > i{display:block;height:100%;background:linear-gradient(90deg,var(--pri),var(--mint));border-radius:6px}
+
+  /* ── Tables ── */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px}
+  tr:last-child td{border-bottom:none}
+  .empty{color:var(--dim);text-align:center;padding:34px 10px;font-size:13px}
+
+  /* ── Conversations ── */
+  .conv{border:1px solid var(--line);border-radius:11px;margin-bottom:10px;overflow:hidden}
+  .conv-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;background:var(--panel)}
+  .conv-head:hover{background:#222633}
+  .conv-head .meta{flex:1;font-size:12px;color:var(--muted)}
+  .tag{font-size:10.5px;padding:2px 8px;border-radius:20px;background:rgba(34,197,94,.14);color:var(--mint);font-weight:600}
+  .conv-body{display:none;padding:14px;background:var(--bg2);border-top:1px solid var(--line)}
+  .conv-body.open{display:block}
+  .bub{max-width:80%;padding:8px 12px;border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.5}
+  .bub.u{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;margin-left:auto;border-bottom-right-radius:3px}
+  .bub.b{background:var(--panel);border:1px solid var(--line);border-bottom-left-radius:3px}
+
+  /* ── Forms ── */
+  .row{display:flex;gap:16px;flex-wrap:wrap}
+  .row .field{flex:1;min-width:200px}
+  .hint{color:var(--dim);font-size:11.5px;margin-top:5px}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{background:var(--bg2);border:none;color:var(--muted);padding:8px 14px;font-size:13px}
+  .seg button.on{background:var(--pri);color:#fff}
+  .colorpick{display:flex;align-items:center;gap:10px}
+  input[type=color]{width:44px;height:38px;border:1px solid var(--line);border-radius:9px;background:var(--bg2);padding:3px;cursor:pointer}
+  .embed{background:#000;border:1px solid var(--line);border-radius:10px;padding:13px;
+    font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--mint);word-break:break-all}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 18px;
+    font-size:13px;opacity:0;transition:all .25s;pointer-events:none;z-index:20;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.ok{border-color:rgba(34,197,94,.4)} .toast.bad{border-color:rgba(239,68,68,.5);color:var(--coral)}
+  .logo-prev{width:48px;height:48px;border-radius:11px;border:1px solid var(--line);object-fit:cover;background:var(--bg2)}
+  .gate{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:var(--coral);
+    border-radius:10px;padding:11px 14px;font-size:12.5px;margin-bottom:14px}
+  .flex{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<!-- ════════════ LOGIN ════════════ -->
+<div id="login">
+  <form class="login-card" onsubmit="doLogin(event)">
+    <div class="brand" style="margin-bottom:18px">
+      <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#4F8EF7" stroke-width="3"/><line x1="50" y1="73" x2="19" y2="31" stroke="#4F8EF7" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="50" y2="11" stroke="#4F8EF7" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="81" y2="31" stroke="#4F8EF7" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="31" r="5" fill="#4F8EF7"/><circle cx="50" cy="11" r="5" fill="#4F8EF7"/><circle cx="81" cy="31" r="5" fill="#4F8EF7"/><circle cx="50" cy="73" r="5.5" fill="#4F8EF7"/></svg>
+      ATLYZ
+    </div>
+    <h1>Owner Dashboard</h1>
+    <p>Sign in to manage your chatbot.</p>
+    <div class="field"><label>Email</label><input class="inp" type="email" id="li-email" autocomplete="username" required></div>
+    <div class="field"><label>Password</label><input class="inp" type="password" id="li-pass" autocomplete="current-password" required></div>
+    <button class="btn" type="submit">Sign in</button>
+    <div class="err" id="li-err"></div>
+  </form>
+</div>
+
+<!-- ════════════ APP ════════════ -->
+<div id="app">
+  <div class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#4F8EF7" stroke-width="3"/><line x1="50" y1="73" x2="19" y2="31" stroke="#4F8EF7" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="50" y2="11" stroke="#4F8EF7" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="81" y2="31" stroke="#4F8EF7" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="31" r="5" fill="#4F8EF7"/><circle cx="50" cy="11" r="5" fill="#4F8EF7"/><circle cx="81" cy="31" r="5" fill="#4F8EF7"/><circle cx="50" cy="73" r="5.5" fill="#4F8EF7"/></svg>
+      ATLYZ
+    </div>
+    <span class="plan-pill" id="plan-pill">—</span>
+    <div class="spacer"></div>
+    <select class="biz-select" id="biz-select" onchange="selectBiz(this.value)"></select>
+    <button class="btn ghost sm" onclick="doLogout()">Log out</button>
+  </div>
+
+  <div class="wrap">
+    <nav class="side">
+      <button class="navbtn active" data-tab="overview" onclick="tab('overview')">Overview</button>
+      <button class="navbtn" data-tab="leads" onclick="tab('leads')">Leads</button>
+      <button class="navbtn" data-tab="convos" onclick="tab('convos')">Conversations</button>
+      <button class="navbtn" data-tab="customize" onclick="tab('customize')">Customize</button>
+      <button class="navbtn" data-tab="knowledge" onclick="tab('knowledge')">Knowledge</button>
+      <button class="navbtn" data-tab="install" onclick="tab('install')">Install</button>
+    </nav>
+
+    <main class="main">
+      <!-- OVERVIEW -->
+      <section class="sec active" id="sec-overview">
+        <h2 class="sec-h" id="ov-name">Overview</h2>
+        <p class="sec-sub">How your chatbot is performing.</p>
+        <div class="grid" id="ov-stats"></div>
+        <div class="panel">
+          <h3>Monthly chats</h3>
+          <div id="ov-usage"></div>
+        </div>
+        <div class="panel">
+          <h3>Knowledge base</h3>
+          <div class="flex">
+            <div id="ov-scrape" style="color:var(--muted);font-size:13px"></div>
+            <div class="spacer" style="flex:1"></div>
+            <button class="btn ghost sm" id="ov-rescrape" onclick="rescrape()">Re-scrape website</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- LEADS -->
+      <section class="sec" id="sec-leads">
+        <h2 class="sec-h">Leads</h2>
+        <p class="sec-sub">Customers who asked to be contacted.</p>
+        <div id="leads-gate"></div>
+        <div class="panel" style="padding:0;overflow:hidden"><div id="leads-body"></div></div>
+      </section>
+
+      <!-- CONVERSATIONS -->
+      <section class="sec" id="sec-convos">
+        <h2 class="sec-h">Conversations</h2>
+        <p class="sec-sub">Recent chats between customers and your bot.</p>
+        <div id="convos-body"></div>
+      </section>
+
+      <!-- CUSTOMIZE -->
+      <section class="sec" id="sec-customize">
+        <h2 class="sec-h">Customize widget</h2>
+        <p class="sec-sub">Name, look, and behavior of your chatbot.</p>
+        <div class="panel">
+          <div class="row">
+            <div class="field"><label>Bot name</label><input class="inp" id="c-botname"><div class="hint">The bot knows and answers to this name.</div></div>
+            <div class="field"><label>Tagline</label><input class="inp" id="c-tagline"></div>
+          </div>
+          <div class="field"><label>Greeting message</label><textarea class="inp" id="c-greeting" style="min-height:70px"></textarea></div>
+          <div class="row">
+            <div class="field">
+              <label>Color</label>
+              <div class="seg" style="margin-bottom:10px">
+                <button type="button" id="cm-manual" onclick="setColorMode('manual')">Manual</button>
+                <button type="button" id="cm-auto" onclick="setColorMode('auto')">Automatic</button>
+              </div>
+              <div class="colorpick" id="color-pick-wrap"><input type="color" id="c-color"><span class="hint" id="c-color-hex"></span></div>
+              <div class="hint" id="auto-note" style="display:none">Atlyz detects your site's brand color on each scrape.</div>
+            </div>
+            <div class="field">
+              <label>Widget position</label>
+              <select class="inp" id="c-position"><option value="bottom-right">Bottom right</option><option value="bottom-left">Bottom left</option></select>
+            </div>
+            <div class="field">
+              <label>Reply language</label>
+              <select class="inp" id="c-lang">
+                <option value="">Auto-detect (match customer)</option>
+                <option value="English">English</option><option value="Urdu">Urdu</option>
+                <option value="Spanish">Spanish</option><option value="Arabic">Arabic</option>
+                <option value="French">French</option><option value="German">German</option>
+              </select>
+            </div>
+          </div>
+          <div class="field" id="wl-wrap">
+            <label class="flex"><input type="checkbox" id="c-wl"> <span>White-label (hide “Powered by Atlyz”)</span></label>
+            <div class="hint" id="wl-note"></div>
+          </div>
+          <div class="field">
+            <label>Bot logo</label>
+            <div class="flex">
+              <img class="logo-prev" id="logo-prev" alt="">
+              <input type="file" id="logo-file" accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp" style="font-size:12px">
+              <button class="btn ghost sm" type="button" onclick="uploadLogo()">Upload</button>
+              <button class="btn danger sm" type="button" onclick="removeLogo()">Remove</button>
+            </div>
+            <div class="hint">PNG/JPG/SVG/WebP, max 512&nbsp;KB. Shows in the chat header and button.</div>
+          </div>
+          <button class="btn sm" onclick="saveConfig()">Save changes</button>
+        </div>
+      </section>
+
+      <!-- KNOWLEDGE -->
+      <section class="sec" id="sec-knowledge">
+        <h2 class="sec-h">Business knowledge</h2>
+        <p class="sec-sub">Your bot answers from <b>your info first</b>, then from the scraped website.</p>
+        <div class="panel">
+          <h3>About the business &amp; you</h3>
+          <textarea class="inp" id="k-info" placeholder="Tell the bot anything customers ask about — owner name, services, prices, hours, policies, what makes you different, how to reach you…"></textarea>
+          <div class="hint">This takes priority over the scraped website knowledge.</div>
+          <br><button class="btn sm" onclick="saveOwnerInfo()">Save info</button>
+        </div>
+      </section>
+
+      <!-- INSTALL -->
+      <section class="sec" id="sec-install">
+        <h2 class="sec-h">Install on your site</h2>
+        <p class="sec-sub">Paste this one line before <code>&lt;/body&gt;</code> on your website.</p>
+        <div class="panel">
+          <div class="embed" id="embed-code"></div>
+          <br><button class="btn ghost sm" onclick="copyEmbed()">Copy embed code</button>
+          <a class="btn ghost sm" id="preview-link" target="_blank" style="text-decoration:none;display:inline-block">Open live test page</a>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ORIGIN = window.location.origin;
+let BIZ = null, CONFIG = null, FEATURES = {}, COLOR_MODE = "manual";
+
+async function api(path, opts){
+  opts = opts || {};
+  const r = await fetch(ORIGIN + path, Object.assign({credentials:"same-origin"}, opts));
+  let data = null; try { data = await r.json(); } catch(e){}
+  if(!r.ok) throw {status:r.status, data};
+  return data;
+}
+function toast(msg, bad){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = "toast show " + (bad ? "bad" : "ok");
+  setTimeout(()=>{ t.className = "toast"; }, 2600);
+}
+function esc(s){ return (s==null?"":String(s)).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ── Auth ── */
+async function doLogin(e){
+  e.preventDefault();
+  const email = document.getElementById("li-email").value.trim();
+  const pass  = document.getElementById("li-pass").value;
+  const err   = document.getElementById("li-err"); err.textContent = "";
+  try{
+    const d = await api("/auth/login", {method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({email, password: pass})});
+    bootApp(d.businesses);
+  }catch(ex){ err.textContent = (ex.data && ex.data.error) || "Login failed."; }
+}
+async function doLogout(){ try{ await api("/auth/logout", {method:"POST"}); }catch(e){} location.reload(); }
+
+async function init(){
+  try{
+    const me = await api("/auth/me");
+    if(me.businesses && me.businesses.length) return bootApp(me.businesses);
+  }catch(e){}
+  document.getElementById("login").style.display = "flex";
+}
+function bootApp(businesses){
+  document.getElementById("login").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  const sel = document.getElementById("biz-select");
+  sel.innerHTML = businesses.map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join("");
+  selectBiz(businesses[0]);
+}
+
+/* ── Navigation ── */
+function tab(name){
+  document.querySelectorAll(".navbtn").forEach(b=>b.classList.toggle("active", b.dataset.tab===name));
+  document.querySelectorAll(".sec").forEach(s=>s.classList.remove("active"));
+  document.getElementById("sec-"+name).classList.add("active");
+  if(name==="leads") loadLeads();
+  if(name==="convos") loadConversations();
+}
+
+async function selectBiz(id){
+  BIZ = id;
+  document.getElementById("preview-link").href = ORIGIN + "/chat/test/" + id;
+  document.getElementById("embed-code").textContent =
+    `<script src="${ORIGIN}/widget.js?id=${id}"><\/script>`;
+  await loadConfig();
+  await loadOverview();
+  await loadOwnerInfo();
+}
+
+/* ── Overview ── */
+async function loadOverview(){
+  let s;
+  try{ s = await api("/chatbot/stats/"+BIZ); }catch(e){ return; }
+  document.getElementById("plan-pill").textContent = s.plan_label || s.plan || "";
+  document.getElementById("ov-name").textContent = (CONFIG && CONFIG.business_name) || BIZ;
+  document.getElementById("ov-stats").innerHTML = [
+    ["Leads", s.leads_total], ["Chats (all time)", s.total_chats],
+    ["Messages", s.total_messages], ["Active now", s.active_sessions]
+  ].map(([l,n])=>`<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join("");
+
+  const used = s.chats_this_month||0, cap = s.monthly_cap;
+  const usage = document.getElementById("ov-usage");
+  if(cap==null){
+    usage.innerHTML = `<div style="font-size:15px;font-weight:600">${used} chats this month</div><div class="hint">Unlimited on your plan.</div>`;
+  }else{
+    const pct = Math.min(100, Math.round(used/cap*100));
+    usage.innerHTML = `<div class="flex"><b>${used}</b><span class="hint">of ${cap} this month</span></div>
+      <div class="meter"><i style="width:${pct}%"></i></div>
+      ${used>=cap?'<div class="hint" style="color:var(--coral)">Limit reached — new chats are paused until next month.</div>':''}`;
+  }
+  document.getElementById("ov-scrape").innerHTML =
+    `Last scraped: <b>${esc(s.last_scraped)}</b> · ${s.pages_scraped||0} pages`;
+}
+
+/* ── Config / customize ── */
+async function loadConfig(){
+  CONFIG = await api("/chat/config/"+BIZ);
+  FEATURES = CONFIG.features || {};
+  document.getElementById("c-botname").value  = CONFIG.bot_name || "";
+  document.getElementById("c-tagline").value  = CONFIG.bot_tagline || "";
+  document.getElementById("c-greeting").value = CONFIG.greeting || "";
+  document.getElementById("c-position").value = CONFIG.widget_position || "bottom-right";
+  document.getElementById("c-lang").value     = CONFIG.language_lock || "";
+  document.getElementById("c-color").value    = CONFIG.primary_color || "#4F8EF7";
+  document.getElementById("c-color-hex").textContent = CONFIG.primary_color || "";
+  setColorMode(CONFIG.color_mode || "manual", true);
+
+  // White-label gating
+  const wl = document.getElementById("c-wl"), wlNote = document.getElementById("wl-note");
+  wl.checked = !!CONFIG.white_label;
+  wl.disabled = !FEATURES.white_label;
+  wlNote.textContent = FEATURES.white_label ? "" : "Available on the Pro plan.";
+  document.getElementById("wl-wrap").style.opacity = FEATURES.white_label ? "1" : ".55";
+
+  // Logo preview
+  const prev = document.getElementById("logo-prev");
+  if(CONFIG.logo_url){ prev.src = ORIGIN + CONFIG.logo_url + "?t=" + Date.now(); prev.style.display=""; }
+  else { prev.removeAttribute("src"); }
+}
+function setColorMode(mode, silent){
+  COLOR_MODE = mode;
+  document.getElementById("cm-manual").classList.toggle("on", mode==="manual");
+  document.getElementById("cm-auto").classList.toggle("on", mode==="auto");
+  document.getElementById("color-pick-wrap").style.display = mode==="manual" ? "flex" : "none";
+  document.getElementById("auto-note").style.display = mode==="auto" ? "block" : "none";
+}
+async function saveConfig(){
+  const body = {
+    bot_name: val("c-botname"), bot_tagline: val("c-tagline"), greeting: val("c-greeting"),
+    widget_position: val("c-position"), language_lock: val("c-lang") || null,
+    primary_color: val("c-color"), color_mode: COLOR_MODE,
+    white_label: document.getElementById("c-wl").checked
+  };
+  try{ await api("/chatbot/config/"+BIZ, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+    toast("Saved"); await loadConfig(); await loadOverview();
+  }catch(e){ toast("Save failed", true); }
+}
+function val(id){ return document.getElementById(id).value; }
+
+/* ── Logo ── */
+async function uploadLogo(){
+  const f = document.getElementById("logo-file").files[0];
+  if(!f){ toast("Choose a file first", true); return; }
+  const fd = new FormData(); fd.append("logo", f);
+  try{ await api("/owner/logo/"+BIZ, {method:"POST", body:fd}); toast("Logo updated"); await loadConfig(); }
+  catch(e){ toast((e.data&&e.data.error)||"Upload failed", true); }
+}
+async function removeLogo(){
+  try{ await api("/owner/logo/"+BIZ, {method:"DELETE"}); toast("Logo removed"); await loadConfig(); }
+  catch(e){ toast("Failed", true); }
+}
+
+/* ── Knowledge ── */
+async function loadOwnerInfo(){
+  try{ const d = await api("/owner/info/"+BIZ); document.getElementById("k-info").value = d.owner_info || ""; }catch(e){}
+}
+async function saveOwnerInfo(){
+  try{ await api("/owner/info/"+BIZ, {method:"POST", headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({owner_info: val("k-info")})}); toast("Info saved"); }
+  catch(e){ toast("Save failed", true); }
+}
+
+/* ── Leads ── */
+async function loadLeads(){
+  const gate = document.getElementById("leads-gate");
+  const body = document.getElementById("leads-body");
+  gate.innerHTML = FEATURES.lead_capture ? "" :
+    '<div class="gate">Lead capture is available on the Growth and Pro plans. Upgrade to start collecting customer contacts.</div>';
+  let d; try{ d = await api("/owner/leads/"+BIZ); }catch(e){ body.innerHTML='<div class="empty">Could not load leads.</div>'; return; }
+  const rows = d.leads||[];
+  if(!rows.length){ body.innerHTML = '<div class="empty">No leads yet.</div>'; return; }
+  body.innerHTML = `<table><thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Question</th></tr></thead><tbody>`+
+    rows.reverse().map(l=>`<tr><td>${esc(l.timestamp)}</td><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.phone)}</td><td>${esc(l.question)}</td></tr>`).join("")+
+    `</tbody></table>`;
+}
+
+/* ── Conversations ── */
+async function loadConversations(){
+  const body = document.getElementById("convos-body");
+  let d; try{ d = await api("/owner/conversations/"+BIZ); }catch(e){ body.innerHTML='<div class="empty">Could not load.</div>'; return; }
+  const items = d.conversations||[];
+  if(!items.length){ body.innerHTML = '<div class="empty">No conversations yet.</div>'; return; }
+  body.innerHTML = items.map((c,i)=>{
+    const msgs = (c.history||[]).map(h=>
+      `<div class="bub u">${esc(h.customer)}</div><div class="bub b">${esc(h.atlyz)}</div>`).join("");
+    return `<div class="conv">
+      <div class="conv-head" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="meta">${esc(c.last_active||c.started_at||"")} · ${c.turns} message${c.turns===1?"":"s"}</span>
+        ${c.lead?'<span class="tag">lead</span>':''}
+      </div>
+      <div class="conv-body">${msgs || '<div class="empty">Empty</div>'}</div>
+    </div>`;
+  }).join("");
+}
+
+/* ── Rescrape ── */
+async function rescrape(){
+  const btn = document.getElementById("ov-rescrape");
+  btn.disabled = true; btn.textContent = "Scraping…";
+  try{
+    const d = await api("/chat/rescrape", {method:"POST", headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({business_id: BIZ, force:true})});
+    toast(d.changed===false ? "No website changes" : `Re-scraped ${d.pages_scraped||0} pages`);
+    await loadOverview(); await loadConfig();
+  }catch(e){ toast((e.data&&e.data.error)||"Scrape failed", true); }
+  btn.disabled = false; btn.textContent = "Re-scrape website";
+}
+
+/* ── Install ── */
+function copyEmbed(){
+  navigator.clipboard.writeText(document.getElementById("embed-code").textContent).then(()=>toast("Copied"));
+}
+
+init();
+</script>
+</body>
+</html>
