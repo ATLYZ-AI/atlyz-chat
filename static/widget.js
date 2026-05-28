@@ -32,7 +32,7 @@
   var botTagline   = "Your AI Assistant";
   var whiteLabel   = false;
   var greeting     = "Hi! How can I help you today?";
-  var primaryColor = "#7c3aed";
+  var primaryColor = "#4F8EF7";
   var leadMode     = false;
   var thinkingTimer = null;
   var thinkingIdx   = 0;
@@ -74,7 +74,7 @@
 
   // ── Color helpers ─────────────────────────────────────────────────────────────
   function applyColor(color) {
-    primaryColor = color || "#7c3aed";
+    primaryColor = color || "#4F8EF7";
     var root = document.getElementById("atz-color-vars");
     if (!root) {
       root = document.createElement("style");
@@ -86,6 +86,7 @@
 
   function shiftColor(hex) {
     var companions = {
+      "#4f8ef7":"#3d7ef5","#00c2ff":"#0091cc",
       "#7c3aed":"#2563eb","#6d28d9":"#1d4ed8","#8b5cf6":"#3b82f6",
       "#a855f7":"#7c3aed","#ec4899":"#8b5cf6","#ef4444":"#dc2626",
       "#10b981":"#059669","#f59e0b":"#d97706","#3b82f6":"#1d4ed8",
@@ -108,15 +109,15 @@
       "#atz-btn{position:fixed;" + side + "bottom:24px;width:56px;height:56px;",
       "border-radius:16px;background:linear-gradient(135deg,var(--atz-c),var(--atz-c2));",
       "border:none;cursor:pointer;z-index:999998;",
-      "box-shadow:0 0 0 1px rgba(124,58,237,.25),0 8px 28px rgba(124,58,237,.38);",
+      "box-shadow:0 0 0 1px rgba(0,194,255,.25),0 8px 28px rgba(0,194,255,.38);",
       "display:flex;align-items:center;justify-content:center;",
       "transition:transform .2s,box-shadow .2s;outline:none;overflow:visible;}",
       "#atz-btn:hover{transform:translateY(-2px);",
-      "box-shadow:0 0 0 1px rgba(124,58,237,.4),0 14px 40px rgba(124,58,237,.48);}",
+      "box-shadow:0 0 0 1px rgba(0,194,255,.4),0 14px 40px rgba(0,194,255,.48);}",
 
       /* pulse ring on FAB */
       "#atz-btn::before{content:'';position:absolute;inset:-4px;border-radius:20px;",
-      "border:1.5px solid rgba(124,58,237,.35);",
+      "border:1.5px solid rgba(0,194,255,.35);",
       "animation:atz-ring 2.4s ease-in-out infinite;pointer-events:none;}",
       "@keyframes atz-ring{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.12);opacity:0}}",
 
@@ -143,7 +144,7 @@
       "background:#0b0b0f;border:1px solid rgba(255,255,255,.07);",
       "border-radius:20px;z-index:999999;display:none;flex-direction:column;",
       "overflow:hidden;font-family:'Inter',system-ui,sans-serif;font-size:14px;",
-      "box-shadow:0 0 0 1px rgba(124,58,237,.1),0 24px 80px rgba(0,0,0,.8);",
+      "box-shadow:0 0 0 1px rgba(0,194,255,.1),0 24px 80px rgba(0,0,0,.8);",
       "animation:atz-up .22s cubic-bezier(.34,1.56,.64,1);}",
       "#atz-box.atz-open{display:flex;}",
       "@keyframes atz-up{from{opacity:0;transform:translateY(16px) scale(.97)}",
@@ -152,7 +153,7 @@
       /* ── Header ── */
       "#atz-head{padding:14px 16px;display:flex;align-items:center;gap:12px;",
       "border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;",
-      "background:linear-gradient(135deg,rgba(124,58,237,.10),rgba(37,99,235,.06));}",
+      "background:linear-gradient(135deg,rgba(0,194,255,.10),rgba(37,99,235,.06));}",
 
       "#atz-logo{width:34px;height:34px;border-radius:9px;flex-shrink:0;",
       "background:linear-gradient(135deg,var(--atz-c),var(--atz-c2));",
@@ -178,8 +179,8 @@
       "align-items:center;gap:5px;}",
       "#atz-head-status::before{content:'';width:6px;height:6px;border-radius:50%;",
       "background:#4ade80;flex-shrink:0;transition:background .3s;}",
-      "#atz-head-status.atz-thinking-status{color:#a78bfa;}",
-      "#atz-head-status.atz-thinking-status::before{background:#a78bfa;",
+      "#atz-head-status.atz-thinking-status{color:var(--atz-c);}",
+      "#atz-head-status.atz-thinking-status::before{background:var(--atz-c);",
       "animation:atz-pulse 1s ease-in-out infinite;}",
       "@keyframes atz-pulse{0%,100%{opacity:1}50%{opacity:.3}}",
 
@@ -208,7 +209,7 @@
 
       /* ── Typing / thinking bubble ── */
       "#atz-thinking-bubble{display:flex;align-items:center;gap:10px;",
-      "padding:10px 14px;background:#18181b;border:1px solid rgba(167,139,250,.14);",
+      "padding:10px 14px;background:#18181b;border:1px solid rgba(0,194,255,.14);",
       "border-radius:4px 12px 12px 12px;align-self:flex-start;",
       "animation:atz-msg .18s ease;max-width:82%;}",
       ".atz-th-dots{display:flex;gap:4px;flex-shrink:0;}",
@@ -229,16 +230,16 @@
       "outline:none;resize:none;max-height:80px;font-family:inherit;",
       "line-height:1.45;transition:border-color .2s,box-shadow .2s;}",
       "#atz-input::placeholder{color:#3f3f46;}",
-      "#atz-input:focus{border-color:rgba(124,58,237,.45);",
-      "box-shadow:0 0 0 3px rgba(124,58,237,.08);}",
+      "#atz-input:focus{border-color:rgba(0,194,255,.45);",
+      "box-shadow:0 0 0 3px rgba(0,194,255,.08);}",
 
       "#atz-send{width:36px;height:36px;border-radius:9px;flex-shrink:0;",
       "background:linear-gradient(135deg,var(--atz-c),var(--atz-c2));border:none;",
       "cursor:pointer;display:flex;align-items:center;justify-content:center;",
       "transition:opacity .15s,transform .15s,box-shadow .15s;",
-      "box-shadow:0 2px 8px rgba(124,58,237,.3);}",
+      "box-shadow:0 2px 8px rgba(0,194,255,.3);}",
       "#atz-send:hover{opacity:.9;transform:translateY(-1px);",
-      "box-shadow:0 4px 14px rgba(124,58,237,.45);}",
+      "box-shadow:0 4px 14px rgba(0,194,255,.45);}",
       "#atz-send:disabled{opacity:.28;cursor:not-allowed;transform:none;box-shadow:none;}",
 
       /* ── Lead capture form ── */
@@ -251,14 +252,14 @@
       "outline:none;font-family:inherit;transition:border-color .2s,box-shadow .2s;",
       "width:100%;box-sizing:border-box;}",
       ".atz-lead-input::placeholder{color:#3f3f46;}",
-      ".atz-lead-input:focus{border-color:rgba(124,58,237,.45);",
-      "box-shadow:0 0 0 3px rgba(124,58,237,.08);}",
+      ".atz-lead-input:focus{border-color:rgba(0,194,255,.45);",
+      "box-shadow:0 0 0 3px rgba(0,194,255,.08);}",
 
       ".atz-lead-btn{padding:10px;",
       "background:linear-gradient(135deg,var(--atz-c),var(--atz-c2));",
       "color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:500;",
       "cursor:pointer;font-family:inherit;transition:opacity .2s,transform .15s;",
-      "box-shadow:0 2px 8px rgba(124,58,237,.28);}",
+      "box-shadow:0 2px 8px rgba(0,194,255,.28);}",
       ".atz-lead-btn:hover{opacity:.9;transform:translateY(-1px);}",
 
       "#atz-lead-note{font-size:10.5px;color:#3f3f46;text-align:center;",
@@ -300,7 +301,7 @@
   // Header logo: AIS 3-prong with circle ring + purple-blue gradient
   var LOGO_ICON  = '<svg width="18" height="18" viewBox="0 0 100 100" fill="none">' +
     '<defs><linearGradient id="atz-hg" x1="0" y1="1" x2="1" y2="0">' +
-    '<stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#93c5fd"/>' +
+    '<stop offset="0%" stop-color="#4F8EF7"/><stop offset="100%" stop-color="#3D7EF5"/>' +
     '</linearGradient></defs>' +
     '<circle cx="50" cy="50" r="44" stroke="url(#atz-hg)" stroke-width="3"/>' +
     '<line x1="50" y1="73" x2="19" y2="31" stroke="url(#atz-hg)" stroke-width="2.8" stroke-linecap="round"/>' +

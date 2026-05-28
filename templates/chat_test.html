@@ -10,8 +10,8 @@
 
 body {
   font-family: 'Sora', sans-serif;
-  background: #0a0a0f;
-  color: #f3eeff;
+  background: #0D0E12;
+  color: #F3F4F6;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -32,13 +32,13 @@ body {
   gap: 16px;
   margin-bottom: 48px;
   padding-bottom: 24px;
-  border-bottom: 1px solid rgba(124,58,237,0.2);
+  border-bottom: 1px solid rgba(79,142,247,0.2);
 }
 
 .shop-logo {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  background: linear-gradient(135deg, #3D7EF5, #4F8EF7);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -49,10 +49,7 @@ body {
 .shop-name {
   font-size: 22px;
   font-weight: 700;
-  background: linear-gradient(135deg, #f3eeff, #a855f7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #F3F4F6;
 }
 
 .shop-tagline {
@@ -68,17 +65,17 @@ body {
 }
 
 .shop-nav a {
-  color: #9d8ec4;
+  color: #666680;
   text-decoration: none;
   font-size: 14px;
   transition: color 0.2s;
 }
 
-.shop-nav a:hover { color: #f3eeff; }
+.shop-nav a:hover { color: #F3F4F6; }
 
 .hero {
-  background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(168,85,247,0.08));
-  border: 1px solid rgba(124,58,237,0.2);
+  background: linear-gradient(135deg, rgba(79,142,247,0.15), rgba(79,142,247,0.08));
+  border: 1px solid rgba(79,142,247,0.2);
   border-radius: 24px;
   padding: 60px 40px;
   text-align: center;
@@ -89,15 +86,12 @@ body {
   font-size: clamp(28px, 5vw, 42px);
   font-weight: 700;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #f3eeff, #c084fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #F3F4F6;
 }
 
 .hero p {
   font-size: 16px;
-  color: #9d8ec4;
+  color: #666680;
   max-width: 500px;
   margin: 0 auto 28px;
   line-height: 1.6;
@@ -106,7 +100,7 @@ body {
 .hero-btn {
   display: inline-block;
   padding: 14px 32px;
-  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  background: linear-gradient(135deg, #3D7EF5, #4F8EF7);
   color: white;
   border-radius: 12px;
   text-decoration: none;
@@ -117,7 +111,7 @@ body {
 
 .hero-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(124,58,237,0.4);
+  box-shadow: 0 8px 24px rgba(79,142,247,0.4);
 }
 
 .products {
@@ -128,25 +122,25 @@ body {
 }
 
 .product-card {
-  background: rgba(124,58,237,0.06);
-  border: 1px solid rgba(124,58,237,0.15);
+  background: rgba(79,142,247,0.06);
+  border: 1px solid rgba(79,142,247,0.15);
   border-radius: 16px;
   padding: 24px;
   transition: border-color 0.2s;
 }
 
 .product-card:hover {
-  border-color: rgba(124,58,237,0.4);
+  border-color: rgba(79,142,247,0.4);
 }
 
 .product-emoji { font-size: 32px; margin-bottom: 12px; }
 .product-name { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-.product-price { font-size: 18px; font-weight: 700; color: #a855f7; }
+.product-price { font-size: 18px; font-weight: 700; color: #4F8EF7; }
 .product-desc { font-size: 13px; color: #6b7280; margin-top: 6px; line-height: 1.4; }
 
 .info-bar {
-  background: rgba(124,58,237,0.08);
-  border: 1px solid rgba(124,58,237,0.15);
+  background: rgba(79,142,247,0.08);
+  border: 1px solid rgba(79,142,247,0.15);
   border-radius: 16px;
   padding: 24px 32px;
   display: flex;
@@ -167,13 +161,13 @@ body {
 .info-item .value {
   font-size: 15px;
   font-weight: 600;
-  color: #f3eeff;
+  color: #F3F4F6;
 }
 
 /* ── Test info panel ── */
 .test-panel {
   background: rgba(0,0,0,0.4);
-  border-top: 1px solid rgba(124,58,237,0.2);
+  border-top: 1px solid rgba(79,142,247,0.2);
   padding: 20px 40px;
   display: flex;
   align-items: center;
@@ -189,24 +183,24 @@ body {
 }
 
 .test-label span {
-  color: #a855f7;
+  color: #4F8EF7;
   font-weight: 600;
 }
 
 .test-hint {
   font-size: 13px;
-  color: #4e4270;
+  color: #4a4a5e;
   font-style: italic;
 }
 
 .embed-code {
   background: rgba(0,0,0,0.6);
-  border: 1px solid rgba(124,58,237,0.2);
+  border: 1px solid rgba(79,142,247,0.2);
   border-radius: 10px;
   padding: 12px 16px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
-  color: #c084fc;
+  color: #4F8EF7;
   word-break: break-all;
 }
 </style>

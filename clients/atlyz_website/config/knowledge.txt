@@ -70,7 +70,7 @@ PRICING
 =======
 Founding Member Pricing — First 10 clients only. Spots are filling fast. All founding rates are locked in forever.
 
-Starter Plan — $55/month | Founding rate: $45/month (locked forever)
+Starter Plan — $69/month | Founding rate: $59/month (locked forever, 14% off)
   - 1 website
   - 500 chats/month
   - Auto website scraping
@@ -78,7 +78,7 @@ Starter Plan — $55/month | Founding rate: $45/month (locked forever)
   - Email support
   - No lead capture, no analytics dashboard
 
-Growth Plan — $99/month | Founding rate: $85/month (locked forever) — MOST POPULAR
+Growth Plan — $129/month | Founding rate: $109/month (locked forever, 15% off) — MOST POPULAR
   - 1 website
   - Unlimited chats
   - Auto website scraping
@@ -87,7 +87,7 @@ Growth Plan — $99/month | Founding rate: $85/month (locked forever) — MOST P
   - Analytics dashboard
   - Priority support
 
-Pro Plan — $149/month | Founding rate: $130/month (locked forever)
+Pro Plan — $189/month | Founding rate: $159/month (locked forever, 16% off)
   - 3 websites
   - Unlimited chats
   - Auto website scraping
