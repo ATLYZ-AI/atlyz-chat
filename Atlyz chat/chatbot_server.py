@@ -606,7 +606,7 @@ action must be: chat, collect_lead, or end"""
             response = client.chat.completions.create(
                 model="gpt-5-nano",
                 messages=messages,
-                max_completion_tokens=800,
+                max_completion_tokens=1500,
                 response_format={"type": "json_object"}
             )
             parsed = _parse_reply(response.choices[0].message.content)
