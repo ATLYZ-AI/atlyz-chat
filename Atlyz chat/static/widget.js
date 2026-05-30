@@ -27,6 +27,7 @@
 
   var sessionId    = null;
   var isOpen       = false;
+  var widgetOpened = false;
   var businessName = "Atlyz";
   var botName      = "Aria";
   var botTagline   = "Your AI Assistant";
@@ -370,9 +371,9 @@
     document.body.appendChild(btn);
     document.body.appendChild(box);
 
-    document.getElementById("atz-close").onclick = closeChat;
-    document.getElementById("atz-send").onclick   = sendMessage;
-    document.getElementById("atz-clear").onclick  = clearChat;
+    document.getElementById("atz-close").addEventListener("click", closeChat);
+    document.getElementById("atz-send").addEventListener("click", sendMessage);
+    document.getElementById("atz-clear").addEventListener("click", clearChat);
 
     var inp = document.getElementById("atz-input");
     inp.addEventListener("keydown", function (e) {
@@ -407,8 +408,9 @@
 
   function clearChat() {
     clearSession();
-    sessionId = null;
-    leadMode  = false;
+    sessionId    = null;
+    leadMode     = false;
+    widgetOpened = false;
     document.getElementById("atz-msgs").innerHTML = "";
     var wrap = document.getElementById("atz-input-wrap");
     var form = document.getElementById("atz-lead-form");
@@ -532,7 +534,8 @@
       // Plan chat-limit reached — show the notice but block sending
       if (d.chat_enabled === false) setChatEnabled(false);
 
-      if (!savedMsgs.length) {
+      if (!savedMsgs.length && !widgetOpened) {
+        widgetOpened = true;
         if (d.greeting) greeting = d.greeting;
         setTimeout(function () {
           addMsg(greeting, false);
@@ -548,9 +551,13 @@
   // ── Send ──────────────────────────────────────────────────────────────────────
   function sendMessage() {
     var inp = document.getElementById("atz-input");
-    if (!inp || !sessionId) return;
+    if (!inp) return;
     var text = inp.value.trim();
     if (!text) return;
+    if (!sessionId) {
+      addMsg("Still connecting — please try again in a moment.", false);
+      return;
+    }
 
     inp.value = "";
     inp.style.height = "auto";
