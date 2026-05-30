@@ -1136,6 +1136,33 @@ def rescrape_endpoint():
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# ADMIN
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@app.route("/admin/knowledge", methods=["POST"])
+def admin_knowledge():
+    if not check_admin_key():
+        return jsonify({"error": "Unauthorized"}), 401
+
+    data           = request.get_json(silent=True) or {}
+    bid            = (data.get("business_id", "") or "").strip()
+    knowledge_text = data.get("knowledge_text", "") or ""
+
+    if not bid:
+        return jsonify({"error": "business_id required"}), 400
+    if not knowledge_text.strip():
+        return jsonify({"error": "knowledge_text required"}), 400
+    if not business_exists(bid):
+        return jsonify({"error": "Unknown business"}), 404
+
+    knowledge_path = os.path.join(CLIENTS_DIR, bid, "config", "knowledge.txt")
+    with open(knowledge_path, "a", encoding="utf-8") as f:
+        f.write("\n" + knowledge_text)
+
+    return jsonify({"success": True, "business_id": bid, "appended_chars": len(knowledge_text)})
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # SETUP (owner or admin)
 # ═══════════════════════════════════════════════════════════════════════════════
 

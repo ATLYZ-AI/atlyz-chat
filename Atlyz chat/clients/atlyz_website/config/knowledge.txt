@@ -177,3 +177,129 @@ A: Yes — 50+ languages, auto-detected. Customer writes in Spanish, bot replies
 
 Q: Is the chatbot white-label?
 A: Yes, on the Pro plan. Remove the "Powered by Atlyz" branding completely.
+
+DETAILED FAQ — ATLYZ CHAT CAPABILITIES
+=======================================
+
+Q: What exactly can Atlyz Chat do?
+A: Atlyz Chat can:
+- Answer any question a visitor asks, as long as the answer is covered on your website or in your knowledge base
+- Respond in the same language the visitor writes in — 50+ languages supported, auto-detected
+- Collect visitor contact details (name, email, phone) via a lead capture form when the bot can't fully help
+- Notify the business owner by email instantly when a new lead is captured
+- Remember the conversation context across the current chat session (last 6 exchanges)
+- Embed on any website with a single line of HTML — no developer required
+- Be customized with brand colors, greeting message, bot name, bot tagline, and widget position
+- Serve unlimited chats simultaneously — no queue, no wait time
+- Run 24/7 with under-1-second response time
+
+Q: What can Atlyz Chat NOT do?
+A: Atlyz Chat cannot:
+- Make phone calls or send SMS — it is a text chatbot only
+- Access real-time data such as live inventory levels, order status, or live pricing unless that information is written into the knowledge base
+- Book appointments automatically (that is an Atlyz Agent feature, coming later)
+- Send follow-up messages after the chat window is closed
+- Pull information from password-protected pages, PDFs, or internal databases — it only reads publicly accessible website pages
+- Learn or update itself from conversations — knowledge is updated by re-scraping your website or editing the knowledge base manually
+- Handle voice or audio input — text only
+- Integrate directly with third-party CRMs, calendars, or e-commerce back-ends (that is Atlyz Agent territory)
+
+Q: How does Atlyz Chat handle questions it cannot answer?
+A: If a visitor asks something not covered in the knowledge base, the bot politely says it doesn't have that information and offers to connect the visitor with the business owner. It triggers a lead capture form to collect the visitor's name, email, and optionally phone number. The business owner receives an instant email with the visitor's details and the question they asked, so no lead is ever lost.
+
+Q: How accurate is the chatbot?
+A: Atlyz Chat answers directly from your knowledge base — it does not guess or hallucinate answers beyond what is written there. If the information is not in the knowledge base, it will say so rather than make something up. Accuracy is directly tied to how complete and up-to-date your knowledge base is.
+
+Q: Can I customise what the bot knows?
+A: Yes. After setup, you can re-scrape your website at any time to update the knowledge base. The scraper reads up to 15 pages. You can also contact Atlyz support to add manual knowledge entries for things your website does not cover, such as internal FAQs or pricing details you prefer not to publish publicly.
+
+DETAILED FAQ — ATLYZ AGENT
+===========================
+
+Q: What is Atlyz Agent?
+A: Atlyz Agent is the third product in the Atlyz lineup, currently in development. Where Atlyz Chat answers questions and Atlyz Voice answers calls, Atlyz Agent goes further — it takes actions. It is a full AI automation layer that connects to your business tools and handles multi-step workflows without any human involvement.
+
+Q: What will Atlyz Agent be able to do?
+A: Atlyz Agent is designed to:
+- Book appointments automatically by checking calendar availability and confirming slots with customers
+- Follow up with leads automatically via chat or email after an initial enquiry
+- Handle full order intake workflows — collecting item, quantity, delivery address, and payment details
+- Integrate with CRM systems so every customer interaction is logged automatically
+- Connect to calendars (Google Calendar, Outlook) to read availability and create bookings
+- Run multi-step workflows — for example: customer asks about a service → agent checks availability → agent books the slot → agent sends confirmation → agent adds customer to CRM
+- Operate proactively, not just reactively — it can initiate follow-ups, not just wait for incoming messages
+
+Q: How is Atlyz Agent different from Atlyz Chat?
+A: Atlyz Chat is reactive and informational — it waits for a visitor to ask a question and answers from your knowledge base. Atlyz Agent is active and operational — it connects to your business tools and completes tasks. Think of Chat as a knowledgeable receptionist and Agent as a full virtual employee who can get things done.
+
+Q: When will Atlyz Agent be available?
+A: Atlyz Agent is currently on the roadmap and in early development. No fixed launch date has been announced. Businesses that join the Atlyz Agent waitlist will be the first to access it and will receive founding-member pricing — the lowest rate ever offered, locked in permanently. To join the waitlist, email contact@atlyz.com or visit atlyz.com/agent-product.
+
+Q: What will Atlyz Agent cost?
+A: Pricing for Atlyz Agent has not been announced yet. Waitlist members will receive founding-member rates, which historically are 14–16% below standard list price and locked in forever. Contact contact@atlyz.com to join the waitlist.
+
+DETAILED FAQ — PRICING
+=======================
+
+Q: What are the Atlyz Chat plans and prices?
+A: There are three plans. Founding-member rates (first 10 clients only) are shown in brackets — these rates are locked in forever for those clients.
+
+Starter — $69/month (Founding: $59/month)
+  Best for: small businesses that want to answer FAQs and reduce repetitive enquiries
+  Includes: 1 website, 500 chats/month, auto website scraping, 50+ language support, email support
+  Does not include: lead capture, analytics dashboard
+
+Growth — $129/month (Founding: $109/month) — Most Popular
+  Best for: businesses that actively want to grow their lead list
+  Includes: 1 website, unlimited chats, auto website scraping, 50+ languages, lead capture, analytics dashboard, priority support
+
+Pro — $189/month (Founding: $159/month)
+  Best for: agencies or businesses with multiple sites, or anyone who wants a fully branded experience
+  Includes: 3 websites, unlimited chats, auto website scraping, 50+ languages, lead capture, order intake, advanced analytics, white-label widget (remove "Powered by Atlyz" branding)
+
+Q: Are these monthly or annual prices?
+A: These are monthly prices. There are no annual lock-in contracts — you pay month to month and can cancel any time with no penalties.
+
+Q: What is the founding-member deal?
+A: The first 10 clients to sign up get the founding-member rate, which is approximately 14–16% below standard list price. These rates are locked in forever — even as the standard price increases over time, founding members always pay the original discounted rate. There are a limited number of spots.
+
+Q: Is there a free trial?
+A: Yes. You can try the live demo on the Atlyz website with no signup and no credit card. A free trial period is also available when you sign up — no credit card required to start. Payments are processed securely via Paddle.
+
+Q: Do you charge per conversation or per message?
+A: No. The Starter plan includes 500 chats per month (a chat = one visitor session, not per message). The Growth and Pro plans include unlimited chats with no per-message or per-session fees.
+
+Q: What happens if I exceed the 500 chats on the Starter plan?
+A: Once the monthly chat limit is reached on Starter, the widget politely notifies visitors that live chat has reached its limit for the month and directs them to the contact details on your website. No chats are lost without warning. You can upgrade to Growth at any time for unlimited chats.
+
+Q: What about Atlyz Voice and Atlyz Agent pricing?
+A: Pricing for Atlyz Voice and Atlyz Agent has not been announced yet. Businesses on the waitlist will receive founding-member rates. Contact contact@atlyz.com to join.
+
+DETAILED FAQ — HOW TO GET STARTED
+===================================
+
+Q: How do I set up Atlyz Chat for my business?
+A: The full process takes under 5 minutes:
+  Step 1 — Sign up at atlyz.com (no credit card required)
+  Step 2 — Enter your website URL. Atlyz reads up to 15 pages in about 60 seconds and builds a knowledge base automatically
+  Step 3 — Customise the widget: set your brand color, greeting message, bot name, and position (bottom-right or bottom-left)
+  Step 4 — Copy the one-line embed code from your dashboard
+  Step 5 — Paste it into your website's HTML before the closing </body> tag. That's it — your chatbot is live instantly
+
+Q: Do I need a developer?
+A: No. Pasting the embed code is identical to adding Google Analytics or a Facebook Pixel. If you can paste a script tag, you can deploy Atlyz Chat. No developer, no technical knowledge required.
+
+Q: What website platforms does it work with?
+A: Atlyz Chat works on any website that allows a custom script tag. Confirmed platforms include: Shopify, WordPress, Webflow, Squarespace, Framer, Wix, React, Vue, plain HTML5. If your platform allows a script tag in the page footer, it works.
+
+Q: How long before the chatbot knows my business?
+A: The scraper reads your website in approximately 60 seconds after you enter your URL. The chatbot is ready to answer questions immediately after scraping completes. You do not need to manually type in your business information.
+
+Q: What if my website has a lot of content?
+A: The scraper reads up to 15 pages. It prioritises the most important pages — homepage, services, pricing, FAQ, contact, about. If you have more content you want the bot to know, contact support and Atlyz can help add it to your knowledge base manually.
+
+Q: Can I update the chatbot after setup?
+A: Yes. From your dashboard you can re-scrape your website at any time, update the widget appearance, change the greeting message, and view analytics and leads. Changes go live immediately.
+
+Q: How do I sign up?
+A: Visit atlyz.com and click "Get Started" or "Try Free". You can also email contact@atlyz.com if you prefer to be onboarded manually by the team.
