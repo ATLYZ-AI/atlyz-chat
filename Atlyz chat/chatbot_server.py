@@ -5,11 +5,10 @@ import json
 import re
 import uuid
 import time
-import smtplib
 import csv
 import threading
 from datetime import datetime
-from email.mime.text import MIMEText
+import requests
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -210,9 +209,8 @@ def is_owner_of(bid: str) -> bool:
 
 def send_lead_email(owner_email: str, business_name: str, lead: dict):
     try:
-        from_addr = os.getenv("EMAIL_FROM", "")
-        password  = os.getenv("EMAIL_PASSWORD", "")
-        if not from_addr or not password or not owner_email:
+        api_key = os.getenv("RESEND_API_KEY", "")
+        if not api_key or not owner_email:
             return
         body = (
             f"New lead from your Atlyz chatbot!\n\n"
@@ -223,14 +221,27 @@ def send_lead_email(owner_email: str, business_name: str, lead: dict):
             f"Business: {business_name}\n"
             f"Time:     {lead.get('timestamp', '')}\n"
         )
-        msg            = MIMEText(body)
-        msg["Subject"] = f"[Atlyz] New lead — {lead.get('name') or lead.get('email') or 'Unknown'}"
-        msg["From"]    = from_addr
-        msg["To"]      = owner_email
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(from_addr, password)
-            server.sendmail(from_addr, owner_email, msg.as_string())
-        print(f"[LEAD] Email sent to {owner_email}")
+        payload = {
+            "from":    "Atlyz Contact <noreply@send.atlyz.com>",
+            "to":      [owner_email],
+            "subject": f"[Atlyz] New lead — {lead.get('name') or lead.get('email') or 'Unknown'}",
+            "text":    body,
+        }
+        # Reply-To the lead's email so the owner can reply to the customer directly.
+        lead_email = (lead.get("email") or "").strip()
+        if lead_email:
+            payload["reply_to"] = lead_email
+
+        resp = requests.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json=payload,
+            timeout=10,
+        )
+        if resp.status_code >= 300:
+            print(f"[LEAD EMAIL ERROR] Resend {resp.status_code}: {resp.text}")
+        else:
+            print(f"[LEAD] Email sent to {owner_email}")
     except Exception as e:
         print(f"[LEAD EMAIL ERROR] {e}")
 
@@ -1326,18 +1337,24 @@ def contact_form():
     print(f"[CONTACT] From: {name} <{email}> | Topic: {topic}")
 
     try:
-        from_addr = os.getenv("EMAIL_FROM")
-        password  = os.getenv("EMAIL_PASSWORD")
-        to_addr   = from_addr
-        if from_addr and password:
+        api_key = os.getenv("RESEND_API_KEY", "")
+        if api_key:
             body = f"New contact form submission\n\nName: {name}\nEmail: {email}\nTopic: {topic}\n\nMessage:\n{message}"
-            msg  = MIMEText(body)
-            msg["Subject"] = f"[Atlyz] Contact: {topic or 'General'} from {name or email}"
-            msg["From"]    = from_addr
-            msg["To"]      = to_addr
-            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-                server.login(from_addr, password)
-                server.sendmail(from_addr, to_addr, msg.as_string())
+            payload = {
+                "from":     "Atlyz Contact <noreply@send.atlyz.com>",
+                "to":       ["contact@atlyz.com"],
+                "reply_to": email,
+                "subject":  f"[Atlyz] Contact: {topic or 'General'} from {name or email}",
+                "text":     body,
+            }
+            resp = requests.post(
+                "https://api.resend.com/emails",
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                json=payload,
+                timeout=10,
+            )
+            if resp.status_code >= 300:
+                print(f"[CONTACT] Email failed: Resend {resp.status_code}: {resp.text}")
     except Exception as e:
         print(f"[CONTACT] Email failed: {e}")
 
