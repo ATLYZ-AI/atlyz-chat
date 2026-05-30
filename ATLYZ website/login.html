@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in — Atlyz</title>
+<meta name="description" content="Log in to your Atlyz account to manage your AI chatbot dashboard.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.05) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+
+/* ── Orbs ── */
+.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;animation:orb-drift 28s ease-in-out infinite alternate}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(0,194,255,0.06),transparent 65%);top:-200px;left:-150px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(0,194,255,0.06),transparent 65%);bottom:-100px;right:-200px;animation-direction:alternate-reverse;animation-delay:-12s}
+@keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,-40px) scale(1.08)}}
+
+/* ── Nav ── */
+nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;justify-content:space-between;gap:32px;padding:0 24px;height:52px;width:max-content;max-width:calc(100vw - 40px);min-width:320px;background:rgba(0,0,0,0.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:100px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.05)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-word{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.3px;color:#F3F4F6}
+.nav-back{color:var(--muted);text-decoration:none;font-size:14px;display:flex;align-items:center;gap:6px;transition:.2s}
+.nav-back:hover{color:var(--text)}
+
+/* ── Layout ── */
+.auth-wrap{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:110px 24px 60px}
+.auth-card{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px;animation:card-in .4s ease}
+@keyframes card-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:480px){.auth-card{padding:26px}}
+
+.auth-head{text-align:center;margin-bottom:28px}
+.auth-tag{display:inline-block;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);padding:3px 12px;border-radius:100px;margin-bottom:16px}
+.auth-head h1{font-size:clamp(24px,4vw,30px);font-weight:500;letter-spacing:-1px;margin-bottom:8px}
+.auth-head p{font-size:14px;color:var(--muted);line-height:1.6}
+
+/* ── Fields ── */
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:7px;font-weight:400}
+.field input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--text);font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s}
+.field input::placeholder{color:var(--muted2)}
+.field input:focus{border-color:rgba(255,255,255,.5)}
+
+/* ── Button ── */
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:#00C2FF;color:#000000;padding:13px 28px;border-radius:10px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s;width:100%;justify-content:center;margin-top:6px}
+.btn-primary:hover{opacity:.92;transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ── Toggle / footer ── */
+.auth-toggle{text-align:center;font-size:14px;color:var(--muted);margin-top:20px}
+.auth-toggle a{color:var(--accent);text-decoration:none;font-weight:500}
+.auth-toggle a:hover{text-decoration:underline}
+.auth-legal{text-align:center;font-size:11.5px;color:var(--muted2);margin-top:18px;line-height:1.6}
+.auth-legal a{color:var(--muted);text-decoration:none}
+.auth-legal a:hover{color:var(--text)}
+
+/* ── Error ── */
+.error-msg{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:11px 15px;font-size:13px;color:#f87171;margin-bottom:18px;display:none}
+
+/* ── Password show/hide ── */
+.pass-wrap{position:relative}
+.pass-wrap input{padding:11px 44px 11px 14px}
+.pass-toggle{position:absolute;top:50%;right:8px;transform:translateY(-50%);background:none;border:none;padding:6px;cursor:pointer;color:var(--muted2);display:flex;align-items:center;justify-content:center;border-radius:6px;transition:color .15s}
+.pass-toggle:hover{color:var(--text)}
+</style>
+<link rel="stylesheet" href="atlyz.css">
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="3"/>
+      <line x1="50" y1="73" x2="19" y2="31" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="34" y2="17" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="50" y2="11" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="66" y2="17" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="50" y1="73" x2="81" y2="31" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="34" cy="52" r="4" fill="#fff"/>
+      <circle cx="50" cy="42" r="4" fill="#fff"/>
+      <circle cx="66" cy="52" r="4" fill="#fff"/>
+      <circle cx="19" cy="31" r="5" fill="#fff"/>
+      <circle cx="34" cy="17" r="5" fill="#fff"/>
+      <circle cx="50" cy="11" r="5" fill="#fff"/>
+      <circle cx="66" cy="17" r="5" fill="#fff"/>
+      <circle cx="81" cy="31" r="5" fill="#fff"/>
+      <circle cx="50" cy="73" r="5.5" fill="#fff"/>
+    </svg>
+    <span class="logo-word">ATLYZ</span>
+  </a>
+  <a href="index.html" class="nav-back">← Back to home</a>
+</nav>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-head">
+      <div class="auth-tag">Welcome back</div>
+      <h1>Log in</h1>
+      <p>Log in to manage your chatbot and view your leads.</p>
+    </div>
+
+    <div class="error-msg" id="auth-err"></div>
+
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="li-email" placeholder="you@yourbusiness.com" autocomplete="email">
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <div class="pass-wrap">
+        <input type="password" id="li-pass" placeholder="Your password" autocomplete="current-password">
+        <button type="button" class="pass-toggle" aria-label="Show password" onclick="togglePass('li-pass', this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="auth-submit" onclick="submitLogin()">Log in →</button>
+
+    <p class="auth-toggle">
+      <span>New to Atlyz?</span>
+      <a href="signup.html">Create an account</a>
+    </p>
+  </div>
+</div>
+
+<script src="atlyz-config.js"></script>
+<script>
+var SERVER = window.ATLYZ_API;
+var params = new URLSearchParams(window.location.search);
+
+function showErr(msg){ var e=document.getElementById('auth-err'); e.textContent=msg; e.style.display='block'; }
+function clearErr(){ var e=document.getElementById('auth-err'); e.style.display='none'; }
+
+var EYE_ON  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+var EYE_OFF = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
+function togglePass(id, btn){
+  var inp = document.getElementById(id);
+  if(!inp) return;
+  var reveal = inp.type === 'password';
+  inp.type = reveal ? 'text' : 'password';
+  btn.setAttribute('aria-label', reveal ? 'Hide password' : 'Show password');
+  btn.innerHTML = reveal ? EYE_OFF : EYE_ON;
+}
+
+function submitLogin(){
+  clearErr();
+  var email = document.getElementById('li-email').value.trim();
+  var pass  = document.getElementById('li-pass').value;
+  if(!email){ showErr('Please enter your email.'); return; }
+  if(!pass){  showErr('Please enter your password.'); return; }
+
+  var btn = document.getElementById('auth-submit');
+  var orig = btn.textContent;
+  btn.textContent = 'Please wait…';
+  btn.disabled = true;
+
+  fetch(SERVER + '/auth/login', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ email: email, password: pass })
+  })
+  .then(function(r){ return r.json().then(function(d){ return {ok:r.ok, d:d}; }); })
+  .then(function(res){
+    if(res.ok && res.d && res.d.success){
+      localStorage.setItem('atlyz_token', res.d.token);
+      localStorage.setItem('atlyz_email', res.d.email);
+      if(res.d.name) localStorage.setItem('atlyz_name', res.d.name);
+      window.location.href = 'setup.html';
+    } else {
+      btn.textContent = orig; btn.disabled = false;
+      showErr((res.d && res.d.error) ? res.d.error : 'Incorrect email or password.');
+    }
+  })
+  .catch(function(){
+    btn.textContent = orig; btn.disabled = false;
+    showErr('Could not reach the Atlyz server. Please try again in a moment.');
+  });
+}
+
+(function(){
+  var emailParam = params.get('email');
+  if(emailParam){ var le = document.getElementById('li-email'); if(le) le.value = emailParam; }
+
+  ['li-email','li-pass'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.addEventListener('keydown', function(e){ if(e.key === 'Enter') submitLogin(); });
+  });
+})();
+</script>
+</body>
+</html>

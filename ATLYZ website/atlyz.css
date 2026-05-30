@@ -316,3 +316,8 @@ footer{position:relative;z-index:var(--z-base);padding:56px 24px 36px;max-width:
   .reveal{opacity:1!important;transform:none!important}
   .hero-glow,.orb{animation:none!important}
 }
+
+/* ─────────────── NAV "SIGN IN" LINK ─────────────── */
+/* Secondary link shown in .nav-right alongside the "Start free" CTA. */
+.nav-signin{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;padding:7px 14px;border-radius:100px;border:1px solid transparent;transition:.2s;font-family:'Outfit',sans-serif;white-space:nowrap}
+.nav-signin:hover{color:var(--text);border-color:var(--border-h)}
