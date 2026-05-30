@@ -491,6 +491,12 @@ def ai_chat_response(message: str, bid: str, session: dict, knowledge: str, conf
     owner_section     = owner_info if owner_info else "(No owner-provided info yet.)"
     knowledge_section = knowledge if knowledge else "(No scraped website knowledge yet.)"
 
+    if owner_info:
+        knowledge_block = (f"OWNER-PROVIDED INFO (most authoritative — trust this first):\n{owner_section}\n\n"
+                           f"WEBSITE KNOWLEDGE:\n{knowledge_section}")
+    else:
+        knowledge_block = knowledge_section
+
     if lead_capture:
         lead_rule = "- If the customer asks to speak to someone, get a quote, book an appointment, or be contacted: action = collect_lead."
     else:
@@ -503,31 +509,87 @@ def ai_chat_response(message: str, bid: str, session: dict, knowledge: str, conf
         history_lines.append(f"Assistant: {h['atlyz']}")
     history_text = "\n".join(history_lines) if history_lines else "(new conversation)"
 
-    system_prompt = f"""You are {bot_name}, a friendly and helpful AI assistant for {business_name}. You have deep knowledge about this business and genuinely care about helping customers.
+    # Smart email routing is specific to Atlyz's own site. Every other business gets a
+    # generic, business-appropriate fallback — customers must never be sent to Atlyz inboxes.
+    if bid == "atlyz_website":
+        dont_know_section = (
+            "WHEN YOU DON'T KNOW THE ANSWER:\n"
+            "Never say connection issue, technical error, or flag to the team.\n"
+            "Instead, based on what the question is about, direct them to the right email naturally and warmly:\n\n"
+            "- Pricing, plans, payments, billing → billing@atlyz.com\n"
+            "- Jobs, hiring, working at Atlyz → careers@atlyz.com\n"
+            "- Setup, embed code, not working, technical help → support@atlyz.com\n"
+            "- Anything else → contact@atlyz.com\n\n"
+            "Example response when you don't know:\n"
+            "'That one's a bit outside what I have on hand! For anything about pricing, "
+            "billing@atlyz.com is your best bet — they'll sort you out quickly 😊'\n\n"
+            "Vary these responses — never say the same thing twice."
+        )
+    else:
+        dont_know_section = (
+            "WHEN YOU DON'T KNOW THE ANSWER:\n"
+            "Never say connection issue, technical error, or flag to the team.\n"
+            f"Warmly let the customer know it's just outside what you have on hand, then point them to the "
+            f"contact details for {business_name} shown in the knowledge base above so the team can follow up. "
+            "Vary how you say this — never repeat the same wording twice."
+        )
 
-PERSONALITY: Warm, natural, conversational. Never corporate or robotic. Use the customer's name if you know it. Give concise answers — no walls of text. Use 1 emoji max per message only when it feels natural.
+    system_prompt = f"""You are {bot_name} — warm, sharp, and genuinely helpful. You work for {business_name} and you care about giving customers exactly what they need.
 
-PRIMARY SOURCE — OWNER-PROVIDED INFO (trust this first):
-{owner_section}
+PERSONALITY:
+- Conversational and natural — like a smart friend, not a bot
+- Vary your openings — never start two replies the same way
+- Light humour when appropriate
+- 1 emoji max per message, only when it feels natural
+- Short answers for simple questions, detailed for complex ones
 
-SECONDARY SOURCE — SCRAPED WEBSITE KNOWLEDGE:
-{knowledge_section}
+YOUR JOB:
+- Answer exactly what was asked — nothing more, nothing less
+- Never push products unless the customer asks about them
+- If asked what YOU can do: say you can answer questions about this business, help find what they need, and point them to the right contact if needed
 
-HOW TO ANSWER:
-- For questions about {business_name}: answer from the sources above, checking owner info first. Never invent business-specific facts.
-- If the answer truly isn't in either source, say: 'That's a great question — let me flag that for the team and they'll get back to you shortly!'
-- For general small talk or everyday questions, answer warmly then gently steer back to how you can help with {business_name}.
-- Keep replies to 1-3 sentences. Don't open with Hi/Hello every time.
-{lead_rule}
-- If the customer says goodbye and is done: action = end.
+{dont_know_section}
+
+KNOWLEDGE BASE:
+{knowledge_block}
 
 CONVERSATION HISTORY:
 {history_text}
+
+LEAD & FLOW RULES:
+{lead_rule}
+- If the customer says goodbye and is done: action = end.
 
 {language_instruction}
 
 Always respond with valid JSON: {{"reply": "...", "action": "chat", "language": "English"}}
 action must be: chat, collect_lead, or end"""
+
+    # Code-level safety net — used only if the model returns unusable output twice or
+    # the API call errors. No "flag to team" phrasing; route to a contact instead.
+    if bid == "atlyz_website":
+        fallback_reply = ("Hmm, that one slipped right past me! Email contact@atlyz.com and the "
+                          "team will take great care of you. 😊")
+    else:
+        fallback_reply = ("Sorry — I didn't quite catch that. Mind rephrasing? For anything specific, "
+                          "the contact details on this site will reach the team.")
+    fallback = {"reply": fallback_reply, "action": "chat", "language": "English"}
+
+    def _parse_reply(text):
+        text = (text or "").strip()
+        candidates = [text, text.replace("```json", "").replace("```", "").strip()]
+        for candidate in candidates:
+            try:
+                return json.loads(candidate)
+            except Exception:
+                pass
+        match = re.search(r"\{.*\}", candidates[1], re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group())
+            except Exception:
+                pass
+        return None
 
     try:
         from openai import OpenAI
@@ -539,38 +601,25 @@ action must be: chat, collect_lead, or end"""
             messages.append({"role": "assistant",  "content": h["atlyz"]})
         messages.append({"role": "user", "content": message})
 
-        response = client.chat.completions.create(
-            model="gpt-5-nano",
-            messages=messages,
-            max_completion_tokens=1500,
-            response_format={"type": "json_object"}
-        )
+        # Initial call plus one retry if the model returns malformed JSON.
+        for attempt in range(2):
+            response = client.chat.completions.create(
+                model="gpt-5-nano",
+                messages=messages,
+                max_completion_tokens=800,
+                response_format={"type": "json_object"}
+            )
+            parsed = _parse_reply(response.choices[0].message.content)
+            if parsed is not None:
+                return parsed
+            if attempt == 0:
+                print("[CHAT AI] Malformed JSON — retrying once")
 
-        raw = (response.choices[0].message.content or "").strip()
-
-        try:
-            return json.loads(raw)
-        except Exception:
-            pass
-
-        cleaned = raw.replace("```json", "").replace("```", "").strip()
-        try:
-            return json.loads(cleaned)
-        except Exception:
-            pass
-
-        match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group())
-            except Exception:
-                pass
-
-        return {"reply": "That's a great question — let me flag that for the team and they'll get back to you shortly!", "action": "chat", "language": "English"}
+        return fallback
 
     except Exception as e:
         print(f"[CHAT AI ERROR] {e}")
-        return {"reply": "That's a great question — let me flag that for the team and they'll get back to you shortly!", "action": "chat", "language": "English"}
+        return fallback
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
