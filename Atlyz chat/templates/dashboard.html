@@ -4,15 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Atlyz Chat — Owner Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0D0E12; --bg2:#111219; --panel:#1A1D26; --line:rgba(255,255,255,.08);
+    --bg:#06080f; --bg2:#0d1117; --panel:#111827; --line:rgba(255,255,255,.08);
     --txt:#F3F4F6; --muted:#8B90A3; --dim:#5B6072;
-    --pri:#4F8EF7; --pri2:#3D7EF5; --mint:#10B981; --coral:#ef4444;
+    --pri:#00C2FF; --pri2:#00a8e0; --mint:#10B981; --coral:#ef4444;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--txt);
-    font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.5}
+    font-family:'Outfit',system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.5}
   a{color:var(--pri)}
   button{font-family:inherit;cursor:pointer}
   input,textarea,select{font-family:inherit}
@@ -29,8 +30,8 @@
     padding:11px 13px;color:var(--txt);font-size:14px;outline:none;transition:border-color .15s}
   .inp:focus{border-color:var(--pri)}
   textarea.inp{resize:vertical;min-height:120px;line-height:1.55}
-  .btn{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border:none;
-    border-radius:10px;padding:11px 16px;font-size:14px;font-weight:600;width:100%;
+  .btn{background:#00C2FF;color:#000000;border:none;
+    border-radius:10px;padding:11px 16px;font-size:14px;font-weight:700;width:100%;
     transition:opacity .15s,transform .1s}
   .btn:hover{opacity:.92}
   .btn:active{transform:translateY(1px)}
@@ -49,18 +50,19 @@
   .biz-select{background:var(--panel);border:1px solid var(--line);border-radius:9px;
     padding:7px 11px;color:var(--txt);font-size:13px;outline:none}
   .plan-pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;
-    background:rgba(79,142,247,.15);color:var(--pri);border:1px solid rgba(79,142,247,.3);text-transform:uppercase;letter-spacing:.5px}
+    background:rgba(0,194,255,.12);color:var(--pri);border:1px solid rgba(0,194,255,.3);text-transform:uppercase;letter-spacing:.5px}
 
   .wrap{display:flex;min-height:calc(100vh - 53px)}
   .side{width:210px;flex-shrink:0;border-right:1px solid var(--line);padding:16px 12px;background:var(--bg2)}
   .navbtn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;
     border:none;color:var(--muted);padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:500;margin-bottom:2px}
   .navbtn:hover{background:var(--panel);color:var(--txt)}
-  .navbtn.active{background:rgba(79,142,247,.12);color:var(--pri)}
+  .navbtn.active{background:rgba(0,194,255,.1);color:var(--pri)}
   .main{flex:1;padding:26px 30px;max-width:980px}
   .sec{display:none}
   .sec.active{display:block;animation:fade .2s ease}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif}
   h2.sec-h{font-size:19px;margin:0 0 4px}
   .sec-sub{color:var(--muted);font-size:13px;margin:0 0 20px}
 
@@ -90,7 +92,7 @@
   .conv-body{display:none;padding:14px;background:var(--bg2);border-top:1px solid var(--line)}
   .conv-body.open{display:block}
   .bub{max-width:80%;padding:8px 12px;border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.5}
-  .bub.u{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;margin-left:auto;border-bottom-right-radius:3px}
+  .bub.u{background:linear-gradient(135deg,#00C2FF,#00a8e0);color:#000;margin-left:auto;border-bottom-right-radius:3px}
   .bub.b{background:var(--panel);border:1px solid var(--line);border-bottom-left-radius:3px}
 
   /* ── Forms ── */
@@ -121,7 +123,7 @@
 <div id="login">
   <form class="login-card" onsubmit="doLogin(event)">
     <div class="brand" style="margin-bottom:18px">
-      <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#4F8EF7" stroke-width="3"/><line x1="50" y1="73" x2="19" y2="31" stroke="#4F8EF7" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="50" y2="11" stroke="#4F8EF7" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="81" y2="31" stroke="#4F8EF7" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="31" r="5" fill="#4F8EF7"/><circle cx="50" cy="11" r="5" fill="#4F8EF7"/><circle cx="81" cy="31" r="5" fill="#4F8EF7"/><circle cx="50" cy="73" r="5.5" fill="#4F8EF7"/></svg>
+      <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#00C2FF" stroke-width="3"/><line x1="50" y1="73" x2="19" y2="31" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="50" y2="11" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="81" y2="31" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="31" r="5" fill="#00C2FF"/><circle cx="50" cy="11" r="5" fill="#00C2FF"/><circle cx="81" cy="31" r="5" fill="#00C2FF"/><circle cx="50" cy="73" r="5.5" fill="#00C2FF"/></svg>
       ATLYZ
     </div>
     <h1>Owner Dashboard</h1>
@@ -137,7 +139,7 @@
 <div id="app">
   <div class="topbar">
     <div class="brand">
-      <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#4F8EF7" stroke-width="3"/><line x1="50" y1="73" x2="19" y2="31" stroke="#4F8EF7" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="50" y2="11" stroke="#4F8EF7" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="81" y2="31" stroke="#4F8EF7" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="31" r="5" fill="#4F8EF7"/><circle cx="50" cy="11" r="5" fill="#4F8EF7"/><circle cx="81" cy="31" r="5" fill="#4F8EF7"/><circle cx="50" cy="73" r="5.5" fill="#4F8EF7"/></svg>
+      <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#00C2FF" stroke-width="3"/><line x1="50" y1="73" x2="19" y2="31" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="50" y2="11" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="81" y2="31" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="31" r="5" fill="#00C2FF"/><circle cx="50" cy="11" r="5" fill="#00C2FF"/><circle cx="81" cy="31" r="5" fill="#00C2FF"/><circle cx="50" cy="73" r="5.5" fill="#00C2FF"/></svg>
       ATLYZ
     </div>
     <span class="plan-pill" id="plan-pill">—</span>
@@ -277,7 +279,11 @@ let BIZ = null, CONFIG = null, FEATURES = {}, COLOR_MODE = "manual";
 
 async function api(path, opts){
   opts = opts || {};
-  const r = await fetch(ORIGIN + path, Object.assign({credentials:"same-origin"}, opts));
+  const token = localStorage.getItem('atlyz_token');
+  const headers = Object.assign({}, opts.headers || {});
+  if(token) headers['Authorization'] = 'Bearer ' + token;
+  opts = Object.assign({credentials:"same-origin"}, opts, {headers});
+  const r = await fetch(ORIGIN + path, opts);
   let data = null; try { data = await r.json(); } catch(e){}
   if(!r.ok) throw {status:r.status, data};
   return data;
@@ -301,9 +307,23 @@ async function doLogin(e){
     bootApp(d.businesses);
   }catch(ex){ err.textContent = (ex.data && ex.data.error) || "Login failed."; }
 }
-async function doLogout(){ try{ await api("/auth/logout", {method:"POST"}); }catch(e){} location.reload(); }
+async function doLogout(){
+  try{ await api("/auth/logout", {method:"POST"}); }catch(e){}
+  localStorage.removeItem('atlyz_token');
+  localStorage.removeItem('atlyz_email');
+  localStorage.removeItem('atlyz_name');
+  location.reload();
+}
 
 async function init(){
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlToken = urlParams.get('token');
+  if(urlToken){
+    localStorage.setItem('atlyz_token', urlToken);
+    const clean = new URL(window.location);
+    clean.searchParams.delete('token');
+    history.replaceState({}, '', clean);
+  }
   try{
     const me = await api("/auth/me");
     if(me.businesses && me.businesses.length) return bootApp(me.businesses);
@@ -371,7 +391,7 @@ async function loadConfig(){
   document.getElementById("c-greeting").value = CONFIG.greeting || "";
   document.getElementById("c-position").value = CONFIG.widget_position || "bottom-right";
   document.getElementById("c-lang").value     = CONFIG.language_lock || "";
-  document.getElementById("c-color").value    = CONFIG.primary_color || "#4F8EF7";
+  document.getElementById("c-color").value    = CONFIG.primary_color || "#00C2FF";
   document.getElementById("c-color-hex").textContent = CONFIG.primary_color || "";
   setColorMode(CONFIG.color_mode || "manual", true);
 
