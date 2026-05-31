@@ -169,7 +169,7 @@ function submitLogin(){
       localStorage.setItem('atlyz_token', res.d.token);
       localStorage.setItem('atlyz_email', res.d.email);
       if(res.d.name) localStorage.setItem('atlyz_name', res.d.name);
-      window.location.href = 'setup.html';
+      window.location.href = window.ATLYZ_API + '/dashboard?token=' + res.d.token;
     } else {
       btn.textContent = orig; btn.disabled = false;
       showErr((res.d && res.d.error) ? res.d.error : 'Incorrect email or password.');
