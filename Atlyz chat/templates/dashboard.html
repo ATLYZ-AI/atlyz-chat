@@ -115,6 +115,7 @@
   .gate{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:var(--coral);
     border-radius:10px;padding:11px 14px;font-size:12.5px;margin-bottom:14px}
   .flex{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  @media(max-width:640px){.ov-row{grid-template-columns:1fr!important}}
 </style>
 </head>
 <body>
@@ -162,18 +163,27 @@
       <!-- OVERVIEW -->
       <section class="sec active" id="sec-overview">
         <h2 class="sec-h" id="ov-name">Overview</h2>
-        <p class="sec-sub">How your chatbot is performing.</p>
+        <p class="sec-sub" id="ov-sub">Your chatbot performance at a glance.</p>
         <div class="grid" id="ov-stats"></div>
         <div class="panel">
-          <h3>Monthly chats</h3>
-          <div id="ov-usage"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <h3 style="margin:0">Your embed code</h3>
+            <button class="btn ghost sm" onclick="copyEmbedOv()">Copy</button>
+          </div>
+          <div class="embed" id="ov-embed-code"></div>
+          <p class="hint" style="margin-top:8px">Paste this before <code>&lt;/body&gt;</code> on your website to activate the chatbot widget.</p>
         </div>
-        <div class="panel">
-          <h3>Knowledge base</h3>
-          <div class="flex">
-            <div id="ov-scrape" style="color:var(--muted);font-size:13px"></div>
-            <div class="spacer" style="flex:1"></div>
-            <button class="btn ghost sm" id="ov-rescrape" onclick="rescrape()">Re-scrape website</button>
+        <div class="ov-row" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px">
+          <div class="panel" style="margin-bottom:0">
+            <h3>Monthly chats</h3>
+            <div id="ov-usage"></div>
+          </div>
+          <div class="panel" style="margin-bottom:0">
+            <h3>Knowledge base</h3>
+            <div id="ov-knowledge" style="color:var(--muted);font-size:13px;line-height:2"></div>
+            <div style="margin-top:14px">
+              <button class="btn ghost sm" id="ov-rescrape" onclick="rescrape()">Re-scrape website</button>
+            </div>
           </div>
         </div>
       </section>
@@ -362,24 +372,46 @@ async function loadOverview(){
   let s;
   try{ s = await api("/chatbot/stats/"+BIZ); }catch(e){ return; }
   document.getElementById("plan-pill").textContent = s.plan_label || s.plan || "";
-  document.getElementById("ov-name").textContent = (CONFIG && CONFIG.business_name) || BIZ;
+  const bizName = (CONFIG && CONFIG.business_name) || BIZ;
+  document.getElementById("ov-name").textContent = bizName;
+  const website = CONFIG && CONFIG.website_url;
+  document.getElementById("ov-sub").innerHTML = website
+    ? `Website: <a href="${esc(website)}" target="_blank" style="color:var(--pri)">${esc(website)}</a>`
+    : "Your chatbot performance at a glance.";
+
   document.getElementById("ov-stats").innerHTML = [
-    ["Leads", s.leads_total], ["Chats (all time)", s.total_chats],
-    ["Messages", s.total_messages], ["Active now", s.active_sessions]
+    ["Chats this month", s.chats_this_month ?? 0],
+    ["Leads captured",   s.leads_total      ?? 0],
+    ["All-time chats",   s.total_chats      ?? 0],
+    ["Active now",       s.active_sessions  ?? 0],
   ].map(([l,n])=>`<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join("");
+
+  document.getElementById("ov-embed-code").textContent =
+    `<script src="${ORIGIN}/widget.js?id=${BIZ}"><\/script>`;
 
   const used = s.chats_this_month||0, cap = s.monthly_cap;
   const usage = document.getElementById("ov-usage");
   if(cap==null){
-    usage.innerHTML = `<div style="font-size:15px;font-weight:600">${used} chats this month</div><div class="hint">Unlimited on your plan.</div>`;
+    usage.innerHTML = `<div style="font-size:26px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px">${used}</div>
+      <div class="hint">Unlimited on your plan.</div>`;
   }else{
     const pct = Math.min(100, Math.round(used/cap*100));
-    usage.innerHTML = `<div class="flex"><b>${used}</b><span class="hint">of ${cap} this month</span></div>
+    usage.innerHTML = `<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px">
+      <span style="font-size:26px;font-weight:700;letter-spacing:-.5px">${used}</span>
+      <span class="hint">/ ${cap} this month</span></div>
       <div class="meter"><i style="width:${pct}%"></i></div>
-      ${used>=cap?'<div class="hint" style="color:var(--coral)">Limit reached — new chats are paused until next month.</div>':''}`;
+      ${used>=cap?'<div class="hint" style="color:var(--coral);margin-top:6px">Limit reached — chats paused until next month.</div>':''}`;
   }
-  document.getElementById("ov-scrape").innerHTML =
-    `Last scraped: <b>${esc(s.last_scraped)}</b> · ${s.pages_scraped||0} pages`;
+
+  const scraped = esc(s.last_scraped || "Never");
+  const pages   = s.pages_scraped || 0;
+  document.getElementById("ov-knowledge").innerHTML =
+    `Last scraped: <b style="color:var(--txt)">${scraped}</b><br>` +
+    `Pages indexed: <b style="color:var(--txt)">${pages}</b>` +
+    (website ? `<br>Source: <a href="${esc(website)}" target="_blank" style="color:var(--pri)">${esc(website)}</a>` : "");
+}
+function copyEmbedOv(){
+  navigator.clipboard.writeText(document.getElementById("ov-embed-code").textContent).then(()=>toast("Copied"));
 }
 
 /* ── Config / customize ── */

@@ -156,7 +156,10 @@ def email_from_token(token: str):
 def request_account_email():
     """Email of the signed-in account on this request, or None."""
     body  = request.get_json(silent=True) or {}
-    token = (body.get("account_token", "") or
+    auth_header = request.headers.get("Authorization", "")
+    bearer = auth_header[7:] if auth_header.startswith("Bearer ") else ""
+    token = (bearer or
+             body.get("account_token", "") or
              request.headers.get("X-Auth-Token", "") or
              request.args.get("token", ""))
     return email_from_token(token)
@@ -844,6 +847,7 @@ def get_chat_config(bid):
     config["features"]     = feats
     config["logo_url"]     = f"/chat/logo/{bid}" if logo_fname else None
     config["white_label"]  = bool(config.get("white_label")) and feats.get("white_label", False)
+    config["website_url"]  = business_config.get("website", "")
     return jsonify(config)
 
 
