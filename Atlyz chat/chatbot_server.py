@@ -210,6 +210,44 @@ def is_owner_of(bid: str) -> bool:
 # NOTIFICATIONS
 # ═══════════════════════════════════════════════════════════════════════════════
 
+def send_welcome_email(email: str, name: str):
+    try:
+        api_key = os.getenv("RESEND_API_KEY", "")
+        if not api_key or not email:
+            return
+        first = name.split()[0] if name.strip() else "there"
+        body = (
+            f"Hey {first},\n\n"
+            "Welcome to Atlyz! Your account is ready.\n\n"
+            "Here's what to do next:\n\n"
+            "1. Go to your dashboard: https://app.atlyz.com/dashboard\n"
+            "2. Enter your website URL — Atlyz reads it and builds your knowledge base in 60 seconds\n"
+            "3. Copy your embed code and paste it on your site — your AI chatbot goes live instantly\n\n"
+            "Setup takes under 5 minutes. No developer needed.\n\n"
+            "Questions? Just reply to this email or contact us at support@atlyz.com — we're happy to help.\n\n"
+            "— The Atlyz Team\n"
+            "atlyz.com"
+        )
+        resp = requests.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={
+                "from":     "Atlyz <noreply@send.atlyz.com>",
+                "to":       [email],
+                "reply_to": "support@atlyz.com",
+                "subject":  "Welcome to Atlyz 👋",
+                "text":     body,
+            },
+            timeout=10,
+        )
+        if resp.status_code >= 300:
+            print(f"[WELCOME EMAIL ERROR] Resend {resp.status_code}: {resp.text}")
+        else:
+            print(f"[WELCOME] Email sent to {email}")
+    except Exception as e:
+        print(f"[WELCOME EMAIL ERROR] {e}")
+
+
 def send_lead_email(owner_email: str, business_name: str, lead: dict):
     try:
         api_key = os.getenv("RESEND_API_KEY", "")
@@ -911,6 +949,7 @@ def auth_signup():
         "businesses":    [],
     }
     save_accounts(accounts)
+    send_welcome_email(email, name)
     return jsonify({"success": True, "token": issue_token(email), "email": email, "name": name})
 
 
