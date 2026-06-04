@@ -11,7 +11,7 @@
    ════════════════════════════════════════════════════════════════════ */
 (function () {
   // Production backend (Railway). Switch to 'https://api.atlyz.com' once DNS is set up.
-  var PROD_API = 'https://web-production-baaea.up.railway.app';
+  var PROD_API = 'https://app.atlyz.com';
 
   var host    = window.location.hostname;
   var isLocal = window.location.protocol === 'file:' ||
