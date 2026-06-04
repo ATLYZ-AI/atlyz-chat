@@ -115,6 +115,35 @@
   .gate{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:var(--coral);
     border-radius:10px;padding:11px 14px;font-size:12.5px;margin-bottom:14px}
   .flex{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+
+  /* ── Login animated glow ── */
+  #login{position:relative;overflow:hidden}
+  #login::before{content:"";position:absolute;left:50%;top:50%;width:620px;height:620px;
+    border-radius:50%;pointer-events:none;z-index:0;
+    background:radial-gradient(circle,rgba(0,194,255,.10),rgba(0,194,255,0) 70%);
+    transform:translate(-50%,-50%) scale(.85);animation:glowpulse 6s ease-in-out infinite}
+  .login-card{position:relative;z-index:1}
+  @keyframes glowpulse{
+    0%,100%{opacity:.45;transform:translate(-50%,-50%) scale(.85)}
+    50%{opacity:1;transform:translate(-50%,-50%) scale(1.18)}}
+
+  /* ── Password visibility toggle ── */
+  .pass-wrap{position:relative}
+  .pass-wrap .inp{padding-right:42px}
+  .eye-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;
+    border:none;padding:7px;color:var(--muted);display:flex;align-items:center;border-radius:8px}
+  .eye-btn:hover{color:var(--txt)}
+  .eye-btn svg{width:18px;height:18px}
+
+  /* ── Sidebar profile ── */
+  .side{display:flex;flex-direction:column}
+  .nav-top{display:flex;flex-direction:column}
+  .profile{margin-top:auto;padding:14px 10px 4px;border-top:1px solid var(--line)}
+  .pf-name{font-size:13.5px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pf-email{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+  .profile .plan-pill{display:inline-block;margin:10px 0}
+  .profile .btn{margin-top:6px}
+
   @media(max-width:640px){.ov-row{grid-template-columns:1fr!important}}
 </style>
 </head>
@@ -124,13 +153,19 @@
 <div id="login">
   <form class="login-card" onsubmit="doLogin(event)">
     <div class="brand" style="margin-bottom:18px">
-      <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#00C2FF" stroke-width="3"/><line x1="50" y1="73" x2="19" y2="31" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="50" y2="11" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="81" y2="31" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="31" r="5" fill="#00C2FF"/><circle cx="50" cy="11" r="5" fill="#00C2FF"/><circle cx="81" cy="31" r="5" fill="#00C2FF"/><circle cx="50" cy="73" r="5.5" fill="#00C2FF"/></svg>
-      ATLYZ
+      <img src="https://atlyz.com/atlyz_white_transparent.png" style="height:32px;width:auto;" alt="Atlyz">
     </div>
     <h1>Owner Dashboard</h1>
     <p>Sign in to manage your chatbot.</p>
     <div class="field"><label>Email</label><input class="inp" type="email" id="li-email" autocomplete="username" required></div>
-    <div class="field"><label>Password</label><input class="inp" type="password" id="li-pass" autocomplete="current-password" required></div>
+    <div class="field"><label>Password</label>
+      <div class="pass-wrap">
+        <input class="inp" type="password" id="li-pass" autocomplete="current-password" required>
+        <button type="button" class="eye-btn" id="eye-btn" onclick="togglePass()" aria-label="Show password">
+          <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </div>
     <button class="btn" type="submit">Sign in</button>
     <div class="err" id="li-err"></div>
   </form>
@@ -140,23 +175,30 @@
 <div id="app">
   <div class="topbar">
     <div class="brand">
-      <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#00C2FF" stroke-width="3"/><line x1="50" y1="73" x2="19" y2="31" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="50" y2="11" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="73" x2="81" y2="31" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="31" r="5" fill="#00C2FF"/><circle cx="50" cy="11" r="5" fill="#00C2FF"/><circle cx="81" cy="31" r="5" fill="#00C2FF"/><circle cx="50" cy="73" r="5.5" fill="#00C2FF"/></svg>
-      ATLYZ
+      <img src="https://atlyz.com/atlyz_white_transparent.png" style="height:32px;width:auto;" alt="Atlyz">
     </div>
     <span class="plan-pill" id="plan-pill">—</span>
     <div class="spacer"></div>
     <select class="biz-select" id="biz-select" onchange="selectBiz(this.value)"></select>
-    <button class="btn ghost sm" onclick="doLogout()">Log out</button>
   </div>
 
   <div class="wrap">
     <nav class="side">
-      <button class="navbtn active" data-tab="overview" onclick="tab('overview')">Overview</button>
-      <button class="navbtn" data-tab="leads" onclick="tab('leads')">Leads</button>
-      <button class="navbtn" data-tab="convos" onclick="tab('convos')">Conversations</button>
-      <button class="navbtn" data-tab="customize" onclick="tab('customize')">Customize</button>
-      <button class="navbtn" data-tab="knowledge" onclick="tab('knowledge')">Knowledge</button>
-      <button class="navbtn" data-tab="install" onclick="tab('install')">Install</button>
+      <div class="nav-top">
+        <button class="navbtn active" data-tab="overview" onclick="tab('overview')">Overview</button>
+        <button class="navbtn" data-tab="leads" onclick="tab('leads')">Leads</button>
+        <button class="navbtn" data-tab="convos" onclick="tab('convos')">Conversations</button>
+        <button class="navbtn" data-tab="customize" onclick="tab('customize')">Customize</button>
+        <button class="navbtn" data-tab="knowledge" onclick="tab('knowledge')">Knowledge</button>
+        <button class="navbtn" data-tab="install" onclick="tab('install')">Install</button>
+      </div>
+      <div class="profile">
+        <div class="pf-name" id="pf-name">Account</div>
+        <div class="pf-email" id="pf-email"></div>
+        <span class="plan-pill" id="pf-plan">—</span>
+        <button class="btn ghost sm" style="width:100%" onclick="upgradePlan()">Upgrade Plan</button>
+        <button class="btn danger sm" style="width:100%" onclick="doLogout()">Log out</button>
+      </div>
     </nav>
 
     <main class="main">
@@ -314,8 +356,25 @@ async function doLogin(e){
   try{
     const d = await api("/auth/login", {method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({email, password: pass})});
+    if(d.token) localStorage.setItem('atlyz_token', d.token);
+    if(d.email) localStorage.setItem('atlyz_email', d.email);
+    if(d.name)  localStorage.setItem('atlyz_name', d.name);
     bootApp(d.businesses);
   }catch(ex){ err.textContent = (ex.data && ex.data.error) || "Login failed."; }
+}
+function togglePass(){
+  const inp = document.getElementById("li-pass");
+  const show = inp.type === "password";
+  inp.type = show ? "text" : "password";
+  document.getElementById("eye-btn").setAttribute("aria-label", show ? "Hide password" : "Show password");
+  document.getElementById("eye-icon").innerHTML = show
+    ? '<path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/><path d="M6.61 6.61A18.5 18.5 0 0 0 2 12s3.5 7 10 7a9.12 9.12 0 0 0 4.39-1.11"/>'
+    : '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
+}
+function upgradePlan(){ alert("Contact support@atlyz.com to upgrade"); }
+function renderProfile(){
+  document.getElementById("pf-name").textContent  = localStorage.getItem("atlyz_name")  || "Account";
+  document.getElementById("pf-email").textContent = localStorage.getItem("atlyz_email") || "";
 }
 async function doLogout(){
   try{ await api("/auth/logout", {method:"POST"}); }catch(e){}
@@ -336,6 +395,8 @@ async function init(){
   }
   try{
     const me = await api("/auth/me");
+    if(me.email) localStorage.setItem('atlyz_email', me.email);
+    if(me.name)  localStorage.setItem('atlyz_name', me.name);
     if(me.businesses && me.businesses.length) return bootApp(me.businesses);
   }catch(e){}
   document.getElementById("login").style.display = "flex";
@@ -343,6 +404,7 @@ async function init(){
 function bootApp(businesses){
   document.getElementById("login").style.display = "none";
   document.getElementById("app").style.display = "block";
+  renderProfile();
   const sel = document.getElementById("biz-select");
   sel.innerHTML = businesses.map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join("");
   selectBiz(businesses[0]);
@@ -371,7 +433,9 @@ async function selectBiz(id){
 async function loadOverview(){
   let s;
   try{ s = await api("/chatbot/stats/"+BIZ); }catch(e){ return; }
-  document.getElementById("plan-pill").textContent = s.plan_label || s.plan || "";
+  const planLabel = s.plan_label || s.plan || "";
+  document.getElementById("plan-pill").textContent = planLabel;
+  document.getElementById("pf-plan").textContent = planLabel || "—";
   const bizName = (CONFIG && CONFIG.business_name) || BIZ;
   document.getElementById("ov-name").textContent = bizName;
   const website = CONFIG && CONFIG.website_url;
