@@ -279,6 +279,7 @@
       ".atz-lead-input::placeholder{color:#3f3f46;}",
       ".atz-lead-input:focus{border-color:rgba(124,58,237,.45);",
       "box-shadow:0 0 0 3px rgba(124,58,237,.08);}",
+      "textarea.atz-lead-input{resize:none;min-height:70px;line-height:1.45;}",
 
       ".atz-lead-btn{padding:10px;",
       "background:linear-gradient(135deg,var(--atz-c),var(--atz-c2));",
@@ -603,6 +604,7 @@
       '<input class="atz-lead-input" id="atz-ln" type="text" placeholder="Your name" />' +
       '<input class="atz-lead-input" id="atz-le" type="email" placeholder="Email address" />' +
       '<input class="atz-lead-input" id="atz-lp" type="tel" placeholder="Phone (optional)" />' +
+      '<textarea class="atz-lead-input" id="atz-ld" placeholder="Brief description (optional)"></textarea>' +
       '<button class="atz-lead-btn" id="atz-lsub">Send — we\'ll be in touch</button>' +
       '<p id="atz-lead-note">We\'ll only use this to follow up on your question.</p>';
 
@@ -612,9 +614,10 @@
   }
 
   function submitLead() {
-    var name  = (document.getElementById("atz-ln") || {}).value || "";
-    var email = (document.getElementById("atz-le") || {}).value || "";
-    var phone = (document.getElementById("atz-lp") || {}).value || "";
+    var name        = (document.getElementById("atz-ln") || {}).value || "";
+    var email       = (document.getElementById("atz-le") || {}).value || "";
+    var phone       = (document.getElementById("atz-lp") || {}).value || "";
+    var description = (document.getElementById("atz-ld") || {}).value || "";
     if (!name && !email) { alert("Please enter your name or email."); return; }
 
     var userMsgs = document.querySelectorAll(".atz-user");
@@ -623,7 +626,7 @@
     fetch(SERVER_URL + "/chat/lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ session_id: sessionId, name: name, email: email, phone: phone, question: lastQ })
+      body: JSON.stringify({ session_id: sessionId, name: name, email: email, phone: phone, description: description, question: lastQ })
     })
     .then(function (r) { return r.json(); })
     .then(function (d) {

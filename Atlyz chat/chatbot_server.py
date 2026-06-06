@@ -255,10 +255,11 @@ def send_lead_email(owner_email: str, business_name: str, lead: dict):
             return
         body = (
             f"New lead from your Atlyz chatbot!\n\n"
-            f"Name:    {lead.get('name') or 'Not provided'}\n"
-            f"Email:   {lead.get('email') or 'Not provided'}\n"
-            f"Phone:   {lead.get('phone') or 'Not provided'}\n"
-            f"Message: {lead.get('question') or 'Not provided'}\n\n"
+            f"Name:        {lead.get('name') or 'Not provided'}\n"
+            f"Email:       {lead.get('email') or 'Not provided'}\n"
+            f"Phone:       {lead.get('phone') or 'Not provided'}\n"
+            f"Description: {lead.get('description') or 'Not provided'}\n"
+            f"Message:     {lead.get('question') or 'Not provided'}\n\n"
             f"Business: {business_name}\n"
             f"Time:     {lead.get('timestamp', '')}\n"
         )
@@ -688,7 +689,7 @@ def save_lead(bid: str, lead: dict):
         write_header = not os.path.exists(path)
         with _disk_lock:
             with open(path, "a", newline="", encoding="utf-8") as f:
-                writer = csv.DictWriter(f, fieldnames=["lead_id", "timestamp", "name", "email", "phone", "question", "session_id"])
+                writer = csv.DictWriter(f, fieldnames=["lead_id", "timestamp", "name", "email", "phone", "description", "question", "session_id"])
                 if write_header:
                     writer.writeheader()
                 writer.writerow(lead)
@@ -860,13 +861,14 @@ def chat_lead():
         return jsonify({"error": "Lead capture is not available on this plan"}), 403
 
     lead = {
-        "lead_id":    str(uuid.uuid4())[:8],
-        "timestamp":  datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "name":       (data.get("name", "") or "")[:120],
-        "email":      (data.get("email", "") or "")[:160],
-        "phone":      (data.get("phone", "") or "")[:40],
-        "question":   (data.get("question", "") or "")[:500],
-        "session_id": session_id,
+        "lead_id":     str(uuid.uuid4())[:8],
+        "timestamp":   datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "name":        (data.get("name", "") or "")[:120],
+        "email":       (data.get("email", "") or "")[:160],
+        "phone":       (data.get("phone", "") or "")[:40],
+        "description": (data.get("description", "") or "")[:500],
+        "question":    (data.get("question", "") or "")[:500],
+        "session_id":  session_id,
     }
 
     save_lead(bid, lead)
