@@ -804,6 +804,14 @@ def chat_message():
     bid    = session["business_id"]
     config = session["config"]
 
+    _PAID_PLANS = {"starter", "growth", "pro"}
+    if load_business_config(bid).get("plan", "").strip().lower() not in _PAID_PLANS:
+        return jsonify({
+            "reply":    "This chatbot is not active. The business owner needs to activate a plan.",
+            "action":   "chat",
+            "language": "English",
+        }), 403
+
     if session.get("over_limit"):
         notice = ("Our live chat has hit its monthly limit. Please use the contact details on this "
                   "site to reach the team and they'll follow up with you shortly.")
