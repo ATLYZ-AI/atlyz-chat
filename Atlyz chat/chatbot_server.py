@@ -963,12 +963,13 @@ def auth_login():
     if not account or not check_password_hash(account.get("password_hash", ""), password):
         return jsonify({"success": False, "error": "Incorrect email or password."}), 401
 
+    businesses = [b for b in account.get("businesses", []) if business_exists(b)]
     return jsonify({
         "success":    True,
         "token":      issue_token(email),
         "email":      email,
         "name":       account.get("name", ""),
-        "businesses": account.get("businesses", []),
+        "businesses": businesses,
     })
 
 
@@ -978,11 +979,12 @@ def auth_me():
     if not email:
         return jsonify({"success": False, "error": "Not signed in"}), 401
     account = load_accounts().get(email, {})
+    businesses = [b for b in account.get("businesses", []) if business_exists(b)]
     return jsonify({
         "success":    True,
         "email":      email,
         "name":       account.get("name", ""),
-        "businesses": account.get("businesses", []),
+        "businesses": businesses,
     })
 
 

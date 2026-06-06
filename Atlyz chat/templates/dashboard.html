@@ -397,7 +397,7 @@ async function init(){
     const me = await api("/auth/me");
     if(me.email) localStorage.setItem('atlyz_email', me.email);
     if(me.name)  localStorage.setItem('atlyz_name', me.name);
-    if(me.businesses && me.businesses.length) return bootApp(me.businesses);
+    if(me.email) return bootApp(me.businesses || []);
   }catch(e){}
   document.getElementById("login").style.display = "flex";
 }
@@ -405,6 +405,19 @@ function bootApp(businesses){
   document.getElementById("login").style.display = "none";
   document.getElementById("app").style.display = "block";
   renderProfile();
+  if(!businesses.length){
+    document.getElementById("biz-select").style.display = "none";
+    document.querySelector(".wrap").innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
+                  width:100%;gap:18px;padding:60px 20px;text-align:center">
+        <p style="color:var(--dim);font-size:15px;margin:0">
+          No chatbot found. Set up your chatbot at atlyz.com/setup
+        </p>
+        <a href="https://atlyz.com/setup" class="btn primary" style="text-decoration:none">Go to Setup</a>
+        <button class="btn ghost sm" onclick="doLogout()">Log out</button>
+      </div>`;
+    return;
+  }
   const sel = document.getElementById("biz-select");
   sel.innerHTML = businesses.map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join("");
   selectBiz(businesses[0]);
