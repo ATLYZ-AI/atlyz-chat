@@ -6,6 +6,7 @@ import re
 import uuid
 import time
 import csv
+import secrets
 import threading
 from datetime import datetime, timedelta
 import requests
@@ -1034,6 +1035,85 @@ def auth_profile():
 
     save_accounts(accounts)
     return jsonify({"success": True, "name": account.get("name", ""), "phone": account.get("phone", ""), "email": email})
+
+
+@app.route("/auth/forgot-password", methods=["POST"])
+def auth_forgot_password():
+    data  = request.get_json(silent=True) or {}
+    email = (data.get("email", "") or "").strip().lower()
+
+    accounts = load_accounts()
+    account  = accounts.get(email)
+    if account:
+        token  = secrets.token_hex(32)
+        expiry = (datetime.now() + timedelta(hours=1)).isoformat()
+        account["reset_token"]  = token
+        account["reset_expiry"] = expiry
+        save_accounts(accounts)
+
+        try:
+            api_key = os.getenv("RESEND_API_KEY", "")
+            if api_key:
+                body = (
+                    "Hi,\n\n"
+                    "You requested a password reset for your Atlyz account.\n\n"
+                    "Click the link below to reset your password. This link expires in 1 hour.\n\n"
+                    f"https://app.atlyz.com/dashboard?reset_token={token}\n\n"
+                    "If you didn't request this, ignore this email.\n\n"
+                    "— The Atlyz Team"
+                )
+                requests.post(
+                    "https://api.resend.com/emails",
+                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    json={
+                        "from":    "Atlyz <noreply@send.atlyz.com>",
+                        "to":      [email],
+                        "subject": "Reset your Atlyz password",
+                        "text":    body,
+                    },
+                    timeout=10,
+                )
+        except Exception as e:
+            print(f"[RESET EMAIL ERROR] {e}")
+
+    # Always return success — don't reveal whether the email exists
+    return jsonify({"success": True})
+
+
+@app.route("/auth/reset-password", methods=["POST"])
+def auth_reset_password():
+    data         = request.get_json(silent=True) or {}
+    token        = (data.get("token", "") or "").strip()
+    new_password = data.get("new_password", "") or ""
+
+    if not token:
+        return jsonify({"success": False, "error": "Missing reset token."}), 400
+    if len(new_password) < 8:
+        return jsonify({"success": False, "error": "Password must be at least 8 characters."}), 400
+
+    accounts = load_accounts()
+    matched_email = None
+    for email, account in accounts.items():
+        if account.get("reset_token") == token:
+            matched_email = email
+            break
+
+    if not matched_email:
+        return jsonify({"success": False, "error": "Invalid or expired reset link."}), 400
+
+    account = accounts[matched_email]
+    expiry  = account.get("reset_expiry", "")
+    try:
+        if datetime.fromisoformat(expiry) < datetime.now():
+            return jsonify({"success": False, "error": "This reset link has expired. Please request a new one."}), 400
+    except Exception:
+        return jsonify({"success": False, "error": "Invalid reset link."}), 400
+
+    account["password_hash"] = generate_password_hash(new_password)
+    account.pop("reset_token",  None)
+    account.pop("reset_expiry", None)
+    save_accounts(accounts)
+    return jsonify({"success": True})
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
