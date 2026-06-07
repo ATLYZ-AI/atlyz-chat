@@ -1552,6 +1552,340 @@ def admin_knowledge():
     return jsonify({"success": True, "business_id": bid, "appended_chars": len(knowledge_text)})
 
 
+def list_all_bids() -> list:
+    if not os.path.isdir(CLIENTS_DIR):
+        return []
+    return sorted(d for d in os.listdir(CLIENTS_DIR)
+                  if os.path.isdir(os.path.join(CLIENTS_DIR, d)) and valid_business_id(d))
+
+
+def parse_owner_meta(bid: str) -> dict:
+    """Parse the structured header written by setup/create into a dict."""
+    key_map = {
+        "owner name": "owner_name", "email":   "email",
+        "company":    "company",    "website": "website",
+        "phone":      "phone",      "plan":    "plan",
+        "joined":     "joined",
+    }
+    meta = {v: "" for v in key_map.values()}
+    for line in load_owner_info(bid).splitlines():
+        if ":" in line:
+            k, _, v = line.partition(":")
+            mapped = key_map.get(k.strip().lower())
+            if mapped:
+                meta[mapped] = v.strip()
+    return meta
+
+
+def analyze_faqs(bid: str) -> list:
+    """Read all conversation files, count customer messages, write bot_faqs.txt."""
+    conv_dir = os.path.join(client_dir(bid), "data", "conversations")
+    if not os.path.isdir(conv_dir):
+        return []
+    freq = {}
+    for fname in os.listdir(conv_dir):
+        if not fname.endswith(".json"):
+            continue
+        try:
+            with open(os.path.join(conv_dir, fname), encoding="utf-8") as fh:
+                rec = json.load(fh)
+            for h in rec.get("history", []):
+                msg = (h.get("customer", "") or "").strip().lower()
+                if len(msg) < 5:
+                    continue
+                freq[msg] = freq.get(msg, 0) + 1
+        except Exception:
+            pass
+
+    top = sorted(freq.items(), key=lambda x: x[1], reverse=True)[:20]
+
+    base = client_dir(bid)
+    if base:
+        faq_path = os.path.join(base, "config", "bot_faqs.txt")
+        try:
+            with open(faq_path, "w", encoding="utf-8") as fh:
+                for q, cnt in top:
+                    fh.write(f"[{cnt}] {q}\n")
+        except Exception:
+            pass
+
+    return [{"count": cnt, "question": q} for q, cnt in top]
+
+
+def read_faqs(bid: str) -> list:
+    base = client_dir(bid)
+    if not base:
+        return []
+    path = os.path.join(base, "config", "bot_faqs.txt")
+    if not os.path.exists(path):
+        return []
+    faqs = []
+    try:
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if line.startswith("["):
+                    close = line.index("]")
+                    count = int(line[1:close])
+                    q     = line[close + 2:]
+                    faqs.append({"count": count, "question": q})
+    except Exception:
+        pass
+    return faqs[:10]
+
+
+@app.route("/admin/clients", methods=["GET"])
+def admin_clients():
+    if not check_admin_key():
+        return jsonify({"error": "Unauthorized"}), 401
+    result = []
+    for bid in list_all_bids():
+        stats  = read_stats(bid)
+        leads  = read_leads(bid)
+        meta   = parse_owner_meta(bid)
+        faqs   = read_faqs(bid)
+        result.append({
+            "business_id":   bid,
+            "owner_meta":    meta,
+            "plan":          business_plan(bid),
+            "total_chats":   stats.get("total_chats", 0),
+            "total_leads":   len(leads),
+            "last_active":   stats.get("last_active", "never"),
+            "top_faqs":      faqs,
+        })
+    return jsonify({"clients": result, "count": len(result)})
+
+
+@app.route("/admin/analyze-faqs/<bid>", methods=["POST"])
+def admin_analyze_faqs(bid):
+    if not check_admin_key():
+        return jsonify({"error": "Unauthorized"}), 401
+    if not business_exists(bid):
+        return jsonify({"error": "Unknown business"}), 404
+    faqs = analyze_faqs(bid)
+    return jsonify({"business_id": bid, "faqs": faqs, "count": len(faqs)})
+
+
+@app.route("/admin/analyze-all-faqs", methods=["POST"])
+def admin_analyze_all_faqs():
+    if not check_admin_key():
+        return jsonify({"error": "Unauthorized"}), 401
+    summary = []
+    for bid in list_all_bids():
+        faqs = analyze_faqs(bid)
+        summary.append({"business_id": bid, "faq_count": len(faqs),
+                        "top": faqs[0]["question"] if faqs else None})
+    return jsonify({"processed": len(summary), "summary": summary})
+
+
+@app.route("/admin-panel")
+def admin_panel():
+    if not check_admin_key():
+        return "<h1>Unauthorized</h1>", 401
+
+    admin_key = (request.args.get("key", "") or
+                 request.headers.get("X-Admin-Key", "") or
+                 os.getenv("ATLYZ_ADMIN_KEY", ""))
+
+    bids    = list_all_bids()
+    clients = []
+    total_leads = 0
+    total_chats = 0
+    for bid in bids:
+        meta    = parse_owner_meta(bid)
+        stats   = read_stats(bid)
+        leads   = read_leads(bid)
+        faqs    = read_faqs(bid)
+        plan    = business_plan(bid)
+        cfg     = load_chatbot_config(bid)
+        total_leads += len(leads)
+        total_chats += stats.get("total_chats", 0)
+        clients.append({
+            "bid":          bid,
+            "biz_name":     cfg.get("business_name") or meta.get("company") or bid,
+            "owner_name":   meta.get("owner_name", ""),
+            "email":        meta.get("email", ""),
+            "website":      meta.get("website", ""),
+            "phone":        meta.get("phone", ""),
+            "plan":         plan,
+            "joined":       meta.get("joined", ""),
+            "total_chats":  stats.get("total_chats", 0),
+            "total_leads":  len(leads),
+            "last_active":  stats.get("last_active", "never"),
+            "faqs":         faqs,
+        })
+
+    def card(c):
+        faq_html = ""
+        if c["faqs"]:
+            rows = "".join(
+                f'<div class="faq-item"><span class="faq-count">×{f["count"]}</span>{f["question"]}</div>'
+                for f in c["faqs"]
+            )
+            faq_html = f'<div class="faqs"><div class="faq-label">Top FAQs</div>{rows}</div>'
+        else:
+            faq_html = '<div class="faqs"><div class="faq-label">Top FAQs</div><div class="faq-empty">No data yet — click Analyze</div></div>'
+
+        website_html = (f'<a href="{c["website"]}" target="_blank" class="link">{c["website"]}</a>'
+                        if c["website"] else "—")
+        phone_html   = f'<br>📞 {c["phone"]}' if c["phone"] else ""
+
+        return f"""
+        <div class="card" id="card-{c['bid']}">
+          <div class="card-top">
+            <div>
+              <div class="biz-name">{c['biz_name']}</div>
+              <span class="badge badge-{c['plan']}">{c['plan'].upper()}</span>
+            </div>
+            <div class="card-stats">
+              <div class="cstat"><div class="cstat-n">{c['total_chats']}</div><div class="cstat-l">chats</div></div>
+              <div class="cstat"><div class="cstat-n">{c['total_leads']}</div><div class="cstat-l">leads</div></div>
+            </div>
+          </div>
+          <div class="meta">
+            👤 {c['owner_name'] or '—'} &nbsp;·&nbsp; ✉️ {c['email'] or '—'}{phone_html}<br>
+            🌐 {website_html}<br>
+            📅 Joined {c['joined'] or '—'} &nbsp;·&nbsp; Last active: {c['last_active'][:10] if c['last_active'] != 'never' else 'never'}
+          </div>
+          {faq_html}
+          <div style="display:flex;gap:8px;margin-top:14px;align-items:center">
+            <button class="btn-analyze" onclick="analyzeFAQs('{c['bid']}', this)">Analyze FAQs</button>
+            <span class="msg" id="msg-{c['bid']}" style="display:none"></span>
+          </div>
+        </div>"""
+
+    cards_html = "\n".join(card(c) for c in clients)
+
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atlyz Admin Panel</title>
+<style>
+  :root{{--bg:#06080f;--panel:#111827;--line:rgba(255,255,255,.08);--txt:#F3F4F6;--muted:#8B90A3;
+        --dim:#5B6072;--pri:#00C2FF;--mint:#10B981;--coral:#ef4444}}
+  *{{box-sizing:border-box}}
+  body{{margin:0;padding:24px 28px;background:var(--bg);color:var(--txt);
+       font-family:system-ui,-apple-system,sans-serif;font-size:14px}}
+  a{{color:var(--pri)}}
+  .topbar{{display:flex;align-items:center;justify-content:space-between;
+           border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:24px}}
+  .topbar h1{{margin:0;font-size:22px;color:var(--pri);letter-spacing:-.3px}}
+  .topbar .sub{{color:var(--muted);font-size:13px;margin-top:3px}}
+  .summary{{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px}}
+  .scard{{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+          padding:14px 20px;min-width:120px;text-align:center}}
+  .scard .n{{font-size:26px;font-weight:700;color:var(--pri)}}
+  .scard .l{{font-size:12px;color:var(--muted);margin-top:2px}}
+  .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:16px}}
+  .card{{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}}
+  .card-top{{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}}
+  .biz-name{{font-size:16px;font-weight:700;margin-bottom:4px}}
+  .badge{{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;
+          letter-spacing:.5px;text-transform:uppercase}}
+  .badge-starter{{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--line)}}
+  .badge-growth{{background:rgba(16,185,129,.12);color:var(--mint);border:1px solid rgba(16,185,129,.3)}}
+  .badge-pro{{background:rgba(0,194,255,.12);color:var(--pri);border:1px solid rgba(0,194,255,.3)}}
+  .card-stats{{display:flex;gap:10px}}
+  .cstat{{background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:8px;
+          padding:8px 12px;text-align:center;min-width:52px}}
+  .cstat-n{{font-size:18px;font-weight:700}}
+  .cstat-l{{font-size:10px;color:var(--dim)}}
+  .meta{{font-size:12.5px;color:var(--muted);line-height:1.9;margin-bottom:14px}}
+  .link{{color:var(--pri);text-decoration:none;word-break:break-all}}
+  .faqs{{border-top:1px solid var(--line);padding-top:12px}}
+  .faq-label{{font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);margin-bottom:8px}}
+  .faq-item{{font-size:12px;color:var(--muted);padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;gap:6px;align-items:baseline}}
+  .faq-item:last-child{{border-bottom:none}}
+  .faq-count{{color:var(--pri);font-weight:700;font-size:10px;flex-shrink:0}}
+  .faq-empty{{font-size:12px;color:var(--dim);font-style:italic}}
+  .btn-analyze{{background:none;border:1px solid rgba(0,194,255,.35);color:var(--pri);
+               border-radius:8px;padding:6px 13px;font-size:12.5px;cursor:pointer;transition:.15s}}
+  .btn-analyze:hover{{background:rgba(0,194,255,.07)}}
+  .btn-analyze:disabled{{opacity:.45;cursor:not-allowed}}
+  .msg{{font-size:12px;padding:4px 10px;border-radius:6px}}
+  .msg.ok{{background:rgba(16,185,129,.1);color:var(--mint);border:1px solid rgba(16,185,129,.2)}}
+  .msg.bad{{background:rgba(239,68,68,.08);color:var(--coral);border:1px solid rgba(239,68,68,.2)}}
+  .analyze-all{{background:rgba(0,194,255,.1);border:1px solid rgba(0,194,255,.3);color:var(--pri);
+               border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;transition:.15s}}
+  .analyze-all:hover{{background:rgba(0,194,255,.18)}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div>
+    <h1>Atlyz Admin Panel</h1>
+    <div class="sub">{len(clients)} client{"s" if len(clients)!=1 else ""} &nbsp;·&nbsp; {total_leads} total leads &nbsp;·&nbsp; {total_chats} total chats</div>
+  </div>
+  <button class="analyze-all" onclick="analyzeAll(this)">Analyze all FAQs</button>
+</div>
+
+<div class="summary">
+  <div class="scard"><div class="n">{len(clients)}</div><div class="l">Clients</div></div>
+  <div class="scard"><div class="n">{sum(1 for c in clients if c['plan']=='starter')}</div><div class="l">Starter</div></div>
+  <div class="scard"><div class="n">{sum(1 for c in clients if c['plan']=='growth')}</div><div class="l">Growth</div></div>
+  <div class="scard"><div class="n">{sum(1 for c in clients if c['plan']=='pro')}</div><div class="l">Pro</div></div>
+  <div class="scard"><div class="n">{total_chats}</div><div class="l">Total chats</div></div>
+  <div class="scard"><div class="n">{total_leads}</div><div class="l">Total leads</div></div>
+</div>
+
+<div class="grid">
+{cards_html}
+</div>
+
+<script>
+const KEY = {repr(admin_key)};
+
+async function analyzeFAQs(bid, btn) {{
+  btn.disabled = true; btn.textContent = 'Analyzing…';
+  const msg = document.getElementById('msg-' + bid);
+  msg.className = 'msg'; msg.style.display = 'none';
+  try {{
+    const r = await fetch('/admin/analyze-faqs/' + bid, {{
+      method:'POST', headers:{{'X-Admin-Key': KEY}}
+    }});
+    const d = await r.json();
+    if(r.ok) {{
+      msg.textContent = d.count + ' questions found'; msg.className='msg ok'; msg.style.display='';
+      // Refresh the FAQ section in the card
+      const card = document.getElementById('card-' + bid);
+      const faqDiv = card.querySelector('.faqs');
+      if(faqDiv && d.faqs && d.faqs.length) {{
+        const rows = d.faqs.slice(0,10).map(f =>
+          '<div class="faq-item"><span class="faq-count">×' + f.count + '</span>' + f.question + '</div>'
+        ).join('');
+        faqDiv.innerHTML = '<div class="faq-label">Top FAQs</div>' + rows;
+      }}
+    }} else {{
+      msg.textContent = d.error || 'Failed'; msg.className='msg bad'; msg.style.display='';
+    }}
+  }} catch(e) {{
+    msg.textContent = 'Error'; msg.className='msg bad'; msg.style.display='';
+  }}
+  btn.disabled = false; btn.textContent = 'Analyze FAQs';
+}}
+
+async function analyzeAll(btn) {{
+  btn.disabled = true; btn.textContent = 'Analyzing all…';
+  try {{
+    const r = await fetch('/admin/analyze-all-faqs', {{
+      method:'POST', headers:{{'X-Admin-Key': KEY}}
+    }});
+    const d = await r.json();
+    if(r.ok) {{ btn.textContent = 'Done — ' + d.processed + ' processed'; }}
+    else {{ btn.textContent = 'Failed'; }}
+  }} catch(e) {{ btn.textContent = 'Error'; }}
+  setTimeout(()=>{{ btn.disabled=false; btn.textContent='Analyze all FAQs'; }}, 3000);
+}}
+</script>
+</body>
+</html>"""
+
+    from flask import Response
+    return Response(html, mimetype="text/html")
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # SETUP (owner or admin)
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1597,9 +1931,24 @@ def setup_create():
         if password:
             f.write(f"owner_password_hash = {generate_password_hash(password)}\n")
 
+    # Always write structured owner info (used by bot and admin panel)
+    acct_data    = load_accounts().get(account_email or owner_email, {})
+    owner_name   = acct_data.get("name",  "") or (data.get("owner_name",  "") or "").strip()
+    owner_phone  = acct_data.get("phone", "") or (data.get("phone",       "") or "").strip()
+    meta_lines   = [
+        f"Owner Name: {owner_name}",
+        f"Email: {owner_email}",
+        f"Company: {business_name}",
+        f"Website: {website_url}",
+    ]
+    if owner_phone:
+        meta_lines.append(f"Phone: {owner_phone}")
+    meta_lines += [f"Plan: {plan}", f"Joined: {datetime.now().strftime('%Y-%m-%d')}"]
+    owner_info_content = "\n".join(meta_lines)
     if owner_info:
-        with open(os.path.join(config_dir, "owner_info.txt"), "w", encoding="utf-8") as f:
-            f.write(owner_info)
+        owner_info_content += "\n\n" + owner_info
+    with open(os.path.join(config_dir, "owner_info.txt"), "w", encoding="utf-8") as f:
+        f.write(owner_info_content)
 
     if not greeting:
         greeting = f"Hi! I'm {data.get('bot_name', 'Aria')}, the virtual assistant for {business_name}. How can I help you today?"
