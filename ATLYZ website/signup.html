@@ -125,6 +125,11 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
       <input type="email" id="su-email" placeholder="you@yourbusiness.com" autocomplete="email">
     </div>
 
+    <div class="field" id="field-phone">
+      <label>Phone number <span style="font-size:11px;color:var(--muted2)">(optional)</span></label>
+      <input type="tel" id="su-phone" placeholder="+1 555 000 0000" autocomplete="tel">
+    </div>
+
     <div class="field">
       <label>Password</label>
       <div class="pass-wrap">
@@ -206,6 +211,7 @@ function toggleMode(){
   document.getElementById('auth-title').textContent    = s ? 'Create your account' : 'Log in';
   document.getElementById('auth-sub').textContent      = s ? 'Sign up to set up your AI chatbot — free to start, no card needed.' : 'Log in to continue setting up your chatbot.';
   document.getElementById('field-name').style.display    = s ? '' : 'none';
+  document.getElementById('field-phone').style.display   = s ? '' : 'none';
   document.getElementById('field-confirm').style.display = s ? '' : 'none';
   document.getElementById('field-terms').style.display   = s ? '' : 'none';
   document.getElementById('su-pass').setAttribute('autocomplete', s ? 'new-password' : 'current-password');
@@ -233,12 +239,14 @@ function submitAuth(){
 
   if(mode === 'signup'){
     var name  = document.getElementById('su-name').value.trim();
+    var phone = document.getElementById('su-phone').value.trim();
     var pass2 = document.getElementById('su-pass2').value;
     var terms = document.getElementById('su-terms');
     if(pass.length < 8){ showErr('Password must be at least 8 characters.'); return; }
     if(pass !== pass2){ showErr('Those passwords don\'t match.'); return; }
     if(!terms.checked){ showErr('Please agree to the Terms of Service to continue.'); return; }
-    body.name = name;
+    body.name  = name;
+    body.phone = phone;
     path = '/auth/signup';
   }
 
@@ -290,7 +298,7 @@ function logout(){
   var emailParam = params.get('email');
   if(emailParam){ var se = document.getElementById('su-email'); if(se) se.value = emailParam; }
 
-  ['su-name','su-email','su-pass','su-pass2'].forEach(function(id){
+  ['su-name','su-email','su-phone','su-pass','su-pass2'].forEach(function(id){
     var el = document.getElementById(id);
     if(el) el.addEventListener('keydown', function(e){ if(e.key === 'Enter') submitAuth(); });
   });

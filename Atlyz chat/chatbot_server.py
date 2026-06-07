@@ -7,7 +7,7 @@ import uuid
 import time
 import csv
 import threading
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, render_template, send_from_directory
@@ -943,6 +943,8 @@ def auth_signup():
     email    = (data.get("email", "") or "").strip().lower()
     password = data.get("password", "") or ""
 
+    phone    = (data.get("phone", "") or "").strip()[:40]
+
     if not email or not EMAIL_RE.match(email):
         return jsonify({"success": False, "error": "Please enter a valid email address."}), 400
     if len(password) < 8:
@@ -954,13 +956,14 @@ def auth_signup():
 
     accounts[email] = {
         "name":          name,
+        "phone":         phone,
         "password_hash": generate_password_hash(password),
         "created_at":    datetime.now().isoformat(),
         "businesses":    [],
     }
     save_accounts(accounts)
     send_welcome_email(email, name)
-    return jsonify({"success": True, "token": issue_token(email), "email": email, "name": name})
+    return jsonify({"success": True, "token": issue_token(email), "email": email, "name": name, "phone": phone})
 
 
 @app.route("/auth/login", methods=["POST"])
@@ -979,6 +982,7 @@ def auth_login():
         "token":      issue_token(email),
         "email":      email,
         "name":       account.get("name", ""),
+        "phone":      account.get("phone", ""),
         "businesses": businesses,
     })
 
@@ -994,8 +998,42 @@ def auth_me():
         "success":    True,
         "email":      email,
         "name":       account.get("name", ""),
+        "phone":      account.get("phone", ""),
         "businesses": businesses,
     })
+
+
+@app.route("/auth/profile", methods=["POST"])
+def auth_profile():
+    email = request_account_email()
+    if not email:
+        return jsonify({"success": False, "error": "Not signed in"}), 401
+    accounts = load_accounts()
+    account  = accounts.get(email)
+    if not account:
+        return jsonify({"success": False, "error": "Account not found"}), 404
+
+    data = request.get_json(silent=True) or {}
+
+    if "name" in data:
+        account["name"] = (data["name"] or "").strip()[:120]
+    if "phone" in data:
+        account["phone"] = (data["phone"] or "").strip()[:40]
+
+    if "new_password" in data:
+        cur = data.get("current_password", "")
+        nw  = data.get("new_password", "")
+        cf  = data.get("confirm_password", "")
+        if not check_password_hash(account.get("password_hash", ""), cur):
+            return jsonify({"success": False, "error": "Current password is incorrect."}), 400
+        if len(nw) < 8:
+            return jsonify({"success": False, "error": "New password must be at least 8 characters."}), 400
+        if nw != cf:
+            return jsonify({"success": False, "error": "Passwords don't match."}), 400
+        account["password_hash"] = generate_password_hash(nw)
+
+    save_accounts(accounts)
+    return jsonify({"success": True, "name": account.get("name", ""), "phone": account.get("phone", ""), "email": email})
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1038,7 +1076,8 @@ def chatbot_stats(bid):
     if not is_owner_of(bid):
         return jsonify({"error": "Unauthorized"}), 401
 
-    leads_count = len(read_leads(bid))
+    leads       = read_leads(bid)
+    leads_count = len(leads)
     stats       = read_stats(bid)
     scrape_meta = {}
     meta_path   = os.path.join(client_dir(bid), "config", "scrape_meta.json")
@@ -1053,13 +1092,51 @@ def chatbot_stats(bid):
     plan   = business_plan(bid)
     feats  = plans.get_plan(plan)
 
+    # Chats today / this week from conversation files (scan up to 500 most recent)
+    now        = datetime.now()
+    today      = now.date()
+    week_start = today - timedelta(days=today.weekday())
+    chats_today      = 0
+    chats_this_week  = 0
+    conv_dir = os.path.join(client_dir(bid), "data", "conversations")
+    if os.path.isdir(conv_dir):
+        try:
+            fnames = [f for f in os.listdir(conv_dir) if f.endswith(".json")]
+            fnames.sort(key=lambda f: os.path.getmtime(os.path.join(conv_dir, f)), reverse=True)
+            for fname in fnames[:500]:
+                try:
+                    with open(os.path.join(conv_dir, fname), encoding="utf-8") as fh:
+                        rec = json.load(fh)
+                    ts = rec.get("started_at", "")
+                    if ts:
+                        d = datetime.fromisoformat(ts).date()
+                        if d == today:
+                            chats_today += 1
+                        if d >= week_start:
+                            chats_this_week += 1
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+    # Last 3 leads for overview preview
+    recent_leads = [
+        {"name": l.get("name", ""), "email": l.get("email", ""), "timestamp": l.get("timestamp", "")}
+        for l in leads[-3:]
+    ]
+    recent_leads.reverse()
+
     return jsonify({
         "business_id":      bid,
         "plan":             plan,
         "plan_label":       feats.get("label", plan.title()),
+        "features":         feats,
         "monthly_cap":      feats.get("monthly_chats"),
         "chats_this_month": monthly_chats_used(bid),
+        "chats_today":      chats_today,
+        "chats_this_week":  chats_this_week,
         "leads_total":      leads_count,
+        "recent_leads":     recent_leads,
         "total_chats":      stats.get("total_chats", 0),
         "total_messages":   stats.get("total_messages", 0),
         "active_sessions":  len(active),
@@ -1067,6 +1144,124 @@ def chatbot_stats(bid):
         "last_scraped":     scrape_meta.get("timestamp", "never"),
         "pages_scraped":    scrape_meta.get("pages_scraped", 0),
     })
+
+
+@app.route("/chatbot/analytics/<bid>", methods=["GET"])
+def chatbot_analytics(bid):
+    if not business_exists(bid):
+        return jsonify({"error": "Unknown business"}), 404
+    if not is_owner_of(bid):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    plan  = business_plan(bid)
+    feats = plans.get_plan(plan)
+    if not feats.get("analytics", False):
+        return jsonify({"error": "Analytics not available on this plan"}), 403
+
+    is_pro   = plan == "pro"
+    now      = datetime.now()
+    today    = now.date()
+    week_start      = today - timedelta(days=today.weekday())
+    last_week_start = week_start - timedelta(days=7)
+
+    # Parse all conversation files
+    conv_dir = os.path.join(client_dir(bid), "data", "conversations")
+    parsed   = []
+    if os.path.isdir(conv_dir):
+        for fname in os.listdir(conv_dir):
+            if not fname.endswith(".json"):
+                continue
+            try:
+                with open(os.path.join(conv_dir, fname), encoding="utf-8") as fh:
+                    rec = json.load(fh)
+                ts = rec.get("started_at", "")
+                if ts:
+                    parsed.append({
+                        "dt":   datetime.fromisoformat(ts),
+                        "lead": bool(rec.get("lead_captured", False)),
+                    })
+            except Exception:
+                pass
+
+    # 7-day chart
+    days_7 = []
+    for i in range(6, -1, -1):
+        d     = today - timedelta(days=i)
+        count = sum(1 for p in parsed if p["dt"].date() == d)
+        days_7.append({"date": d.isoformat(), "label": d.strftime("%a"), "count": count})
+
+    # Chats by hour (0-23)
+    hour_counts = [0] * 24
+    for p in parsed:
+        hour_counts[p["dt"].hour] += 1
+    hours = [{"hour": h, "label": f"{h:02d}:00" if h % 6 == 0 else "", "count": hour_counts[h]}
+             for h in range(24)]
+
+    # This week vs last week
+    this_week = sum(1 for p in parsed if week_start <= p["dt"].date() < week_start + timedelta(days=7))
+    last_week = sum(1 for p in parsed if last_week_start <= p["dt"].date() < week_start)
+
+    # Leads this week
+    leads = read_leads(bid)
+    leads_this_week = 0
+    for l in leads:
+        try:
+            lt = datetime.strptime(l.get("timestamp", ""), "%Y-%m-%d %H:%M:%S")
+            if lt.date() >= week_start:
+                leads_this_week += 1
+        except Exception:
+            pass
+
+    result = {
+        "plan":             plan,
+        "days_7":           days_7,
+        "hours":            hours,
+        "this_week":        this_week,
+        "last_week":        last_week,
+        "total_leads":      len(leads),
+        "leads_this_week":  leads_this_week,
+    }
+
+    if is_pro:
+        # 30-day chart
+        days_30 = []
+        for i in range(29, -1, -1):
+            d     = today - timedelta(days=i)
+            count = sum(1 for p in parsed if p["dt"].date() == d)
+            days_30.append({"date": d.isoformat(), "label": d.strftime("%-d %b"), "count": count})
+
+        total_30    = sum(d["count"] for d in days_30)
+        avg_per_day = round(total_30 / 30, 1)
+
+        # Busiest day of week
+        dow = [0] * 7
+        for p in parsed:
+            dow[p["dt"].weekday()] += 1
+        day_names   = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+        busiest_day = day_names[dow.index(max(dow))] if any(dow) else "—"
+
+        # Lead conversion rate
+        total_convs   = len(parsed)
+        leads_captured = sum(1 for p in parsed if p["lead"])
+        conversion_rate = round(leads_captured / total_convs * 100, 1) if total_convs else 0.0
+
+        # Weekly trend (last 4 weeks)
+        weekly_trend = []
+        for w in range(3, -1, -1):
+            ws    = week_start - timedelta(days=7 * w)
+            we    = ws + timedelta(days=7)
+            count = sum(1 for p in parsed if ws <= p["dt"].date() < we)
+            weekly_trend.append({"label": ws.strftime("%-d %b"), "count": count})
+
+        result.update({
+            "days_30":         days_30,
+            "avg_per_day":     avg_per_day,
+            "busiest_day":     busiest_day,
+            "conversion_rate": conversion_rate,
+            "weekly_trend":    weekly_trend,
+        })
+
+    return jsonify(result)
 
 
 @app.route("/owner/leads/<bid>", methods=["GET"])
