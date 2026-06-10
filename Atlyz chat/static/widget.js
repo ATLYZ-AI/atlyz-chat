@@ -122,16 +122,34 @@
   }
 
   // ── CSS ──────────────────────────────────────────────────────────────────────
+  function applyPosition(pos) {
+    if (pos) POSITION = pos;
+    var btn = document.getElementById("atz-btn");
+    var box = document.getElementById("atz-box");
+    if (!btn || !box) return;
+
+    var isBottom = POSITION.indexOf("top") === -1;
+    var isRight  = POSITION.indexOf("left") === -1;
+
+    btn.style.top    = isBottom ? ""     : "20px";
+    btn.style.bottom = isBottom ? "20px" : "";
+    btn.style.right  = isRight  ? "20px" : "";
+    btn.style.left   = isRight  ? ""     : "20px";
+
+    box.style.top    = isBottom ? ""     : "80px";
+    box.style.bottom = isBottom ? "80px" : "";
+    box.style.right  = isRight  ? "20px" : "";
+    box.style.left   = isRight  ? ""     : "20px";
+  }
+
   function injectCSS() {
     applyColor(primaryColor);
-    var isRight = POSITION.includes("right");
-    var side    = isRight ? "right:24px;" : "left:24px;";
 
     var css = [
       "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');",
 
       /* ── FAB button (rounded square) ── */
-      "#atz-btn{position:fixed;" + side + "bottom:24px;width:56px;height:56px;",
+      "#atz-btn{position:fixed;width:56px;height:56px;",
       "border-radius:16px;background:linear-gradient(135deg,var(--atz-c),var(--atz-c2));",
       "border:none;cursor:pointer;z-index:999998;",
       "box-shadow:0 0 0 1px rgba(124,58,237,.25),0 8px 28px rgba(124,58,237,.38);",
@@ -164,7 +182,7 @@
       "border-radius:50%;background:#22c55e;border:2px solid #09090b;display:none;}",
 
       /* ── Chat window ── */
-      "#atz-box{position:fixed;" + side + "bottom:92px;width:370px;",
+      "#atz-box{position:fixed;width:370px;",
       "max-width:calc(100vw - 48px);height:540px;max-height:calc(100vh - 116px);",
       "background:#0b0b0f;border:1px solid rgba(255,255,255,.07);",
       "border-radius:20px;z-index:999999;display:none;flex-direction:column;",
@@ -530,6 +548,8 @@
         }
 
         if (d.config.logo_url) applyLogo(d.config.logo_url);
+
+        if (d.config.widget_position) applyPosition(d.config.widget_position);
       }
 
       // Plan chat-limit reached — show the notice but block sending
@@ -654,6 +674,7 @@
   function init() {
     injectCSS();
     buildHTML();
+    applyPosition(POSITION);
     setTimeout(initSession, 400);
 
     // Animate on FAB click
