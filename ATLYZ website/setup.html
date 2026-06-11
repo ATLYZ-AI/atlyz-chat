@@ -172,6 +172,7 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
 
 </style>
 <link rel="stylesheet" href="atlyz.css">
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 </head>
 <body>
 <div class="amb-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div><div class="orb orb4"></div><div class="orb orb5"></div></div>
@@ -426,8 +427,9 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
           <li>Lead capture with instant email alerts</li>
           <li>Full widget customization &amp; your branding</li>
         </ul>
-        <button class="btn-primary" onclick="payAndGoLive()">Pay &amp; go live →</button>
-        <p class="pay-secure">🔒 Secure checkout. Card payments are being set up — for now we'll send an invoice and confirm within hours. Questions? <a href="mailto:billing@atlyz.com" style="color:#e0e0e0;text-decoration:none">billing@atlyz.com</a></p>
+        <button class="btn-primary" onclick="payAndGoLive()">Activate your plan →</button>
+        <p id="pay-cancelled-note" style="display:none;text-align:center;font-size:13px;color:#f87171;margin-top:12px">Complete payment to activate your chatbot.</p>
+        <p class="pay-secure">🔒 Secure checkout via Paddle · Questions? <a href="mailto:billing@atlyz.com" style="color:#e0e0e0;text-decoration:none">billing@atlyz.com</a></p>
       </div>
     </div>
 
@@ -437,6 +439,7 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
       <div class="success-icon">✓</div>
       <h2>Your chatbot is live!</h2>
       <p>Paste one line of code into your website and you're done. No developer needed.</p>
+      <p id="plan-active-msg" style="display:none;margin-top:10px;font-size:14px;color:#4ade80;font-weight:600">Your plan is now active!</p>
     </div>
 
     <div class="stat-strip" id="stat-strip">
@@ -503,6 +506,25 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
 <script>
 var SERVER = window.ATLYZ_API;
 
+Paddle.Initialize({
+  token: 'live_c534b05fbb02366878ba8a6779c',
+  eventCallback: function(data){
+    if(data.name === 'checkout.completed'){
+      document.getElementById('pay-view').style.display = 'none';
+      document.getElementById('live-view').style.display = '';
+      var msg = document.getElementById('plan-active-msg');
+      if(msg) msg.style.display = '';
+      setProgress(100);
+      window.scrollTo({top:0,behavior:'smooth'});
+    } else if(data.name === 'checkout.closed'){
+      if(document.getElementById('pay-view').style.display !== 'none'){
+        var note = document.getElementById('pay-cancelled-note');
+        if(note) note.style.display = '';
+      }
+    }
+  }
+});
+
 // ── Require a signed-in account ────────────────────────────────────────────────
 var ATLYZ_TOKEN = localStorage.getItem('atlyz_token') || '';
 if(!ATLYZ_TOKEN){
@@ -545,9 +567,9 @@ var chosenPlan  = 'starter';
 var embedCode   = '';
 
 var PLANS = {
-  starter: { name: 'Starter', price: '$59' },
-  growth:  { name: 'Growth',  price: '$109' },
-  pro:     { name: 'Pro',     price: '$159' }
+  starter: { name: 'Starter', price: '$59',  priceId: 'pri_01ktv8m6sc51nacw4t6afpkbrr' },
+  growth:  { name: 'Growth',  price: '$109', priceId: 'pri_01ktv9m3efz4bn96xk3sfs9g67' },
+  pro:     { name: 'Pro',     price: '$200', priceId: 'pri_01ktvads8c13403e4efh8yhqhs' }
 };
 
 // ── Step navigation ──────────────────────────────────────────────────────────
@@ -815,10 +837,14 @@ function createChatbot(){
 }
 
 function payAndGoLive(){
-  document.getElementById('pay-view').style.display = 'none';
-  document.getElementById('live-view').style.display = '';
-  setProgress(100);
-  window.scrollTo({top:0,behavior:'smooth'});
+  var plan = PLANS[chosenPlan] || PLANS.starter;
+  var emailEl = document.getElementById('biz-email');
+  var customerEmail = emailEl ? emailEl.value.trim() : '';
+  var opts = {
+    items: [{ priceId: plan.priceId, quantity: 1 }]
+  };
+  if(customerEmail) opts.customer = { email: customerEmail };
+  Paddle.Checkout.open(opts);
 }
 
 // ── Step 3 ────────────────────────────────────────────────────────────────────
