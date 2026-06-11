@@ -344,7 +344,7 @@ def load_chatbot_config(bid: str) -> dict:
         "greeting":        "Hi! How can I help you today?",
         "language_lock":   None,
         "business_name":   "Business",
-        "bot_name":        "Aria",
+        "bot_name":        "Assistant",
         "bot_tagline":     "Your AI Assistant",
         "collect_leads":   True,
         "widget_position": "bottom-right",
@@ -519,7 +519,7 @@ def get_or_load_session(session_id: str, bid: str = "") -> dict:
 def ai_chat_response(message: str, bid: str, session: dict, knowledge: str, config: dict,
                      owner_info: str = "", lead_capture: bool = True) -> dict:
     business_name = config.get("business_name", "the business")
-    bot_name      = config.get("bot_name", "Aria")
+    bot_name      = config.get("bot_name", "Assistant")
     language_lock = config.get("language_lock")
 
     if language_lock:
@@ -767,7 +767,7 @@ def chat_start():
         "config": {
             "primary_color":   config.get("primary_color", "#00C2FF"),
             "widget_position": config.get("widget_position", "bottom-right"),
-            "bot_name":        config.get("bot_name", "Aria"),
+            "bot_name":        config.get("bot_name", "Assistant"),
             "bot_tagline":     config.get("bot_tagline", "Your AI Assistant"),
             "white_label":     white_label,
             "logo_url":        f"/chat/logo/{bid}" if logo_fname else None,
@@ -897,7 +897,12 @@ def get_chat_config(bid):
     config["logo_url"]     = f"/chat/logo/{bid}" if logo_fname else None
     config["white_label"]  = bool(config.get("white_label")) and feats.get("white_label", False)
     config["website_url"]  = business_config.get("website", "")
-    return jsonify(config)
+    if not config.get("bot_name"):
+        config["bot_name"] = business_config.get("bot_name", "Assistant")
+    response = jsonify(config)
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    return response
 
 
 @app.route("/widget.js")
@@ -1951,7 +1956,7 @@ def setup_create():
         f.write(owner_info_content)
 
     if not greeting:
-        greeting = f"Hi! I'm {data.get('bot_name', 'Aria')}, the virtual assistant for {business_name}. How can I help you today?"
+        greeting = f"Hi! I'm {data.get('bot_name', 'Assistant')}, the virtual assistant for {business_name}. How can I help you today?"
 
     chatbot_cfg = {
         "primary_color":   primary_color,
@@ -1960,7 +1965,7 @@ def setup_create():
         "greeting":        greeting,
         "language_lock":   None,
         "business_name":   business_name,
-        "bot_name":        data.get("bot_name", "Aria"),
+        "bot_name":        data.get("bot_name", "Assistant"),
         "bot_tagline":     data.get("bot_tagline", "Your AI Assistant"),
         "collect_leads":   True,
         "widget_position": position,

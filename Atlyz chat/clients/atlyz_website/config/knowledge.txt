@@ -96,7 +96,7 @@ Pro Plan — $189/month | Founding rate: $159/month (locked forever, 16% off)
   - Advanced analytics
   - White-label widget (remove "Powered by Atlyz" branding)
 
-Free trial available — no credit card required to start.
+7-day free trial included — then from $59/month (founding-member rate).
 Atlyz Voice and Agent: Pricing coming soon; join waitlist for founding-member rates.
 
 HOW TO GET STARTED
@@ -264,7 +264,7 @@ Q: What is the founding-member deal?
 A: The first 10 clients to sign up get the founding-member rate, which is approximately 14–16% below standard list price. These rates are locked in forever — even as the standard price increases over time, founding members always pay the original discounted rate. There are a limited number of spots.
 
 Q: Is there a free trial?
-A: Yes. You can try the live demo on the Atlyz website with no signup and no credit card. A free trial period is also available when you sign up — no credit card required to start. Payments are processed securely via Paddle.
+A: Yes. You can try the live demo on the Atlyz website with no signup and no credit card. Every new account includes a 7-day free trial — then from $59/month (founding-member rate). Payments are processed securely via Paddle.
 
 Q: Do you charge per conversation or per message?
 A: No. The Starter plan includes 500 chats per month (a chat = one visitor session, not per message). The Growth and Pro plans include unlimited chats with no per-message or per-session fees.
@@ -280,7 +280,7 @@ DETAILED FAQ — HOW TO GET STARTED
 
 Q: How do I set up Atlyz Chat for my business?
 A: The full process takes under 5 minutes:
-  Step 1 — Sign up at atlyz.com (no credit card required)
+  Step 1 — Sign up at atlyz.com (7-day free trial included)
   Step 2 — Enter your website URL. Atlyz reads up to 15 pages in about 60 seconds and builds a knowledge base automatically
   Step 3 — Customise the widget: set your brand color, greeting message, bot name, and position (bottom-right or bottom-left)
   Step 4 — Copy the one-line embed code from your dashboard

@@ -671,10 +671,28 @@
   }
 
   // ── Init ──────────────────────────────────────────────────────────────────────
+  function prefetchConfig() {
+    fetch(SERVER_URL + "/chat/config/" + BUSINESS_ID + "?v=" + Date.now())
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.primary_color) applyColor(d.primary_color);
+        if (d.widget_position) applyPosition(d.widget_position);
+        if (d.bot_name) {
+          botName = d.bot_name;
+          var nameEl = document.getElementById("atz-head-name");
+          if (nameEl) nameEl.textContent = botName;
+          var tipEl = document.getElementById("atz-tooltip");
+          if (tipEl) tipEl.textContent = "Ask " + botName;
+        }
+      })
+      .catch(function () {});
+  }
+
   function init() {
     injectCSS();
     buildHTML();
     applyPosition(POSITION);
+    prefetchConfig();
     setTimeout(initSession, 400);
 
     // Animate on FAB click

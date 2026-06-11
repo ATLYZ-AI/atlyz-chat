@@ -108,9 +108,9 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
   <!-- Sign up / log in -->
   <div class="auth-card" id="auth-main-card">
     <div class="auth-head">
-      <div class="auth-tag" id="auth-tag">Get started free</div>
+      <div class="auth-tag" id="auth-tag">Start free trial</div>
       <h1 id="auth-title">Create your account</h1>
-      <p id="auth-sub">Sign up to set up your AI chatbot — free to start, no card needed.</p>
+      <p id="auth-sub">Sign up to set up your AI chatbot — 7-day free trial, then from $59/mo.</p>
     </div>
 
     <div class="error-msg" id="auth-err"></div>
@@ -207,9 +207,9 @@ function socialSoon(provider){
 function toggleMode(){
   mode = (mode === 'signup') ? 'login' : 'signup';
   var s = mode === 'signup';
-  document.getElementById('auth-tag').textContent      = s ? 'Get started free' : 'Welcome back';
+  document.getElementById('auth-tag').textContent      = s ? 'Start free trial' : 'Welcome back';
   document.getElementById('auth-title').textContent    = s ? 'Create your account' : 'Log in';
-  document.getElementById('auth-sub').textContent      = s ? 'Sign up to set up your AI chatbot — free to start, no card needed.' : 'Log in to continue setting up your chatbot.';
+  document.getElementById('auth-sub').textContent      = s ? 'Sign up to set up your AI chatbot — 7-day free trial, then from $59/mo.' : 'Log in to continue setting up your chatbot.';
   document.getElementById('field-name').style.display    = s ? '' : 'none';
   document.getElementById('field-phone').style.display   = s ? '' : 'none';
   document.getElementById('field-confirm').style.display = s ? '' : 'none';
