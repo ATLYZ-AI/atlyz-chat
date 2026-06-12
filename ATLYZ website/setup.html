@@ -267,7 +267,7 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
           <select id="biz-plan">
             <option value="starter">Starter — $59/mo (Founding Rate)</option>
             <option value="growth">Growth — $109/mo (Founding Rate)</option>
-            <option value="pro">Pro — $159/mo (Founding Rate)</option>
+            <option value="pro">Pro — $200/mo (Founding Rate)</option>
           </select>
         </div>
       </div>
@@ -423,7 +423,7 @@ nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;disp
           <p class="pay-plan-note" id="pay-plan-note">Founding-member rate · billed monthly · cancel anytime</p>
         </div>
         <ul class="pay-features">
-          <li>Unlimited AI conversations on your website</li>
+          <li id="pay-chats-feature">Unlimited AI conversations on your website</li>
           <li>Lead capture with instant email alerts</li>
           <li>Full widget customization &amp; your branding</li>
         </ul>
@@ -567,9 +567,9 @@ var chosenPlan  = 'starter';
 var embedCode   = '';
 
 var PLANS = {
-  starter: { name: 'Starter', price: '$59',  priceId: 'pri_01ktv8m6sc51nacw4t6afpkbrr' },
-  growth:  { name: 'Growth',  price: '$109', priceId: 'pri_01ktv9m3efz4bn96xk3sfs9g67' },
-  pro:     { name: 'Pro',     price: '$200', priceId: 'pri_01ktvads8c13403e4efh8yhqhs' }
+  starter: { name: 'Starter', price: '$59',  priceId: 'pri_01ktv8m6sc51nacw4t6afpkbrr', chats: 'Unlimited AI conversations on your website', monthly_limit: null },
+  growth:  { name: 'Growth',  price: '$109', priceId: 'pri_01ktv9m3efz4bn96xk3sfs9g67', chats: 'Unlimited AI conversations on your website', monthly_limit: null },
+  pro:     { name: 'Pro',     price: '$200', priceId: 'pri_01ktvads8c13403e4efh8yhqhs', chats: '3,000 chats/month on your website',          monthly_limit: 3000  }
 };
 
 // ── Step navigation ──────────────────────────────────────────────────────────
@@ -829,6 +829,8 @@ function createChatbot(){
   var plan = PLANS[chosenPlan] || PLANS.starter;
   document.getElementById('pay-plan-name').textContent = plan.name;
   document.getElementById('pay-plan-price').innerHTML = plan.price + '<span>/mo</span>';
+  var chatsEl = document.getElementById('pay-chats-feature');
+  if(chatsEl) chatsEl.textContent = plan.chats || 'Unlimited AI conversations on your website';
   document.getElementById('pay-view').style.display = '';
   document.getElementById('live-view').style.display = 'none';
   updateIndicator(3);
