@@ -2144,7 +2144,8 @@ def _extract_customer_email(data: dict) -> str:
         if node:
             return str(node).strip().lower()
     # transaction.completed includes a top-level customer email in some payloads
-    email = obj.get("email") or (obj.get("customer") or {}).get("email", "") if isinstance(obj.get("customer"), dict) else ""
+    cust  = obj.get("customer")
+    email = obj.get("email") or (cust.get("email", "") if isinstance(cust, dict) else "")
     return str(email or "").strip().lower()
 
 
@@ -2214,24 +2215,39 @@ def paddle_webhook():
         return jsonify({"error": "Malformed JSON"}), 400
 
     event_type = data.get("event_type", "unknown")
+    sub_status = ((data.get("data") or {}).get("status") or "").strip().lower()
     email      = _extract_customer_email(data)
     bid        = _resolve_webhook_business(data, email)
-    _log_webhook(f"event={event_type} email={email or '-'} business={bid or 'UNRESOLVED'}")
+    _log_webhook(f"event={event_type} status={sub_status or '-'} email={email or '-'} business={bid or 'UNRESOLVED'}")
 
-    ACTIVATE   = {"subscription.activated", "subscription.created",
-                  "subscription.resumed", "transaction.completed"}
-    DEACTIVATE = {"subscription.canceled": "canceled", "subscription.past_due": "past_due",
-                  "subscription.paused": "paused"}
+    SUB_ACTIVATE  = {"subscription.activated", "subscription.created", "subscription.resumed"}
+    DEACTIVATE    = {"subscription.canceled": "canceled", "subscription.past_due": "past_due",
+                     "subscription.paused": "paused"}
+    LIVE_STATUSES = {"active", "trialing"}
 
     if not bid:
         # Acknowledge so Paddle stops retrying, but record that we couldn't match it.
         return jsonify({"ok": True, "matched": False})
 
-    if event_type in ACTIVATE:
+    # transaction.completed = payment captured → always live.
+    # subscription.* activation events only go live when the subscription is
+    # genuinely active/trialing — a sub created in past_due/paused (e.g. a failed
+    # first charge) must NOT serve chats, or checkout could be bypassed.
+    if event_type == "transaction.completed":
+        go_live = True
+    elif event_type in SUB_ACTIVATE:
+        go_live = (not sub_status) or (sub_status in LIVE_STATUSES)
+    else:
+        go_live = None
+
+    if go_live is True:
         plan = _plan_from_paddle_items(data) or business_plan(bid)
         set_business_config_field(bid, "plan", plan)
         set_business_config_field(bid, "plan_status", "active")
         _log_webhook(f"ACTIVATED business={bid} plan={plan}")
+    elif go_live is False:
+        set_business_config_field(bid, "plan_status", sub_status or "inactive")
+        _log_webhook(f"BLOCKED business={bid} status={sub_status or 'inactive'}")
     elif event_type in DEACTIVATE:
         status = DEACTIVATE[event_type]
         set_business_config_field(bid, "plan_status", status)
