@@ -5,6 +5,8 @@ accounts/
 Atlyz chat/accounts/
 clients/*/data/
 clients/test-biz/
+# Demo store is seeded at startup from chatbot_server.py — never commit the runtime copy.
+Atlyz chat/clients/stride_sneakers/
 *.pyc
 *.pyo
 .DS_Store

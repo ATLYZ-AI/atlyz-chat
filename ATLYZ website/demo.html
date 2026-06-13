@@ -224,7 +224,7 @@ footer p{font-size:13px;color:var(--muted)}
   <div class="hero-glow"></div>
   <div class="badge"><span class="badge-dot"></span>LIVE INTERACTIVE DEMO</div>
   <h1>See <span class="grad">Atlyz Chat</span><br>working right now</h1>
-  <p class="hero-sub">This is a real Atlyz chatbot, trained on a sample plumbing business. Type anything — just like your customers would.</p>
+  <p class="hero-sub">This is a real Atlyz chatbot, trained on a sample sneaker shop. Type anything — just like your customers would.</p>
   <p class="hero-hint">&#8595; Scroll down to try it</p>
 </div>
 
@@ -236,9 +236,9 @@ footer p{font-size:13px;color:var(--muted)}
 
     <div class="business-card reveal">
       <div class="biz-header">
-        <div class="biz-avatar">🔧</div>
+        <div class="biz-avatar">👟</div>
         <div class="biz-info">
-          <h3>QuickFix Plumbing</h3>
+          <h3>Stride Sneakers</h3>
           <p>Sample demo business</p>
           <span>Demo chatbot is live</span>
         </div>
@@ -246,19 +246,19 @@ footer p{font-size:13px;color:var(--muted)}
       <div class="biz-details">
         <div class="biz-detail">
           <div class="biz-detail-label">Hours</div>
-          <div class="biz-detail-val">Mon–Sat 7am–8pm<br>Sun 9am–5pm</div>
+          <div class="biz-detail-val">Mon–Sat 9am–8pm<br>Sun 11am–6pm</div>
         </div>
         <div class="biz-detail">
-          <div class="biz-detail-label">Emergency</div>
-          <div class="biz-detail-val">24/7 emergency<br>call-outs available</div>
+          <div class="biz-detail-label">Shipping</div>
+          <div class="biz-detail-val">Free over $75<br>Ships worldwide</div>
         </div>
         <div class="biz-detail">
           <div class="biz-detail-label">Location</div>
-          <div class="biz-detail-val">Austin, Texas<br>Serving Travis County</div>
+          <div class="biz-detail-val">Portland, Oregon<br>Online + flagship</div>
         </div>
         <div class="biz-detail">
           <div class="biz-detail-label">Pricing</div>
-          <div class="biz-detail-val">From $85/hr<br>Free estimates</div>
+          <div class="biz-detail-val">From $90 a pair<br>Free 30-day returns</div>
         </div>
       </div>
     </div>
@@ -266,20 +266,20 @@ footer p{font-size:13px;color:var(--muted)}
     <div class="try-these reveal">
       <h4>Try asking</h4>
       <div class="suggestion-btns">
-        <button class="sug-btn" onclick="sendSuggestion('Do you do emergency plumbing?')">
-          <span class="sug-icon">🚨</span>Do you do emergency plumbing?
+        <button class="sug-btn" onclick="sendSuggestion('Do you have Air Max in size 10?')">
+          <span class="sug-icon">👟</span>Do you have Air Max in size 10?
         </button>
-        <button class="sug-btn" onclick="sendSuggestion('How much does a pipe repair cost?')">
-          <span class="sug-icon">💰</span>How much does a pipe repair cost?
+        <button class="sug-btn" onclick="sendSuggestion('What\'s your return policy?')">
+          <span class="sug-icon">🔄</span>What's your return policy?
         </button>
-        <button class="sug-btn" onclick="sendSuggestion('What areas do you cover?')">
-          <span class="sug-icon">📍</span>What areas do you cover?
+        <button class="sug-btn" onclick="sendSuggestion('Do you ship internationally?')">
+          <span class="sug-icon">🌍</span>Do you ship internationally?
         </button>
-        <button class="sug-btn" onclick="sendSuggestion('Can I get a free estimate?')">
-          <span class="sug-icon">📋</span>Can I get a free estimate?
+        <button class="sug-btn" onclick="sendSuggestion('What brands do you carry?')">
+          <span class="sug-icon">🏷️</span>What brands do you carry?
         </button>
-        <button class="sug-btn" onclick="sendSuggestion('I need to speak to someone')">
-          <span class="sug-icon">📞</span>I need to speak to someone
+        <button class="sug-btn" onclick="sendSuggestion('I\'d like to speak to someone')">
+          <span class="sug-icon">📞</span>I'd like to speak to someone
         </button>
       </div>
     </div>
@@ -324,7 +324,7 @@ footer p{font-size:13px;color:var(--muted)}
           </svg>
         </div>
         <div class="chat-head-info">
-          <div class="chat-head-name">QuickFix Plumbing</div>
+          <div class="chat-head-name">Stride Sneakers</div>
           <div class="chat-head-status" id="demo-status">Online now</div>
         </div>
         <span class="demo-badge-pill">DEMO</span>
@@ -459,7 +459,7 @@ reveals.forEach(function(r) { observer.observe(r); });
    ══════════════════════════════════════════════════════ */
 
 var SERVER_URL = (typeof window.ATLYZ_API !== 'undefined') ? window.ATLYZ_API : (location.protocol === 'file:' ? 'http://localhost:5002' : '');
-var demoState = { sessionId: null, leadMode: false, busy: false };
+var demoState = { sessionId: null, leadMode: false, busy: false, starting: null, greeted: false };
 
 function addMsg(text, fromUser) {
   var msgs = document.getElementById('demo-msgs');
@@ -539,41 +539,40 @@ function submitDemoLead() {
   })
   .catch(function() {
     var b = document.querySelector('#demo-lead-form .lead-submit'); if (b) b.disabled = false;
-    addMsg("Something went wrong. Please call (512) 555-0192 directly.", false);
+    addMsg("Something went wrong. Please call (503) 555-0148 directly.", false);
   });
 }
 
+// Establish a chat session. Returns a promise that resolves true once a real
+// session_id exists. Concurrent calls share one in-flight request, and we only
+// ever set sessionId to a genuine value — never to undefined from an error body
+// (a 404/500 still parses as JSON, which is what caused the old reconnect loop).
 function startDemoSession() {
-  fetch(SERVER_URL + '/chat/start', {
+  if (demoState.sessionId) return Promise.resolve(true);
+  if (demoState.starting) return demoState.starting;
+  demoState.starting = fetch(SERVER_URL + '/chat/start', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ business_id: 'quickfix_plumbing' })
+    body: JSON.stringify({ business_id: 'stride_sneakers' })
   })
-  .then(function(r) { return r.json(); })
+  .then(function(r) { return r.json().catch(function() { return {}; }); })
   .then(function(d) {
-    demoState.sessionId = d.session_id;
-    setTimeout(function() {
-      addMsg(d.greeting || "Hi! I'm Alex, QuickFix Plumbing's assistant. How can I help?", false);
-    }, 600);
+    demoState.starting = null;
+    if (d && d.session_id) {
+      demoState.sessionId = d.session_id;
+      if (!demoState.greeted) {
+        demoState.greeted = true;
+        addMsg(d.greeting || "Hi! I'm Maya, Stride Sneakers' assistant. Looking for a size, a brand, or just browsing? 👟", false);
+      }
+      return true;
+    }
+    return false;
   })
-  .catch(function() {
-    setTimeout(function() {
-      addMsg("Connecting to demo server… type your message and hit send to try again.", false);
-    }, 600);
-  });
+  .catch(function() { demoState.starting = null; return false; });
+  return demoState.starting;
 }
 
-function sendMessage() {
-  if (demoState.busy || demoState.leadMode) return;
-  var inp = document.getElementById('demo-input'); if (!inp) return;
-  var text = inp.value.trim(); if (!text) return;
-  if (!demoState.sessionId) {
-    setInputEnabled(false);
-    startDemoSession();
-    setTimeout(function() { setInputEnabled(true); }, 2000);
-    addMsg("Reconnecting — please send your message again in a moment.", false);
-    return;
-  }
-  inp.value = ''; inp.style.height = 'auto';
+// POST a message on an established session and render the reply.
+function deliverMessage(text) {
   addMsg(text, true); showThinking(); setInputEnabled(false);
   fetch(SERVER_URL + '/chat/message', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -590,6 +589,29 @@ function sendMessage() {
   .catch(function() {
     hideThinking(); setInputEnabled(true);
     addMsg("Demo temporarily offline — please try again in a moment.", false);
+  });
+}
+
+function sendMessage() {
+  if (demoState.busy || demoState.leadMode) return;
+  var inp = document.getElementById('demo-input'); if (!inp) return;
+  var text = inp.value.trim(); if (!text) return;
+  inp.value = ''; inp.style.height = 'auto';
+
+  if (demoState.sessionId) { deliverMessage(text); return; }
+
+  // No session yet (first message, or an earlier /chat/start failed). Establish
+  // one, then send this message automatically — never drop it, never loop.
+  showThinking(); setInputEnabled(false);
+  startDemoSession().then(function(ok) {
+    hideThinking();
+    if (ok && demoState.sessionId) {
+      deliverMessage(text);
+    } else {
+      setInputEnabled(true);
+      addMsg("Demo's having trouble connecting — please try again in a moment.", false);
+      inp.value = text;  // keep the user's message so it isn't lost
+    }
   });
 }
 

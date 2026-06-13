@@ -400,8 +400,9 @@ def plan_features(bid: str) -> dict:
 # Plans that grant a live chatbot. Activation is gated by plan_is_active() below.
 PAID_PLANS = {"starter", "growth", "pro"}
 
-# The company's own demo bot is never a paying customer — always live.
-ALWAYS_ACTIVE_BIDS = {"atlyz_website"}
+# The company's own demo bots are never paying customers — always live.
+# stride_sneakers powers the public demo at atlyz.com/demo (seeded on startup).
+ALWAYS_ACTIVE_BIDS = {"atlyz_website", "stride_sneakers"}
 
 
 def set_business_config_field(bid: str, key: str, value: str) -> bool:
@@ -2452,7 +2453,121 @@ Keep it factual and concise."""
     threading.Thread(target=run, daemon=True, name="ais-auto-scrape").start()
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# DEMO STORE SEED (startup)
+# Guarantees the public demo business (atlyz.com/demo) always exists and is live —
+# even on a fresh Railway deploy with an empty/ephemeral filesystem. Without this,
+# the demo's /chat/start returns 404 "Unknown business" and the widget loops on
+# "Reconnecting…". The content is version-controlled here (not in the gitignored
+# clients/ dir) so it can never drift or be wiped between deploys.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+DEMO_BID = "stride_sneakers"
+
+_DEMO_BUSINESS_CONFIG = (
+    "business_name = Stride Sneakers\n"
+    "owner_email = hello@stridesneakers.com\n"
+    "website = https://www.stridesneakers.com\n"
+    "plan = pro\n"
+    "plan_status = active\n"
+)
+
+_DEMO_CHATBOT_CONFIG = {
+    "primary_color":   "#00C2FF",
+    "secondary_color": "#f3f4f6",
+    "icon":            "default",
+    "greeting":        "Hi! I'm Maya from Stride Sneakers 👟 Looking for a particular pair, a size, or a brand — or just browsing? Ask me anything.",
+    "language_lock":   None,
+    "business_name":   "Stride Sneakers",
+    "bot_name":        "Maya",
+    "bot_tagline":     "Stride Sneakers Assistant",
+    "collect_leads":   True,
+    "widget_position": "bottom-right",
+    "white_label":     False,
+    "color_mode":      "manual",
+    "logo_mode":       "default",
+}
+
+_DEMO_KNOWLEDGE = """Source: Stride Sneakers (Atlyz demo store)
+Business: Stride Sneakers
+
+ABOUT
+Stride Sneakers is a specialty sneaker store based in Portland, Oregon, fitting
+runners, collectors, and everyday wearers since 2015. We sell online worldwide
+and from our Portland flagship. Our team knows sneakers inside out and helps you
+find the right pair for your feet, your sport, and your style.
+
+BRANDS & PRODUCTS
+We carry Nike (Air Max, Air Force 1, Pegasus), Jordan, Adidas (Ultraboost,
+Samba, Gazelle), New Balance (550, 990 series), ASICS, Puma, Vans, and Converse.
+Categories: running shoes, lifestyle/casual sneakers, basketball shoes, and
+limited-edition releases. Available in men's, women's, and kids' sizes.
+
+POPULAR & IN STOCK
+- Nike Air Max 90 and Air Max 270 — in stock in most sizes including US size 10,
+  in several colorways.
+- Air Jordan 1 — select colorways.
+- Adidas Ultraboost and Samba — wide size range.
+- New Balance 550 and 990v6.
+Sizes run US 4-14 (men's) and US 5-12 (women's). If a size is running low we can
+hold a pair for you or notify you when it's back.
+
+PRICING
+Sneakers from $90. Most running and lifestyle models are $90-$180. Limited and
+premium releases are $200+. We price-match authorized retailers.
+
+SHIPPING
+Free standard shipping on US orders over $75 (2-4 business days). Express
+shipping is available at checkout. We ship internationally to most countries;
+international delivery is typically 5-12 business days, with any duties or taxes
+shown at checkout.
+
+RETURNS & EXCHANGES
+30-day free returns and exchanges on unworn shoes in their original box. Return
+shipping is free within the US. Ordered the wrong size? We'll send the right one
+at no extra cost.
+
+PAYMENT
+We accept all major cards, Apple Pay, Google Pay, and Klarna (pay in 4).
+
+STORE HOURS (Portland flagship)
+Monday-Saturday 9am-8pm, Sunday 11am-6pm. The online store is open 24/7.
+
+CONTACT
+Phone: (503) 555-0148. Email: hello@stridesneakers.com.
+Flagship: 120 SW Stride Ave, Portland, OR.
+For order status, sizing help, holds, or anything you can't find here, just ask
+to speak to someone and we'll take your details so the team can follow up.
+"""
+
+
+def seed_demo_business():
+    """Write the demo store's config + knowledge into clients/<DEMO_BID> at startup.
+
+    Idempotent: rewrites the files every boot so the demo content always matches
+    what ships in this file, regardless of the deploy's filesystem state.
+    """
+    try:
+        base = client_dir(DEMO_BID)
+        if not base:
+            print(f"[DEMO] Invalid demo bid {DEMO_BID!r} — skipping seed")
+            return
+        config_dir = os.path.join(base, "config")
+        os.makedirs(config_dir, exist_ok=True)
+        with open(os.path.join(config_dir, "business_config.txt"), "w", encoding="utf-8") as f:
+            f.write(_DEMO_BUSINESS_CONFIG)
+        with open(os.path.join(config_dir, "chatbot_config.json"), "w", encoding="utf-8") as f:
+            json.dump(_DEMO_CHATBOT_CONFIG, f, indent=2)
+        with open(os.path.join(config_dir, "knowledge.txt"), "w", encoding="utf-8") as f:
+            f.write(_DEMO_KNOWLEDGE)
+        knowledge_cache.pop(DEMO_BID, None)
+        print(f"[DEMO] Seeded demo business {DEMO_BID!r} ✓")
+    except Exception as e:
+        print(f"[DEMO] Seed failed: {e}")
+
+
 # Runs at import (works under both `python chatbot_server.py` and gunicorn).
+seed_demo_business()
 auto_scrape_atlyz_website()
 
 
