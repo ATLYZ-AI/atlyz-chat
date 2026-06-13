@@ -803,7 +803,11 @@ def chat_start():
 
     feats     = plan_features(bid)
     cap       = feats.get("monthly_chats")
-    over_limit = cap is not None and monthly_chats_used(bid) >= cap
+    # First-party / demo bots (ALWAYS_ACTIVE_BIDS) get unlimited chats — the
+    # monthly cap never applies to them, regardless of plan. Everyone else is
+    # capped per their plan's monthly_chats.
+    over_limit = (bid not in ALWAYS_ACTIVE_BIDS
+                  and cap is not None and monthly_chats_used(bid) >= cap)
 
     greeting = config.get("greeting", "Hi! How can I help you today?")
     if over_limit:
