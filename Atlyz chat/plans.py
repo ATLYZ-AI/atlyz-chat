@@ -28,7 +28,7 @@ PLANS = {
     "pro": {
         "label":         "Pro",
         "max_websites":  1,
-        "monthly_chats": None,
+        "monthly_chats": 3000,
         "lead_capture":  True,
         "analytics":     True,
         "white_label":   True,
