@@ -54,6 +54,7 @@ MAX_KNOWLEDGE_CHARS = int(os.getenv("MAX_KNOWLEDGE_CHARS", 12000))
 RATE_LIMIT_MAX      = int(os.getenv("RATE_LIMIT_MAX", 20))
 RATE_LIMIT_WINDOW   = int(os.getenv("RATE_LIMIT_WINDOW", 60))
 IP_RATE_LIMIT_MAX   = int(os.getenv("IP_RATE_LIMIT_MAX", 40))
+AUTH_RATE_LIMIT_MAX = int(os.getenv("AUTH_RATE_LIMIT_MAX", 10))
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
@@ -81,6 +82,7 @@ sessions        = {}   # session_id → session data
 knowledge_cache = {}   # business_id → knowledge text
 rate_limits     = {}   # session_id → [timestamps]
 ip_rate_limits  = {}   # ip → [timestamps]
+auth_rate_limits = {}  # ip → [timestamps]  (login/signup/password brute-force guard)
 _disk_lock      = threading.Lock()
 _ais_ready      = False   # True once the startup auto-scrape thread finishes
 
@@ -111,16 +113,28 @@ def business_exists(bid: str) -> bool:
     return bool(d) and os.path.isdir(d)
 
 
-def check_admin_key() -> bool:
-    required = os.getenv("ATLYZ_ADMIN_KEY", "")
-    if not required:
-        return DEV_MODE
-    provided = (
+def _provided_admin_key() -> str:
+    return (
         request.headers.get("X-Admin-Key", "") or
         request.args.get("key", "") or
         (request.get_json(silent=True) or {}).get("admin_key", "")
     )
-    return bool(provided) and provided == required
+
+
+def admin_key_matches() -> bool:
+    """Constant-time check of the request's admin key against ATLYZ_ADMIN_KEY."""
+    required = os.getenv("ATLYZ_ADMIN_KEY", "")
+    if not required:
+        return False
+    provided = _provided_admin_key()
+    return bool(provided) and hmac.compare_digest(provided, required)
+
+
+def check_admin_key() -> bool:
+    required = os.getenv("ATLYZ_ADMIN_KEY", "")
+    if not required:
+        return DEV_MODE
+    return admin_key_matches()
 
 
 def client_ip() -> str:
@@ -137,6 +151,11 @@ def check_rate_limit(store: dict, key: str, limit: int) -> bool:
     stamps.append(now)
     store[key] = stamps
     return True
+
+
+def auth_rate_limited() -> bool:
+    """True if this IP has exceeded the auth attempt budget (brute-force guard)."""
+    return not check_rate_limit(auth_rate_limits, client_ip(), AUTH_RATE_LIMIT_MAX)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -188,15 +207,8 @@ def save_accounts(accounts: dict):
 def is_owner_of(bid: str) -> bool:
     """True if the request carries a valid admin key OR is an authenticated owner.
     Never bypasses auth via DEV_MODE — owner routes contain customer data."""
-    required = os.getenv("ATLYZ_ADMIN_KEY", "")
-    if required:
-        provided = (
-            request.headers.get("X-Admin-Key", "") or
-            request.args.get("key", "") or
-            (request.get_json(silent=True) or {}).get("admin_key", "")
-        )
-        if provided and provided == required:
-            return True
+    if admin_key_matches():
+        return True
     email = request_account_email()
     if not email:
         return False
@@ -996,6 +1008,9 @@ def dashboard_page():
 
 @app.route("/auth/signup", methods=["POST"])
 def auth_signup():
+    if auth_rate_limited():
+        return jsonify({"success": False, "error": "Too many attempts. Please wait a minute and try again."}), 429
+
     data     = request.get_json(silent=True) or {}
     name     = (data.get("name", "") or "").strip()
     email    = (data.get("email", "") or "").strip().lower()
@@ -1026,6 +1041,9 @@ def auth_signup():
 
 @app.route("/auth/login", methods=["POST"])
 def auth_login():
+    if auth_rate_limited():
+        return jsonify({"success": False, "error": "Too many attempts. Please wait a minute and try again."}), 429
+
     data     = request.get_json(silent=True) or {}
     email    = (data.get("email", "") or "").strip().lower()
     password = data.get("password", "") or ""
@@ -1096,6 +1114,9 @@ def auth_profile():
 
 @app.route("/auth/forgot-password", methods=["POST"])
 def auth_forgot_password():
+    if auth_rate_limited():
+        return jsonify({"success": True}), 429  # generic — don't reveal anything
+
     data  = request.get_json(silent=True) or {}
     email = (data.get("email", "") or "").strip().lower()
 
@@ -1139,6 +1160,9 @@ def auth_forgot_password():
 
 @app.route("/auth/reset-password", methods=["POST"])
 def auth_reset_password():
+    if auth_rate_limited():
+        return jsonify({"success": False, "error": "Too many attempts. Please wait a minute and try again."}), 429
+
     data         = request.get_json(silent=True) or {}
     token        = (data.get("token", "") or "").strip()
     new_password = data.get("new_password", "") or ""
@@ -1599,12 +1623,14 @@ def admin_knowledge():
         return jsonify({"error": "business_id required"}), 400
     if not knowledge_text.strip():
         return jsonify({"error": "knowledge_text required"}), 400
-    if not business_exists(bid):
+    base = client_dir(bid)
+    if not base or not business_exists(bid):
         return jsonify({"error": "Unknown business"}), 404
 
-    knowledge_path = os.path.join(CLIENTS_DIR, bid, "config", "knowledge.txt")
+    knowledge_path = os.path.join(base, "config", "knowledge.txt")
     with open(knowledge_path, "a", encoding="utf-8") as f:
         f.write("\n" + knowledge_text)
+    knowledge_cache.pop(bid, None)
 
     return jsonify({"success": True, "business_id": bid, "appended_chars": len(knowledge_text)})
 
