@@ -163,12 +163,21 @@ def _is_brandy(hex_color: str) -> bool:
     return True
 
 
-def scrape_website(base_url: str, max_pages: int = 50) -> dict:
+# Overall wall-clock budget for a single scrape. Without this, an unreachable
+# but slow-to-time-out host could block for (seed paths × per-request timeout)
+# ≈ 150s, hanging the synchronous /setup/create request. Tunable via env.
+MAX_SCRAPE_SECONDS = int(os.getenv("MAX_SCRAPE_SECONDS", 40))
+
+
+def scrape_website(base_url: str, max_pages: int = 50, max_seconds: int = MAX_SCRAPE_SECONDS) -> dict:
     """
     Smart website scraper:
     1. Seeds from common paths + homepage links
     2. Breadth-first crawls internal pages up to max_pages
     3. Captures raw page text + brand color, then summarizes with GPT
+
+    Bounded by both max_pages and an overall max_seconds wall-clock budget so a
+    slow or unreachable host can never hang the caller.
     """
     if not base_url.startswith("http"):
         base_url = "https://" + base_url
@@ -178,14 +187,15 @@ def scrape_website(base_url: str, max_pages: int = 50) -> dict:
     if not parsed.netloc:
         return {"status": "error", "error": "Invalid URL", "content": "", "pages_scraped": 0}
 
-    print(f"[SCRAPER] Starting crawl of {base_url} (up to {max_pages} pages)")
+    deadline = time.time() + max_seconds
+    print(f"[SCRAPER] Starting crawl of {base_url} (up to {max_pages} pages, {max_seconds}s budget)")
 
     # Fetch homepage once — used for seeding links + brand color
     homepage_html = ""
     try:
         homepage_html = requests.get(base_url, headers=HEADERS, timeout=8).text
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[SCRAPER] Homepage fetch failed: {e}")
     brand_color = extract_brand_color(homepage_html)
     if brand_color:
         print(f"[SCRAPER] Detected brand color: {brand_color}")
@@ -202,6 +212,9 @@ def scrape_website(base_url: str, max_pages: int = 50) -> dict:
     pages_scraped = 0
 
     while queue and pages_scraped < max_pages:
+        if time.time() > deadline:
+            print(f"[SCRAPER] ⏱ Time budget ({max_seconds}s) reached — stopping at {pages_scraped} pages")
+            break
         url = queue.pop(0)
         norm = url.split("#")[0].split("?")[0].rstrip("/")
         if norm in visited:
