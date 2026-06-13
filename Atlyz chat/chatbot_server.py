@@ -6,6 +6,8 @@ import re
 import uuid
 import time
 import csv
+import hmac
+import hashlib
 import secrets
 import threading
 from datetime import datetime, timedelta
@@ -381,6 +383,57 @@ def business_plan(bid: str) -> str:
 
 def plan_features(bid: str) -> dict:
     return plans.get_plan(business_plan(bid))
+
+
+# Plans that grant a live chatbot. Activation is gated by plan_is_active() below.
+PAID_PLANS = {"starter", "growth", "pro"}
+
+# The company's own demo bot is never a paying customer — always live.
+ALWAYS_ACTIVE_BIDS = {"atlyz_website"}
+
+
+def set_business_config_field(bid: str, key: str, value: str) -> bool:
+    """Update (or append) a `key = value` line in business_config.txt, preserving
+    every other line. Returns False if the business id is unsafe / missing."""
+    base = client_dir(bid)
+    if not base:
+        return False
+    path = os.path.join(base, "config", "business_config.txt")
+    lines, found = [], False
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                if "=" in line and line.split("=", 1)[0].strip() == key:
+                    lines.append(f"{key} = {value}\n")
+                    found = True
+                else:
+                    lines.append(line if line.endswith("\n") else line + "\n")
+    if not found:
+        lines.append(f"{key} = {value}\n")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with _disk_lock:
+        with open(path, "w", encoding="utf-8") as f:
+            f.writelines(lines)
+    return True
+
+
+def plan_is_active(bid: str) -> bool:
+    """True if this business may serve live chats.
+
+    A business is active when it has a paid plan AND its subscription is active.
+    `plan_status` semantics:
+      - "active"                         → live
+      - missing (legacy pre-webhook biz) → live (grandfathered)
+      - "pending"/"canceled"/"past_due"  → blocked (no verified payment)
+    """
+    if bid in ALWAYS_ACTIVE_BIDS:
+        return True
+    cfg    = load_business_config(bid)
+    plan   = (cfg.get("plan", "") or "").strip().lower()
+    if plan not in PAID_PLANS:
+        return False
+    status = (cfg.get("plan_status", "") or "").strip().lower()
+    return status in ("", "active")
 
 
 def logo_info(bid: str):
@@ -806,8 +859,7 @@ def chat_message():
     bid    = session["business_id"]
     config = session["config"]
 
-    _PAID_PLANS = {"starter", "growth", "pro"}
-    if load_business_config(bid).get("plan", "").strip().lower() not in _PAID_PLANS:
+    if not plan_is_active(bid):
         return jsonify({
             "reply":    "This chatbot is not active. The business owner needs to activate a plan.",
             "action":   "chat",
@@ -1933,6 +1985,9 @@ def setup_create():
         f.write(f"owner_email = {owner_email}\n")
         f.write(f"website = {website_url}\n")
         f.write(f"plan = {plan}\n")
+        # New businesses start unpaid — the chatbot stays blocked until Paddle
+        # confirms payment via the /webhooks/paddle endpoint (sets plan_status=active).
+        f.write("plan_status = pending\n")
         if password:
             f.write(f"owner_password_hash = {generate_password_hash(password)}\n")
 
@@ -2001,6 +2056,162 @@ def setup_create():
         "scrape_preview": scrape_preview,
         "embed_code":     f'<script src="SERVER_URL/widget.js?id={bid}"></script>',
     })
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PADDLE BILLING WEBHOOK
+# Verifies payment before a chatbot is allowed to serve live chats.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+WEBHOOK_LOG = os.path.join(DATA_DIR, "webhook_log.txt")
+
+# Paddle price id → Atlyz plan tier. Mirrors the PLANS map in setup.html.
+# Override/extend via env: PADDLE_PRICE_STARTER / _GROWTH / _PRO.
+PADDLE_PRICE_TO_PLAN = {
+    os.getenv("PADDLE_PRICE_STARTER", "pri_01ktv8m6sc51nacw4t6afpkbrr"): "starter",
+    os.getenv("PADDLE_PRICE_GROWTH",  "pri_01ktv9m3efz4bn96xk3sfs9g67"): "growth",
+    os.getenv("PADDLE_PRICE_PRO",     "pri_01ktvads8c13403e4efh8yhqhs"): "pro",
+}
+
+
+def _log_webhook(line: str):
+    try:
+        os.makedirs(os.path.dirname(WEBHOOK_LOG), exist_ok=True)
+        stamp = datetime.now().isoformat()
+        with _disk_lock:
+            with open(WEBHOOK_LOG, "a", encoding="utf-8") as f:
+                f.write(f"[{stamp}] {line}\n")
+    except Exception as e:
+        print(f"[WEBHOOK LOG ERROR] {e}")
+
+
+def verify_paddle_signature(raw_body: bytes, signature_header: str, secret: str) -> bool:
+    """Verify a Paddle Billing 'Paddle-Signature' header.
+
+    Header format:  ts=<unix>;h1=<hex hmac-sha256>
+    Signed payload: "<ts>:<raw request body>" hashed with the webhook secret.
+    """
+    if not secret or not signature_header:
+        return False
+    ts, h1 = "", ""
+    for part in signature_header.split(";"):
+        k, _, v = part.partition("=")
+        k = k.strip()
+        if k == "ts":
+            ts = v.strip()
+        elif k == "h1":
+            h1 = v.strip()
+    if not ts or not h1:
+        return False
+    signed_payload = ts.encode("utf-8") + b":" + raw_body
+    expected = hmac.new(secret.encode("utf-8"), signed_payload, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(expected, h1)
+
+
+def _extract_customer_email(data: dict) -> str:
+    """Pull a customer email out of a Paddle event payload (best effort)."""
+    obj = data.get("data", {}) or {}
+    for path in (("customer", "email"), ("billing_details", "email")):
+        node = obj
+        for key in path:
+            node = (node or {}).get(key) if isinstance(node, dict) else None
+        if node:
+            return str(node).strip().lower()
+    # transaction.completed includes a top-level customer email in some payloads
+    email = obj.get("email") or (obj.get("customer") or {}).get("email", "") if isinstance(obj.get("customer"), dict) else ""
+    return str(email or "").strip().lower()
+
+
+def _plan_from_paddle_items(data: dict) -> str:
+    """Map the purchased price id(s) to an Atlyz plan, or '' if unknown."""
+    obj   = data.get("data", {}) or {}
+    items = obj.get("items", []) or []
+    for it in items:
+        price = it.get("price", {}) if isinstance(it, dict) else {}
+        pid   = price.get("id") or it.get("price_id") or ""
+        if pid in PADDLE_PRICE_TO_PLAN:
+            return PADDLE_PRICE_TO_PLAN[pid]
+    return ""
+
+
+def _resolve_webhook_business(data: dict, email: str) -> str:
+    """Find which business a Paddle event applies to.
+
+    Priority: custom_data.business_id (most reliable) → account.businesses by
+    email (prefer a pending one) → any business whose owner_email matches.
+    """
+    obj         = data.get("data", {}) or {}
+    custom_data = obj.get("custom_data") or {}
+    bid = (custom_data.get("business_id") or "").strip()
+    if bid and business_exists(bid):
+        return bid
+
+    if email:
+        account = load_accounts().get(email)
+        if account:
+            owned = [b for b in account.get("businesses", []) if business_exists(b)]
+            pending = [b for b in owned
+                       if (load_business_config(b).get("plan_status", "") or "").strip().lower() == "pending"]
+            candidates = pending or owned
+            if candidates:
+                # Most recently created/modified wins when several exist.
+                candidates.sort(key=lambda b: os.path.getmtime(
+                    os.path.join(client_dir(b), "config", "business_config.txt")), reverse=True)
+                return candidates[0]
+        # Fallback: scan every business for a matching owner_email.
+        for b in list_all_bids():
+            if load_business_config(b).get("owner_email", "").strip().lower() == email:
+                return b
+    return ""
+
+
+@app.route("/webhooks/paddle", methods=["POST"])
+def paddle_webhook():
+    raw_body  = request.get_data()
+    signature = request.headers.get("Paddle-Signature", "")
+    secret    = os.getenv("PADDLE_WEBHOOK_SECRET", "")
+
+    if not secret:
+        # Fail closed in production — never trust an unverified billing event.
+        if not DEV_MODE:
+            _log_webhook("REJECTED: PADDLE_WEBHOOK_SECRET not configured")
+            return jsonify({"error": "Webhook secret not configured"}), 500
+        print("[PADDLE] DEV_MODE: skipping signature verification (no secret set)")
+    elif not verify_paddle_signature(raw_body, signature, secret):
+        _log_webhook("REJECTED: invalid Paddle-Signature")
+        return jsonify({"error": "Invalid signature"}), 400
+
+    try:
+        data = json.loads(raw_body.decode("utf-8") or "{}")
+    except Exception:
+        _log_webhook("REJECTED: malformed JSON body")
+        return jsonify({"error": "Malformed JSON"}), 400
+
+    event_type = data.get("event_type", "unknown")
+    email      = _extract_customer_email(data)
+    bid        = _resolve_webhook_business(data, email)
+    _log_webhook(f"event={event_type} email={email or '-'} business={bid or 'UNRESOLVED'}")
+
+    ACTIVATE   = {"subscription.activated", "subscription.created",
+                  "subscription.resumed", "transaction.completed"}
+    DEACTIVATE = {"subscription.canceled": "canceled", "subscription.past_due": "past_due",
+                  "subscription.paused": "paused"}
+
+    if not bid:
+        # Acknowledge so Paddle stops retrying, but record that we couldn't match it.
+        return jsonify({"ok": True, "matched": False})
+
+    if event_type in ACTIVATE:
+        plan = _plan_from_paddle_items(data) or business_plan(bid)
+        set_business_config_field(bid, "plan", plan)
+        set_business_config_field(bid, "plan_status", "active")
+        _log_webhook(f"ACTIVATED business={bid} plan={plan}")
+    elif event_type in DEACTIVATE:
+        status = DEACTIVATE[event_type]
+        set_business_config_field(bid, "plan_status", status)
+        _log_webhook(f"DEACTIVATED business={bid} status={status}")
+
+    return jsonify({"ok": True, "matched": True, "business_id": bid})
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

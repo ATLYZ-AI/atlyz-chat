@@ -843,7 +843,10 @@ function payAndGoLive(){
   var emailEl = document.getElementById('biz-email');
   var customerEmail = emailEl ? emailEl.value.trim() : '';
   var opts = {
-    items: [{ priceId: plan.priceId, quantity: 1 }]
+    items: [{ priceId: plan.priceId, quantity: 1 }],
+    // Passed through to the /webhooks/paddle endpoint so the backend can match
+    // the payment to this exact business and activate it.
+    customData: { business_id: bizId, plan: chosenPlan }
   };
   if(customerEmail) opts.customer = { email: customerEmail };
   Paddle.Checkout.open(opts);
