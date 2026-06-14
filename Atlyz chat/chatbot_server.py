@@ -1602,6 +1602,7 @@ def rescrape_endpoint():
     if result.get("status") == "skipped":
         return jsonify({"success": True, "changed": False, "message": "Website unchanged since last scrape"})
     if result.get("status") == "ok":
+        knowledge_cache.pop(bid, None)
         return jsonify({
             "success":       True,
             "changed":       True,
