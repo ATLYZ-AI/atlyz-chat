@@ -365,6 +365,7 @@ def load_chatbot_config(bid: str) -> dict:
         "white_label":     False,
         "color_mode":      "manual",
         "logo_mode":       "default",
+        "theme":           "dark",
     }
     base = client_dir(bid)
     if base:
@@ -836,6 +837,7 @@ def chat_start():
         "chat_enabled":  not over_limit,
         "config": {
             "primary_color":   config.get("primary_color", "#00C2FF"),
+            "theme":           config.get("theme", "dark"),
             "widget_position": config.get("widget_position", "bottom-right"),
             "bot_name":        config.get("bot_name", "Assistant"),
             "bot_tagline":     config.get("bot_tagline", "Your AI Assistant"),
@@ -1226,6 +1228,9 @@ def save_chatbot_config(bid):
                   "language_lock", "bot_name", "bot_tagline", "color_mode", "logo_mode"]:
         if field in data:
             current[field] = data[field]
+
+    if "theme" in data:
+        current["theme"] = "light" if str(data["theme"]).lower() == "light" else "dark"
 
     if "white_label" in data:
         current["white_label"] = bool(data["white_label"]) and plan_features(bid).get("white_label", False)

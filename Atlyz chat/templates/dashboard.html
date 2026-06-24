@@ -407,6 +407,14 @@
               <div class="hint" id="auto-note" style="display:none">Atlyz detects your site's brand color on each scrape.</div>
             </div>
             <div class="field">
+              <label>Theme</label>
+              <div class="seg">
+                <button type="button" id="tm-dark" onclick="setTheme('dark')">Dark</button>
+                <button type="button" id="tm-light" onclick="setTheme('light')">Light</button>
+              </div>
+              <div class="hint">How the chat window looks on your site.</div>
+            </div>
+            <div class="field">
               <label>Widget position</label>
               <select class="inp" id="c-position"><option value="bottom-right">Bottom right</option><option value="bottom-left">Bottom left</option></select>
             </div>
@@ -508,7 +516,7 @@
 
 <script>
 const ORIGIN = window.location.origin;
-let BIZ = null, CONFIG = null, FEATURES = {}, COLOR_MODE = "manual", PLAN = "";
+let BIZ = null, CONFIG = null, FEATURES = {}, COLOR_MODE = "manual", THEME = "dark", PLAN = "";
 
 async function api(path, opts){
   opts = opts || {};
@@ -816,6 +824,7 @@ async function loadConfig(){
   document.getElementById("c-color").value    = CONFIG.primary_color || "#00C2FF";
   document.getElementById("c-color-hex").textContent = CONFIG.primary_color || "";
   setColorMode(CONFIG.color_mode || "manual", true);
+  setTheme(CONFIG.theme || "dark", true);
   const wl = document.getElementById("c-wl"), wlNote = document.getElementById("wl-note");
   wl.checked = !!CONFIG.white_label;
   wl.disabled = !FEATURES.white_label;
@@ -832,11 +841,16 @@ function setColorMode(mode, silent){
   document.getElementById("color-pick-wrap").style.display = mode==="manual" ? "flex" : "none";
   document.getElementById("auto-note").style.display = mode==="auto" ? "block" : "none";
 }
+function setTheme(mode, silent){
+  THEME = mode==="light" ? "light" : "dark";
+  document.getElementById("tm-dark").classList.toggle("on", THEME==="dark");
+  document.getElementById("tm-light").classList.toggle("on", THEME==="light");
+}
 async function saveConfig(){
   const body = {
     bot_name: val("c-botname"), bot_tagline: val("c-tagline"), greeting: val("c-greeting"),
     widget_position: val("c-position"), language_lock: val("c-lang") || null,
-    primary_color: val("c-color"), color_mode: COLOR_MODE,
+    primary_color: val("c-color"), color_mode: COLOR_MODE, theme: THEME,
     white_label: document.getElementById("c-wl").checked
   };
   try{ await api("/chatbot/config/"+BIZ, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
