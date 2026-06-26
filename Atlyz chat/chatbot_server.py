@@ -1303,7 +1303,9 @@ def chatbot_stats(bid):
         "plan":             plan,
         "plan_label":       feats.get("label", plan.title()),
         "features":         feats,
-        "monthly_cap":      feats.get("monthly_chats"),
+        # Whitelisted first-party bots are uncapped — report no limit so the
+        # dashboard shows "Unlimited" (mirrors the /chat/start cap bypass).
+        "monthly_cap":      None if bid in ALWAYS_ACTIVE_BIDS else feats.get("monthly_chats"),
         "chats_this_month": monthly_chats_used(bid),
         "chats_today":      chats_today,
         "chats_this_week":  chats_this_week,
