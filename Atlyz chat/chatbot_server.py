@@ -50,6 +50,7 @@ TOKEN_MAX_AGE    = 60 * 60 * 24 * 30  # 30 days
 
 # ── Tunables ────────────────────────────────────────────────────────────────────
 MAX_MESSAGE_CHARS   = int(os.getenv("MAX_MESSAGE_CHARS", 2000))
+MAX_USER_MSG_CHARS  = int(os.getenv("MAX_USER_MSG_CHARS", 1000))  # hard cap: longer chat messages are rejected before the LLM call
 MAX_KNOWLEDGE_CHARS = int(os.getenv("MAX_KNOWLEDGE_CHARS", 12000))
 RATE_LIMIT_MAX      = int(os.getenv("RATE_LIMIT_MAX", 20))
 RATE_LIMIT_WINDOW   = int(os.getenv("RATE_LIMIT_WINDOW", 60))
@@ -625,11 +626,9 @@ def ai_chat_response(message: str, bid: str, session: dict, knowledge: str, conf
         lead_rule = ("- Lead capture is OFF for this plan. Never use collect_lead. "
                      "If they want to be contacted, point them to the contact details in the knowledge above.")
 
-    history_lines = []
-    for h in session.get("history", [])[-6:]:
-        history_lines.append(f"Customer: {h['customer']}")
-        history_lines.append(f"Assistant: {h['atlyz']}")
-    history_text = "\n".join(history_lines) if history_lines else "(new conversation)"
+    # Conversation history is NOT injected into the system prompt — it is sent below as
+    # real chat turns instead. Keeping it out keeps the large knowledge prefix stable and
+    # cacheable, and avoids paying for the same history twice.
 
     # Smart email routing is specific to Atlyz's own site. Every other business gets a
     # generic, business-appropriate fallback — customers must never be sent to Atlyz inboxes.
@@ -674,9 +673,6 @@ YOUR JOB:
 
 KNOWLEDGE BASE:
 {knowledge_block}
-
-CONVERSATION HISTORY:
-{history_text}
 
 LEAD & FLOW RULES:
 {lead_rule}
@@ -729,6 +725,7 @@ action must be: chat, collect_lead, or end"""
                 model="gpt-5-nano",
                 messages=messages,
                 max_completion_tokens=1500,
+                reasoning_effort="low",  # FAQ-style answers don't need deep reasoning — cuts reasoning/output token cost
                 response_format={"type": "json_object"}
             )
             parsed = _parse_reply(response.choices[0].message.content)
@@ -861,8 +858,13 @@ def chat_message():
     if not message:
         return jsonify({"error": "Empty message"}), 400
 
-    if len(message) > MAX_MESSAGE_CHARS:
-        message = message[:MAX_MESSAGE_CHARS]
+    # Reject over-long messages before they ever reach the LLM (cost + abuse guard).
+    if len(message) > MAX_USER_MSG_CHARS:
+        return jsonify({
+            "reply":    "Message too long, please shorten it.",
+            "action":   "chat",
+            "language": "English",
+        }), 400
 
     session = get_or_load_session(session_id, bid)
     if not session:
