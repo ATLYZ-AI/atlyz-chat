@@ -2576,7 +2576,94 @@ def seed_demo_business():
         print(f"[DEMO] Seed failed: {e}")
 
 
+# ─── Startup junk-client cleanup ───────────────────────────────────────────────
+# Mirrors cleanup_test_clients.py: deletes leftover test/junk clients from storage
+# (DATA_DIR — /data on Railway) on boot so they don't linger after a redeploy.
+import shutil
+
+# Hard protection — these bids can NEVER be deleted, no matter what.
+_CLEANUP_PROTECTED_BIDS = {"atlyz", "atlyz-website", "atlyz_website", "stride_sneakers"}
+# Junk match: bid is an nh-mushroom / nh-mashroom variant, or is exactly "name".
+_CLEANUP_MUSHROOM_RE    = re.compile(r"nhm[au]shroom")  # matches nh-mushroom*/nh-mashroom* after norm
+_cleanup_done = False  # process-level guard so it only runs once per boot
+
+
+def _cleanup_norm(s: str) -> str:
+    """Lowercase, strip all but a-z0-9 — so nh-mushroom-7 == nhmushroom7."""
+    return re.sub(r"[^a-z0-9]", "", (s or "").lower())
+
+
+def _is_junk_bid(bid: str) -> bool:
+    if bid in _CLEANUP_PROTECTED_BIDS:
+        return False
+    if bid.strip().lower() == "name":
+        return True
+    return bool(_CLEANUP_MUSHROOM_RE.search(_cleanup_norm(bid)))
+
+
+def run_startup_cleanup():
+    """Delete junk test clients from DATA_DIR and unlink them from accounts.json.
+
+    Reuses cleanup_test_clients.py's logic. Runs once per boot, never crashes the
+    server: any failure is caught and logged so the app still starts.
+    """
+    global _cleanup_done
+    if _cleanup_done:
+        return
+    _cleanup_done = True
+
+    try:
+        print(f"[CLEANUP] Scanning {CLIENTS_DIR} for junk clients…")
+        if not os.path.isdir(CLIENTS_DIR):
+            print("[CLEANUP] No clients dir — nothing to do.")
+            print("CLEANUP DONE: deleted 0 clients")
+            return
+
+        bids = sorted(
+            d for d in os.listdir(CLIENTS_DIR)
+            if os.path.isdir(os.path.join(CLIENTS_DIR, d))
+        )
+        deleted = []
+        for bid in bids:
+            if not _is_junk_bid(bid):
+                continue
+            path = os.path.join(CLIENTS_DIR, bid)
+            try:
+                shutil.rmtree(path)
+                deleted.append(bid)
+                print(f"[CLEANUP] Deleted junk client: {bid}")
+            except Exception as e:
+                print(f"[CLEANUP] ERROR deleting {bid}: {e}")
+
+        # Unlink any deleted bids from accounts.json.
+        if deleted:
+            try:
+                accounts = load_accounts()
+                changed = False
+                for email in list(accounts.keys()):
+                    acct = accounts[email]
+                    before = acct.get("businesses") or []
+                    after = [b for b in before if b not in deleted]
+                    if after != before:
+                        acct["businesses"] = after
+                        changed = True
+                        print(f"[CLEANUP] Removed {len(before) - len(after)} bid(s) "
+                              f"from account {email}")
+                if changed:
+                    save_accounts(accounts)
+                    print(f"[CLEANUP] Saved {ACCOUNTS_FILE}")
+            except Exception as e:
+                print(f"[CLEANUP] ERROR updating accounts.json: {e}")
+
+        print(f"CLEANUP DONE: deleted {len(deleted)} clients")
+    except Exception as e:
+        # Never let cleanup take down the server.
+        print(f"[CLEANUP] FATAL (ignored, server continues): {e}")
+        print("CLEANUP DONE: deleted 0 clients")
+
+
 # Runs at import (works under both `python chatbot_server.py` and gunicorn).
+run_startup_cleanup()
 seed_demo_business()
 auto_scrape_atlyz_website()
 
