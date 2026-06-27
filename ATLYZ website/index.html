@@ -920,6 +920,27 @@ footer{
   .foot-top{flex-direction:column;gap:32px}
 }
 
+/* ─── PHONE-ONLY FIXES (≤600px) ─── */
+@media(max-width:600px){
+  /* Hero: keep heading + subtext off the screen edge */
+  .hero{padding:100px 28px 60px}
+
+  /* How it works: stack each step vertically instead of squeezing
+     the number/title/description/badge into side-by-side columns */
+  .steps-grid{gap:48px}
+  .step{
+    flex-wrap:wrap;
+    align-items:center;
+    gap:16px;
+    column-gap:18px;
+    padding:0;
+  }
+  .step-num{margin:0}
+  .step h3{flex:1;min-width:0;margin-bottom:0}   /* sits beside the number, top row */
+  .step p{flex-basis:100%;margin:0}              /* full-width row below */
+  .step-tag{margin-top:0}                         /* full-width row below that */
+}
+
 /* ══════════════════════════════════════════════════
    LOGO ANIMATION SYSTEM  (la- prefix)
    Total sequence: ~4.15s  |  Circle completes last
