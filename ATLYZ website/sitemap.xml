@@ -40,4 +40,34 @@
     <lastmod>2026-06-10</lastmod>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://atlyz.com/demo.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://atlyz.com/careers.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://atlyz.com/blog-48-hours.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://atlyz.com/blog-ai-reads-website.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://atlyz.com/blog-missed-messages.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://atlyz.com/blog-small-business-ai.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <priority>0.6</priority>
+  </url>
 </urlset>

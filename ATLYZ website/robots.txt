@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /login.html
+Disallow: /setup.html
+Disallow: /signup.html
+Disallow: /install-guide.html
+
+Sitemap: https://atlyz.com/sitemap.xml
