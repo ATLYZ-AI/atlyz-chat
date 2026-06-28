@@ -10,6 +10,7 @@ import hashlib
 from collections import Counter
 import requests
 from urllib.parse import urljoin, urlparse
+from bs4 import BeautifulSoup, NavigableString, Tag
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -27,21 +28,143 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; AtlyzBot/1.0; +https://atlyz.ai/bot)"
 }
 
+# Tags that never hold reader-facing content — dropped before text/section extraction
+NOISE_TAGS = ["script", "style", "noscript", "template", "svg", "iframe"]
+
+
+def _normalize_ws(text: str) -> str:
+    """Collapse all runs of whitespace to single spaces and trim."""
+    return re.sub(r"\s+", " ", text or "").strip()
+
 
 # ══════════════════════════════════════════════
-# CLEAN HTML → PLAIN TEXT
+# CLEAN HTML → PLAIN TEXT  (BeautifulSoup + lxml)
 # ══════════════════════════════════════════════
 def clean_html(html: str) -> str:
-    """Strip HTML tags and clean up whitespace."""
-    # Remove script and style blocks
-    html = re.sub(r'<(script|style)[^>]*>.*?</(script|style)>', '', html, flags=re.DOTALL | re.IGNORECASE)
-    # Remove HTML tags
-    html = re.sub(r'<[^>]+>', ' ', html)
-    # Decode common entities
-    html = html.replace('&nbsp;', ' ').replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>').replace('&quot;', '"')
-    # Clean whitespace
-    html = re.sub(r'\s+', ' ', html).strip()
-    return html
+    """Strip HTML to clean, whitespace-normalized plain text.
+
+    BeautifulSoup (lxml parser) replaces the old regex approach: it decodes
+    entities, drops noise tags, and yields cleaner text. Same contract as before
+    (HTML string in → plain text out), so the knowledge.txt / scraped_pages.txt
+    fallback artifacts keep working unchanged.
+    """
+    if not html:
+        return ""
+    try:
+        soup = BeautifulSoup(html, "lxml")
+        for tag in soup(NOISE_TAGS):
+            tag.decompose()
+        return _normalize_ws(soup.get_text(" "))
+    except Exception:
+        # Last-resort regex fallback so a parser hiccup never kills a scrape
+        stripped = re.sub(r"<[^>]+>", " ", html)
+        return _normalize_ws(stripped)
+
+
+# ══════════════════════════════════════════════
+# PAGE STRUCTURE → SECTIONS  (BeautifulSoup + lxml)
+# ══════════════════════════════════════════════
+HEADING_TAGS = {"h1", "h2", "h3"}
+
+
+def _within_heading(node) -> bool:
+    """True when a text node lives inside an h1/h2/h3 — i.e. it is the heading's
+    own label, not the body text that follows the heading."""
+    return any(getattr(parent, "name", None) in HEADING_TAGS for parent in node.parents)
+
+
+def extract_page_sections(html: str, page_url: str, fallback_title: str = "") -> dict:
+    """Parse one page into structured sections.
+
+    Returns:
+        {
+          "page_url":   str,
+          "page_title": str,                       # <title>, else fallback_title
+          "sections": [
+            {"heading": str, "level": int,         # level = 1|2|3 (0 = lead/fallback)
+             "subheadings": [str, ...],            # deeper headings nested under this one
+             "text": str},                         # body text up to the next heading
+            ...
+          ]
+        }
+
+    Each h1/h2/h3 opens a section whose `text` is the body content following it up
+    to the next heading of any level (the literal "heading + following text" model).
+    `subheadings` cross-references the deeper-level headings that fall under a
+    section. A page with no headings falls back to one section titled by the page
+    title holding the whole page's text.
+    """
+    try:
+        soup = BeautifulSoup(html or "", "lxml")
+        for tag in soup(NOISE_TAGS):
+            tag.decompose()
+
+        title_tag = soup.title
+        page_title = (title_tag.get_text(" ", strip=True) if title_tag else "") or fallback_title
+
+        # Drop <head> so meta/title text can't leak in as body when <body> is absent
+        if soup.head:
+            soup.head.decompose()
+        body = soup.body or soup
+
+        raw = []          # flat sections in document order
+        current = None
+
+        def close(sec):
+            if sec is None:
+                return
+            sec["text"] = _normalize_ws(" ".join(sec.pop("_parts")))
+            if sec["heading"] or sec["text"]:
+                raw.append(sec)
+
+        for node in body.descendants:
+            if isinstance(node, Tag):
+                if node.name in HEADING_TAGS:
+                    close(current)
+                    current = {"heading": node.get_text(" ", strip=True),
+                               "level": int(node.name[1]), "_parts": []}
+                continue
+            if isinstance(node, NavigableString):
+                chunk = str(node).strip()
+                if not chunk or _within_heading(node):
+                    continue
+                if current is None:                       # text before the first heading
+                    current = {"heading": "", "level": 0, "_parts": []}
+                current["_parts"].append(chunk)
+        close(current)
+
+        # No real heading anywhere → treat the whole page as a single section
+        if not any(sec["level"] > 0 for sec in raw):
+            whole = _normalize_ws(body.get_text(" "))
+            sections = ([{"heading": page_title, "level": 0, "subheadings": [], "text": whole}]
+                        if whole else [])
+            return {"page_url": page_url, "page_title": page_title, "sections": sections}
+
+        # Cross-reference deeper headings as each section's subheadings
+        n = len(raw)
+        for i, sec in enumerate(raw):
+            if sec["level"] == 0:
+                sec["subheadings"] = []
+                continue
+            subs = []
+            for j in range(i + 1, n):
+                if raw[j]["level"] <= sec["level"]:
+                    break
+                if raw[j]["heading"]:
+                    subs.append(raw[j]["heading"])
+            sec["subheadings"] = subs
+
+        sections = [{"heading": sec["heading"], "level": sec["level"],
+                     "subheadings": sec["subheadings"], "text": sec["text"]} for sec in raw]
+        return {"page_url": page_url, "page_title": page_title, "sections": sections}
+
+    except Exception as e:
+        # One malformed page must never crash the whole crawl
+        print(f"[SCRAPER SECTIONS ERROR] {page_url}: {e}")
+        text = clean_html(html)
+        title = fallback_title or page_url
+        sections = [{"heading": title, "level": 0, "subheadings": [], "text": text}] if text else []
+        return {"page_url": page_url, "page_title": title, "sections": sections}
 
 
 # ══════════════════════════════════════════════
@@ -209,6 +332,7 @@ def scrape_website(base_url: str, max_pages: int = 50, max_seconds: int = MAX_SC
     visited = set()
     all_content = []
     raw_pages   = []
+    page_sections = []   # structured {page_url, page_title, sections:[...]} per page
     pages_scraped = 0
 
     while queue and pages_scraped < max_pages:
@@ -235,6 +359,8 @@ def scrape_website(base_url: str, max_pages: int = 50, max_seconds: int = MAX_SC
         if text and len(text) > 150:
             all_content.append(f"=== Page: {path} ===\n{text[:3000]}\n")
             raw_pages.append(f"=== {url} ===\n{text}\n")
+            # Structured sections artifact (additive — does not affect the text above)
+            page_sections.append(extract_page_sections(raw_html, url, fallback_title=path))
             pages_scraped += 1
             print(f"[SCRAPER] ✅ {path} ({len(text)} chars) [{pages_scraped}/{max_pages}]")
 
@@ -267,6 +393,7 @@ def scrape_website(base_url: str, max_pages: int = 50, max_seconds: int = MAX_SC
         "pages_scraped": pages_scraped,
         "content": summarized or combined[:8000],
         "raw_pages": raw_text,
+        "sections": page_sections,
         "brand_color": brand_color,
         "content_hash": content_hash,
     }
@@ -347,6 +474,16 @@ def save_scraped_knowledge(business_id: str, scraped: dict, clients_dir: str = "
         elif os.path.exists(scraped_path):
             os.remove(scraped_path)
 
+        # Structured per-page sections — NEW artifact for upcoming section-selection.
+        # Additive only: the bot still answers from knowledge.txt for now.
+        sections = scraped.get("sections", [])
+        sections_path = os.path.join(config_dir, "knowledge_sections.json")
+        if sections:
+            with open(sections_path, "w", encoding="utf-8") as f:
+                json.dump(sections, f, indent=2, ensure_ascii=False)
+        elif os.path.exists(sections_path):
+            os.remove(sections_path)
+
         meta_path = os.path.join(config_dir, "scrape_meta.json")
         with open(meta_path, "w") as f:
             json.dump({
@@ -374,3 +511,16 @@ if __name__ == "__main__":
     print(f"\nStatus: {result['status']}")
     print(f"Pages scraped: {result['pages_scraped']}")
     print(f"\nContent preview:\n{result['content'][:500]}")
+
+    pages = result.get("sections", [])
+    total = sum(len(p["sections"]) for p in pages)
+    print(f"\nSections artifact: {len(pages)} pages, {total} sections total")
+    if pages:
+        print("\nSample (first page) ─────────────────────────────")
+        print(json.dumps(pages[0], indent=2, ensure_ascii=False)[:1500])
+        # Optional: dump the full artifact for inspection
+        if "--dump" in sys.argv:
+            out = "knowledge_sections.sample.json"
+            with open(out, "w", encoding="utf-8") as f:
+                json.dump(pages, f, indent=2, ensure_ascii=False)
+            print(f"\nFull artifact written to {out}")
