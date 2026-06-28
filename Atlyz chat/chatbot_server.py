@@ -1712,6 +1712,62 @@ def owner_info_route(bid):
     return jsonify({"success": True, "chars": len(text)})
 
 
+@app.route("/owner/scraped/<bid>", methods=["GET"])
+def owner_scraped_route(bid):
+    """Read-only view of what the scraper actually pulled, for the dashboard.
+
+    Prefers the structured knowledge_sections.json (page titles + section headings
+    + text); falls back to the flat knowledge.txt summary; else reports an empty
+    'not scraped yet' state. Owner-only, mirroring owner_info_route's GET."""
+    if not business_exists(bid):
+        return jsonify({"error": "Unknown business"}), 404
+    if not is_owner_of(bid):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    config_dir = os.path.join(client_dir(bid), "config")
+
+    # 1. Structured sections — render readably, grouped by page
+    sections_path = os.path.join(config_dir, "knowledge_sections.json")
+    if os.path.exists(sections_path):
+        try:
+            with open(sections_path, encoding="utf-8") as f:
+                pages = json.load(f)
+            blocks = []
+            for page in pages or []:
+                title = (page.get("page_title") or page.get("page_url") or "Page").strip()
+                url   = (page.get("page_url") or "").strip()
+                parts = [f"=== {title} ===" + (f"\n{url}" if url else "")]
+                for sec in page.get("sections", []):
+                    heading = (sec.get("heading") or "").strip()
+                    body    = (sec.get("text") or "").strip()
+                    if heading:
+                        parts.append(f"\n## {heading}")
+                    if body:
+                        parts.append(body)
+                blocks.append("\n".join(parts))
+            text = "\n\n\n".join(b for b in blocks if b.strip()).strip()
+            if text:
+                return jsonify({"business_id": bid, "text": text,
+                                "source": "sections", "pages": len(pages or [])})
+        except Exception as e:
+            print(f"[SCRAPED VIEW ERROR] {bid}: {e}")
+
+    # 2. Fall back to the flat knowledge.txt summary
+    knowledge_path = os.path.join(config_dir, "knowledge.txt")
+    if os.path.exists(knowledge_path):
+        try:
+            with open(knowledge_path, encoding="utf-8") as f:
+                text = f.read().strip()
+            if text:
+                return jsonify({"business_id": bid, "text": text,
+                                "source": "summary", "pages": 0})
+        except Exception as e:
+            print(f"[SCRAPED VIEW ERROR] {bid}: {e}")
+
+    # 3. Nothing scraped yet
+    return jsonify({"business_id": bid, "text": "", "source": "none", "pages": 0})
+
+
 @app.route("/owner/logo/<bid>", methods=["POST", "DELETE"])
 def owner_logo(bid):
     if not business_exists(bid):
