@@ -1,12 +1,14 @@
 # plans.py — Atlyz Chat plan tiers
 # Feature matrix mirrors the pricing section on the Atlyz website.
 # monthly_chats = None means unlimited.
+# rescrapes_per_month = max manual re-scrapes the owner may trigger per calendar month.
 
 PLANS = {
     "starter": {
         "label":         "Starter",
         "max_websites":  1,
         "monthly_chats": 500,
+        "rescrapes_per_month": 4,
         "lead_capture":  False,
         "analytics":     False,
         "white_label":   False,
@@ -18,6 +20,7 @@ PLANS = {
         "label":         "Growth",
         "max_websites":  1,
         "monthly_chats": 1000,
+        "rescrapes_per_month": 6,
         "lead_capture":  True,
         "analytics":     True,
         "white_label":   False,
@@ -29,6 +32,7 @@ PLANS = {
         "label":         "Pro",
         "max_websites":  1,
         "monthly_chats": 3000,
+        "rescrapes_per_month": 10,
         "lead_capture":  True,
         "analytics":     True,
         "white_label":   True,

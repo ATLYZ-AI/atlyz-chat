@@ -663,7 +663,7 @@ def _stats_path(bid: str):
     return os.path.join(base, "data", "stats.json") if base else None
 
 
-def bump_stats(bid: str, chats: int = 0, messages: int = 0):
+def bump_stats(bid: str, chats: int = 0, messages: int = 0, rescrapes: int = 0):
     path = _stats_path(bid)
     if not path:
         return
@@ -672,7 +672,8 @@ def bump_stats(bid: str, chats: int = 0, messages: int = 0):
         this_month = datetime.now().strftime("%Y-%m")
         with _disk_lock:
             data = {"total_chats": 0, "total_messages": 0, "first_seen": None,
-                    "month": this_month, "chats_this_month": 0}
+                    "month": this_month, "chats_this_month": 0,
+                    "total_rescrapes": 0, "rescrapes_this_month": 0}
             if os.path.exists(path):
                 try:
                     with open(path) as f:
@@ -683,11 +684,14 @@ def bump_stats(bid: str, chats: int = 0, messages: int = 0):
                 data["first_seen"] = datetime.now().isoformat()
             if data.get("month") != this_month:
                 data["month"] = this_month
-                data["chats_this_month"] = 0
-            data["total_chats"]      = data.get("total_chats", 0) + chats
-            data["chats_this_month"] = data.get("chats_this_month", 0) + chats
-            data["total_messages"]   = data.get("total_messages", 0) + messages
-            data["last_active"]      = datetime.now().isoformat()
+                data["chats_this_month"]     = 0
+                data["rescrapes_this_month"] = 0   # same month boundary as chats
+            data["total_chats"]          = data.get("total_chats", 0) + chats
+            data["chats_this_month"]     = data.get("chats_this_month", 0) + chats
+            data["total_messages"]       = data.get("total_messages", 0) + messages
+            data["total_rescrapes"]      = data.get("total_rescrapes", 0) + rescrapes
+            data["rescrapes_this_month"] = data.get("rescrapes_this_month", 0) + rescrapes
+            data["last_active"]          = datetime.now().isoformat()
             with open(path, "w") as f:
                 json.dump(data, f, indent=2)
     except Exception as e:
@@ -699,6 +703,31 @@ def monthly_chats_used(bid: str) -> int:
     if stats.get("month") != datetime.now().strftime("%Y-%m"):
         return 0
     return stats.get("chats_this_month", 0)
+
+
+def monthly_rescrapes_used(bid: str) -> int:
+    """Manual re-scrapes used this calendar month (0 once the month rolls over —
+    boundary handled on read, exactly like monthly_chats_used)."""
+    stats = read_stats(bid)
+    if stats.get("month") != datetime.now().strftime("%Y-%m"):
+        return 0
+    return stats.get("rescrapes_this_month", 0)
+
+
+def rescrape_limit(bid: str):
+    """Monthly manual re-scrape allowance for this bid. None = unlimited
+    (whitelisted first-party/demo bots bypass the quota entirely)."""
+    if bid in ALWAYS_ACTIVE_BIDS:
+        return None
+    return plan_features(bid).get("rescrapes_per_month")
+
+
+def rescrapes_remaining(bid: str):
+    """Re-scrapes left this month, or None when unlimited."""
+    limit = rescrape_limit(bid)
+    if limit is None:
+        return None
+    return max(limit - monthly_rescrapes_used(bid), 0)
 
 
 def read_stats(bid: str) -> dict:
@@ -1491,6 +1520,10 @@ def chatbot_stats(bid):
         # dashboard shows "Unlimited" (mirrors the /chat/start cap bypass).
         "monthly_cap":      None if bid in ALWAYS_ACTIVE_BIDS else feats.get("monthly_chats"),
         "chats_this_month": monthly_chats_used(bid),
+        # Manual re-scrape quota (None cap = unlimited for whitelisted bots)
+        "rescrape_limit":       rescrape_limit(bid),
+        "rescrapes_this_month": monthly_rescrapes_used(bid),
+        "rescrapes_remaining":  rescrapes_remaining(bid),
         "chats_today":      chats_today,
         "chats_this_week":  chats_this_week,
         "leads_total":      leads_count,
@@ -1791,17 +1824,38 @@ def rescrape_endpoint():
     if not website_url:
         return jsonify({"error": "No website on file"}), 400
 
+    # Plan-based monthly re-scrape quota. Whitelisted bots (limit is None) bypass
+    # entirely. At limit → block before scraping, no work done.
+    limit = rescrape_limit(bid)
+    if limit is not None and monthly_rescrapes_used(bid) >= limit:
+        return jsonify({
+            "success":             False,
+            "error":               f"You've used all {limit} re-scrapes this month. Resets on the 1st.",
+            "rescrape_limit":      limit,
+            "rescrapes_remaining": 0,
+        }), 429
+
     result = run_scrape(bid, website_url, force=force)
     if result.get("status") == "skipped":
-        return jsonify({"success": True, "changed": False, "message": "Website unchanged since last scrape"})
+        # Unchanged site = no new content; don't spend a re-scrape on a no-op.
+        return jsonify({
+            "success":             True,
+            "changed":             False,
+            "message":             "Website unchanged since last scrape",
+            "rescrape_limit":      limit,
+            "rescrapes_remaining": rescrapes_remaining(bid),
+        })
     if result.get("status") == "ok":
         knowledge_cache.pop(bid, None)
         sections_cache.pop(bid, None)
+        bump_stats(bid, rescrapes=1)   # only a real, content-changing re-scrape counts
         return jsonify({
-            "success":       True,
-            "changed":       True,
-            "pages_scraped": result["pages_scraped"],
-            "brand_color":   result.get("brand_color", ""),
+            "success":             True,
+            "changed":             True,
+            "pages_scraped":       result["pages_scraped"],
+            "brand_color":         result.get("brand_color", ""),
+            "rescrape_limit":      limit,
+            "rescrapes_remaining": rescrapes_remaining(bid),
         })
     return jsonify({"success": False, "error": result.get("error", "Scrape failed")}), 400
 
