@@ -9,6 +9,7 @@ import csv
 import hmac
 import hashlib
 import secrets
+import shutil
 import threading
 from datetime import datetime, timedelta
 import requests
@@ -404,8 +405,9 @@ PAID_PLANS = {"starter", "growth", "pro"}
 
 # The company's own demo bots are never paying customers — always live.
 # stride_sneakers powers the public demo at atlyz.com/demo (seeded on startup).
-# atlyz / atlyz-website are the live first-party bots on the Railway volume.
-ALWAYS_ACTIVE_BIDS = {"atlyz", "atlyz-website", "stride_sneakers"}
+# atlyz is the live first-party site bot on the Railway volume. (atlyz-website /
+# atlyz_website are the retired old bot — removed on boot by run_startup_cleanup().)
+ALWAYS_ACTIVE_BIDS = {"atlyz", "stride_sneakers"}
 
 
 def set_business_config_field(bid: str, key: str, value: str) -> bool:
@@ -632,7 +634,7 @@ def ai_chat_response(message: str, bid: str, session: dict, knowledge: str, conf
 
     # Smart email routing is specific to Atlyz's own site. Every other business gets a
     # generic, business-appropriate fallback — customers must never be sent to Atlyz inboxes.
-    if bid == "atlyz_website":
+    if bid == "atlyz":
         dont_know_section = (
             "WHEN YOU DON'T KNOW THE ANSWER:\n"
             "Never say connection issue, technical error, or flag to the team.\n"
@@ -685,7 +687,7 @@ action must be: chat, collect_lead, or end"""
 
     # Code-level safety net — used only if the model returns unusable output twice or
     # the API call errors. No "flag to team" phrasing; route to a contact instead.
-    if bid == "atlyz_website":
+    if bid == "atlyz":
         fallback_reply = ("Hmm, that one slipped right past me! Email contact@atlyz.com and the "
                           "team will take great care of you. 😊")
     else:
@@ -2332,7 +2334,7 @@ def health():
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def auto_scrape_atlyz_website():
-    ATLYZ_BID   = "atlyz_website"
+    ATLYZ_BID   = "atlyz"
     ATLYZ_PAGES = [
         ("index.html",         "/"),
         ("chat-product.html",  "/chat-product"),
@@ -2581,7 +2583,73 @@ def seed_demo_business():
         print(f"[DEMO] Seed failed: {e}")
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# STARTUP CLEANUP (one-time per boot)
+# Deletes specific retired test clients from DATA_DIR (/data on Railway) and
+# unlinks them from accounts.json. Mirrors cleanup_test_clients.py. Protected bids
+# can NEVER be deleted — even if listed. Wrapped so it can never crash the server.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Hard protection — these bids can NEVER be deleted, under any circumstances.
+_CLEANUP_PROTECTED_BIDS = {"atlyz", "stride_sneakers"}
+# Retired test bots to remove on boot. atlyz-website (hyphen) and atlyz_website
+# (underscore) are the same old bot — delete whichever spelling exists.
+_CLEANUP_DELETE_BIDS    = {"quickfix_plumbing", "atlyz-website", "atlyz_website"}
+_cleanup_done = False  # process-level guard — runs once per boot
+
+
+def run_startup_cleanup():
+    """Delete the retired test clients from DATA_DIR and unlink them from
+    accounts.json. Protected bids are checked first and are never touched. Runs
+    once per boot and never raises — cleanup must never take the server down."""
+    global _cleanup_done
+    if _cleanup_done:
+        return
+    _cleanup_done = True
+    try:
+        # Protected bids win even if they somehow appear in the delete set.
+        targets = _CLEANUP_DELETE_BIDS - _CLEANUP_PROTECTED_BIDS
+        deleted = []
+        for bid in sorted(targets):
+            # client_dir() validates the id and keeps the delete inside CLIENTS_DIR.
+            path = client_dir(bid)
+            if not path or not os.path.isdir(path):
+                continue
+            try:
+                shutil.rmtree(path)
+                deleted.append(bid)
+                print(f"[CLEANUP] Deleted test client: {bid}")
+            except Exception as e:
+                print(f"[CLEANUP] ERROR deleting {bid}: {e}")
+
+        # Unlink any deleted bids from accounts.json.
+        if deleted:
+            try:
+                accounts = load_accounts()
+                changed  = False
+                for email in list(accounts.keys()):
+                    acct   = accounts[email]
+                    before = acct.get("businesses") or []
+                    after  = [b for b in before if b not in deleted]
+                    if after != before:
+                        acct["businesses"] = after
+                        changed = True
+                        print(f"[CLEANUP] Removed {len(before) - len(after)} bid(s) from account {email}")
+                if changed:
+                    save_accounts(accounts)
+                    print(f"[CLEANUP] Saved {ACCOUNTS_FILE}")
+            except Exception as e:
+                print(f"[CLEANUP] ERROR updating accounts.json: {e}")
+
+        print(f"CLEANUP DONE: deleted {len(deleted)} clients")
+    except Exception as e:
+        # Never let cleanup take down the server.
+        print(f"[CLEANUP] FATAL (ignored, server continues): {e}")
+        print("CLEANUP DONE: deleted 0 clients")
+
+
 # Runs at import (works under both `python chatbot_server.py` and gunicorn).
+run_startup_cleanup()
 seed_demo_business()
 auto_scrape_atlyz_website()
 
