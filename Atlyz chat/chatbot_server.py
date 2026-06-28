@@ -52,6 +52,7 @@ TOKEN_MAX_AGE    = 60 * 60 * 24 * 30  # 30 days
 MAX_MESSAGE_CHARS   = int(os.getenv("MAX_MESSAGE_CHARS", 2000))
 MAX_USER_MSG_CHARS  = int(os.getenv("MAX_USER_MSG_CHARS", 1000))  # hard cap: longer chat messages are rejected before the LLM call
 MAX_KNOWLEDGE_CHARS = int(os.getenv("MAX_KNOWLEDGE_CHARS", 12000))
+MAX_CANDIDATE_SECTIONS = int(os.getenv("MAX_CANDIDATE_SECTIONS", 10))  # stage-1 keyword pre-filter width
 RATE_LIMIT_MAX      = int(os.getenv("RATE_LIMIT_MAX", 20))
 RATE_LIMIT_WINDOW   = int(os.getenv("RATE_LIMIT_WINDOW", 60))
 IP_RATE_LIMIT_MAX   = int(os.getenv("IP_RATE_LIMIT_MAX", 40))
@@ -80,7 +81,8 @@ def handle_options():
 
 # ── In-memory stores ────────────────────────────────────────────────────────────
 sessions        = {}   # session_id → session data
-knowledge_cache = {}   # business_id → knowledge text
+knowledge_cache = {}   # business_id → knowledge text (flat summary fallback)
+sections_cache  = {}   # business_id → flattened knowledge_sections.json (hybrid select)
 rate_limits     = {}   # session_id → [timestamps]
 ip_rate_limits  = {}   # ip → [timestamps]
 auth_rate_limits = {}  # ip → [timestamps]  (login/signup/password brute-force guard)
@@ -334,6 +336,156 @@ def load_knowledge(bid: str) -> str:
                     pass
     knowledge_cache[bid] = ""
     return ""
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# HYBRID SECTION SELECTION  (keyword pre-filter → existing single answer call)
+#
+# Step-3 of the scraper rewrite. The scraper writes knowledge_sections.json per
+# client; at answer time we keyword-narrow it to the few sections most likely to
+# hold the answer and feed only those into the existing prompt. The flat
+# knowledge.txt summary stays as the fallback whenever sections are missing or
+# nothing matches, so the bot never answers with nothing.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _flatten_sections(pages: list) -> list:
+    """[{page_url, page_title, sections:[...]}] → flat list of section dicts, each
+    carrying its page context."""
+    flat = []
+    for page in pages or []:
+        ptitle = page.get("page_title", "")
+        purl   = page.get("page_url", "")
+        for sec in page.get("sections", []):
+            flat.append({
+                "page_title":  ptitle,
+                "page_url":    purl,
+                "heading":     sec.get("heading", ""),
+                "level":       sec.get("level", 0),
+                "subheadings": sec.get("subheadings", []) or [],
+                "text":        sec.get("text", ""),
+            })
+    return flat
+
+
+def load_sections(bid: str) -> list:
+    """Load + cache the flattened knowledge_sections.json for a client. Returns []
+    when the file is absent/unreadable (older clients, or scrapes predating step-2)
+    so callers transparently fall back to the knowledge.txt summary."""
+    if bid in sections_cache:
+        return sections_cache[bid]
+    base = client_dir(bid)
+    flat = []
+    if base:
+        path = os.path.join(base, "config", "knowledge_sections.json")
+        if os.path.exists(path):
+            try:
+                with open(path, encoding="utf-8") as f:
+                    flat = _flatten_sections(json.load(f))
+            except Exception as e:
+                print(f"[SECTIONS LOAD ERROR] {bid}: {e}")
+                flat = []
+    sections_cache[bid] = flat
+    return flat
+
+
+# Small, dependency-free keyword scorer. Generous by design — the goal is to never
+# miss the right section, not to be precise; the answer model does the final pick.
+_STOPWORDS = frozenset({
+    "the", "and", "for", "are", "but", "not", "you", "your", "with", "that", "this",
+    "have", "has", "had", "was", "were", "will", "would", "can", "could", "should",
+    "what", "which", "who", "how", "when", "where", "why", "does", "did", "done",
+    "about", "into", "from", "they", "them", "their", "our", "its", "his", "her",
+    "she", "him", "because", "just", "any", "all", "some", "more", "most", "much",
+    "many", "get", "got", "want", "need", "know", "tell", "please", "here", "there",
+    "then", "than", "too", "very", "also", "yes", "out", "off", "over", "under",
+    "again", "once", "been", "being", "do", "is", "it", "to", "of", "in", "on", "at",
+    "by", "or", "an", "as", "be", "we", "my", "me", "us", "so", "up", "no",
+})
+_WORD_RE       = re.compile(r"[a-z0-9]+")
+_W_HEADING     = 3      # heading keyword hit weight
+_W_SUBHEAD     = 2      # subheading keyword hit weight
+_W_TEXT        = 1      # light weight on the lead of the section body
+_TEXT_LEAD_CHARS = 400  # only the first part of the text is scored
+
+
+def _stem(tok: str) -> str:
+    """Crude suffix stripper so price↔pricing, ship↔shipping, return↔returns match."""
+    for suf in ("ing", "ed", "es", "s"):
+        if tok.endswith(suf) and len(tok) - len(suf) >= 3:
+            return tok[: -len(suf)]
+    return tok
+
+
+def _stem_set(text: str) -> set:
+    return {_stem(t) for t in _WORD_RE.findall((text or "").lower())
+            if len(t) >= 2 and t not in _STOPWORDS}
+
+
+def _overlap(query_stems: set, target_stems: set) -> int:
+    """Count query stems hitting the target — exact stem match, or a shared 4-char
+    prefix (generous, catches near-misses the stemmer leaves behind)."""
+    if not query_stems or not target_stems:
+        return 0
+    hits = 0
+    for q in query_stems:
+        if q in target_stems:
+            hits += 1
+        elif len(q) >= 4 and any(len(t) >= 4 and t[:4] == q[:4] for t in target_stems):
+            hits += 1
+    return hits
+
+
+def _score_section(query_stems: set, sec: dict) -> int:
+    h  = _overlap(query_stems, _stem_set(sec.get("heading", "")))
+    sh = _overlap(query_stems, _stem_set(" ".join(sec.get("subheadings", []))))
+    tx = _overlap(query_stems, _stem_set((sec.get("text", "") or "")[:_TEXT_LEAD_CHARS]))
+    return _W_HEADING * h + _W_SUBHEAD * sh + _W_TEXT * tx
+
+
+def select_sections(message: str, sections: list) -> list:
+    """Stage-1 keyword pre-filter. Returns up to MAX_CANDIDATE_SECTIONS sections in
+    score order. Empty list → caller falls back to the flat summary. level:0 lead/nav
+    sections are excluded unless nothing else matched."""
+    query_stems = _stem_set(message)
+    if not query_stems or not sections:
+        return []
+    scored = []
+    for sec in sections:
+        s = _score_section(query_stems, sec)
+        if s > 0:
+            scored.append((s, sec))
+    if not scored:
+        return []
+    content = [pair for pair in scored if pair[1].get("level", 0) > 0]
+    pool = content if content else scored          # only use lead/nav if nothing else hit
+    pool.sort(key=lambda pair: pair[0], reverse=True)   # key= avoids comparing dicts on ties
+    return [sec for _, sec in pool[:MAX_CANDIDATE_SECTIONS]]
+
+
+def pack_sections(sections: list, budget: int) -> str:
+    """Stage-2 assembly: join candidate sections (heading + text) in score order,
+    whole sections only, stopping before `budget` is exceeded. Drops lowest-ranked
+    sections rather than slicing mid-section (the one exception is a single top
+    section larger than the entire budget, which is trimmed so we answer with
+    something)."""
+    parts, used = [], 0
+    for sec in sections:
+        heading = (sec.get("heading") or "").strip()
+        text    = (sec.get("text") or "").strip()
+        if not heading and not text:
+            continue
+        block = f"## {heading}\n{text}".strip() if heading else text
+        cost  = len(block) + (2 if parts else 0)   # 2 = the "\n\n" joiner
+        if used + cost > budget:
+            if parts:
+                break                              # drop this + all lower-ranked
+            block = block[:budget].strip()         # unavoidable: top section > budget
+            if block:
+                parts.append(block)
+            break
+        parts.append(block)
+        used += cost
+    return "\n\n".join(parts)
 
 
 def load_business_config(bid: str) -> dict:
@@ -610,10 +762,25 @@ def ai_chat_response(message: str, bid: str, session: dict, knowledge: str, conf
 
     owner_info = (owner_info or "").strip()[:MAX_KNOWLEDGE_CHARS // 2]
     remaining  = MAX_KNOWLEDGE_CHARS - len(owner_info)
-    knowledge  = (knowledge or "").strip()[:max(remaining, 1000)]
+    kbudget    = max(remaining, 1000)
+    flat_fallback = (knowledge or "").strip()[:kbudget]
+
+    # Hybrid section selection (step-3). When the scraper has written
+    # knowledge_sections.json, keyword-narrow it to the handful of sections most
+    # likely to hold the answer and feed only those as WEBSITE KNOWLEDGE, packed
+    # whole within the same budget. Falls back to the flat knowledge.txt summary
+    # when sections are missing (older clients, atlyz/demo) or nothing matched, so
+    # the bot never answers with nothing. No extra LLM call — the answer model does
+    # the final relevance pick as it writes the reply below.
+    website_knowledge = flat_fallback
+    selected = select_sections(message, load_sections(bid))
+    if selected:
+        packed = pack_sections(selected, kbudget)
+        if packed:
+            website_knowledge = packed
 
     owner_section     = owner_info if owner_info else "(No owner-provided info yet.)"
-    knowledge_section = knowledge if knowledge else "(No scraped website knowledge yet.)"
+    knowledge_section = website_knowledge if website_knowledge else "(No scraped website knowledge yet.)"
 
     if owner_info:
         knowledge_block = (f"OWNER-PROVIDED INFO (most authoritative — trust this first):\n{owner_section}\n\n"
@@ -1558,6 +1725,7 @@ def run_scrape(bid: str, website_url: str, force: bool = True) -> dict:
 
         save_scraped_knowledge(bid, result, clients_dir=CLIENTS_DIR)
         knowledge_cache.pop(bid, None)
+        sections_cache.pop(bid, None)
 
         cfg = load_chatbot_config(bid)
         if cfg.get("color_mode") == "auto" and result.get("brand_color"):
@@ -1614,6 +1782,7 @@ def rescrape_endpoint():
         return jsonify({"success": True, "changed": False, "message": "Website unchanged since last scrape"})
     if result.get("status") == "ok":
         knowledge_cache.pop(bid, None)
+        sections_cache.pop(bid, None)
         return jsonify({
             "success":       True,
             "changed":       True,
@@ -1648,6 +1817,7 @@ def admin_knowledge():
     with open(knowledge_path, "a", encoding="utf-8") as f:
         f.write("\n" + knowledge_text)
     knowledge_cache.pop(bid, None)
+    sections_cache.pop(bid, None)
 
     return jsonify({"success": True, "business_id": bid, "appended_chars": len(knowledge_text)})
 
@@ -2459,6 +2629,7 @@ Keep it factual and concise."""
                 }, f, indent=2)
 
             knowledge_cache.pop(ATLYZ_BID, None)
+            sections_cache.pop(ATLYZ_BID, None)
             print(f"[AIS] Knowledge auto-updated from {len(pages_content)} pages ✓")
 
         except Exception as e:
@@ -2577,6 +2748,7 @@ def seed_demo_business():
         with open(os.path.join(config_dir, "knowledge.txt"), "w", encoding="utf-8") as f:
             f.write(_DEMO_KNOWLEDGE)
         knowledge_cache.pop(DEMO_BID, None)
+        sections_cache.pop(DEMO_BID, None)
         print(f"[DEMO] Seeded demo business {DEMO_BID!r} ✓")
     except Exception as e:
         print(f"[DEMO] Seed failed: {e}")
