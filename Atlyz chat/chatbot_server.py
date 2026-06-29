@@ -1724,6 +1724,9 @@ def owner_scraped_route(bid):
     if not is_owner_of(bid):
         return jsonify({"error": "Unauthorized"}), 401
 
+    # Re-scrape quota travels with the scraped view so the dashboard's Knowledge
+    # panel can label its re-scrape button without a second request.
+    quota = {"rescrape_limit": rescrape_limit(bid), "rescrapes_remaining": rescrapes_remaining(bid)}
     config_dir = os.path.join(client_dir(bid), "config")
 
     # 1. Structured sections — render readably, grouped by page
@@ -1748,7 +1751,7 @@ def owner_scraped_route(bid):
             text = "\n\n\n".join(b for b in blocks if b.strip()).strip()
             if text:
                 return jsonify({"business_id": bid, "text": text,
-                                "source": "sections", "pages": len(pages or [])})
+                                "source": "sections", "pages": len(pages or []), **quota})
         except Exception as e:
             print(f"[SCRAPED VIEW ERROR] {bid}: {e}")
 
@@ -1760,12 +1763,12 @@ def owner_scraped_route(bid):
                 text = f.read().strip()
             if text:
                 return jsonify({"business_id": bid, "text": text,
-                                "source": "summary", "pages": 0})
+                                "source": "summary", "pages": 0, **quota})
         except Exception as e:
             print(f"[SCRAPED VIEW ERROR] {bid}: {e}")
 
     # 3. Nothing scraped yet
-    return jsonify({"business_id": bid, "text": "", "source": "none", "pages": 0})
+    return jsonify({"business_id": bid, "text": "", "source": "none", "pages": 0, **quota})
 
 
 @app.route("/owner/logo/<bid>", methods=["POST", "DELETE"])
