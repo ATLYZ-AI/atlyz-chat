@@ -99,6 +99,18 @@
   tr:last-child td{border-bottom:none}
   .empty{color:var(--dim);text-align:center;padding:34px 10px;font-size:13px}
 
+  /* ── Filter bars (client-side filter/sort for Leads + Conversations) ── */
+  .filterbar{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px}
+  .filterbar .fb{display:flex;flex-direction:column;gap:5px;min-width:130px}
+  .filterbar .fb.grow{flex:1 1 200px}
+  .filterbar .fb label{font-size:11px;color:var(--muted)}
+  .filterbar .inp{padding:9px 11px;font-size:13px}
+  .filterbar select.inp{cursor:pointer}
+  .filterbar .fb-clear .btn{white-space:nowrap}
+  @media(max-width:640px){
+    .filterbar .fb,.filterbar .fb.grow{flex:1 1 100%;min-width:0}
+  }
+
   /* ── Conversations ── */
   .conv{border:1px solid var(--line);border-radius:11px;margin-bottom:10px;overflow:hidden}
   .conv-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;background:var(--panel)}
@@ -352,6 +364,33 @@
         <h2 class="sec-h">Leads</h2>
         <p class="sec-sub">Customers who asked to be contacted.</p>
         <div id="leads-gate"></div>
+        <div class="filterbar" id="leads-filters" style="display:none">
+          <div class="fb grow">
+            <label for="lf-search">Search</label>
+            <input class="inp" id="lf-search" type="text" placeholder="Name or email" oninput="renderLeads()">
+          </div>
+          <div class="fb">
+            <label for="lf-sort">Sort</label>
+            <select class="inp" id="lf-sort" onchange="renderLeads()">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="az">Name A–Z</option>
+              <option value="za">Name Z–A</option>
+            </select>
+          </div>
+          <div class="fb">
+            <label for="lf-from">From</label>
+            <input class="inp" id="lf-from" type="date" onchange="renderLeads()">
+          </div>
+          <div class="fb">
+            <label for="lf-to">To</label>
+            <input class="inp" id="lf-to" type="date" onchange="renderLeads()">
+          </div>
+          <div class="fb fb-clear">
+            <label>&nbsp;</label>
+            <button class="btn ghost sm" type="button" onclick="clearLeadFilters()">Clear filters</button>
+          </div>
+        </div>
         <div class="panel" style="padding:0;overflow:hidden"><div id="leads-body"></div></div>
       </section>
 
@@ -359,6 +398,31 @@
       <section class="sec" id="sec-convos">
         <h2 class="sec-h">Conversations</h2>
         <p class="sec-sub">Recent chats between customers and your bot.</p>
+        <div class="filterbar" id="convos-filters" style="display:none">
+          <div class="fb grow">
+            <label for="cf-search">Search</label>
+            <input class="inp" id="cf-search" type="text" placeholder="Message keyword" oninput="renderConversations()">
+          </div>
+          <div class="fb">
+            <label for="cf-sort">Sort</label>
+            <select class="inp" id="cf-sort" onchange="renderConversations()">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+            </select>
+          </div>
+          <div class="fb">
+            <label for="cf-from">From</label>
+            <input class="inp" id="cf-from" type="date" onchange="renderConversations()">
+          </div>
+          <div class="fb">
+            <label for="cf-to">To</label>
+            <input class="inp" id="cf-to" type="date" onchange="renderConversations()">
+          </div>
+          <div class="fb fb-clear">
+            <label>&nbsp;</label>
+            <button class="btn ghost sm" type="button" onclick="clearConvoFilters()">Clear filters</button>
+          </div>
+        </div>
         <div id="convos-body"></div>
       </section>
 
@@ -560,6 +624,7 @@
 <script>
 const ORIGIN = window.location.origin;
 let BIZ = null, CONFIG = null, FEATURES = {}, COLOR_MODE = "manual", THEME = "dark", PLAN = "";
+let LEADS_DATA = [], CONVOS_DATA = [];   // cached for client-side filter/sort
 
 async function api(path, opts){
   opts = opts || {};
@@ -1052,25 +1117,89 @@ async function deleteKnowledgeFile(stored, original){
 
 /* ── Leads ── */
 async function loadLeads(){
-  const gate = document.getElementById("leads-gate");
-  const body = document.getElementById("leads-body");
+  const gate    = document.getElementById("leads-gate");
+  const body    = document.getElementById("leads-body");
+  const filters = document.getElementById("leads-filters");
   gate.innerHTML = FEATURES.lead_capture ? "" :
     '<div class="gate">Lead capture is available on the Growth and Pro plans. Upgrade to start collecting customer contacts.</div>';
-  let d; try{ d = await api("/owner/leads/"+BIZ); }catch(e){ body.innerHTML='<div class="empty">Could not load leads.</div>'; return; }
-  const rows = d.leads||[];
-  if(!rows.length){ body.innerHTML = '<div class="empty">No leads yet.</div>'; return; }
+  let d;
+  try{ d = await api("/owner/leads/"+BIZ); }
+  catch(e){ LEADS_DATA=[]; filters.style.display="none"; body.innerHTML='<div class="empty">Could not load leads.</div>'; return; }
+  LEADS_DATA = d.leads || [];
+  if(!LEADS_DATA.length){ filters.style.display="none"; body.innerHTML='<div class="empty">No leads yet.</div>'; return; }
+  filters.style.display = "flex";
+  renderLeads();
+}
+// Both timestamp formats start with YYYY-MM-DD, so the date slice + string compare
+// against the <input type=date> value (also YYYY-MM-DD) filters ranges correctly,
+// and string compare of the full timestamp sorts chronologically.
+function leadDate(l){ return (l.timestamp||"").slice(0,10); }
+function renderLeads(){
+  const body = document.getElementById("leads-body");
+  if(!LEADS_DATA.length){ body.innerHTML='<div class="empty">No leads yet.</div>'; return; }
+  const q    = (document.getElementById("lf-search").value||"").trim().toLowerCase();
+  const sort = document.getElementById("lf-sort").value;
+  const from = document.getElementById("lf-from").value;   // "" or "YYYY-MM-DD"
+  const to   = document.getElementById("lf-to").value;
+  let rows = LEADS_DATA.filter(l=>{
+    if(q && !((l.name||"")+" "+(l.email||"")).toLowerCase().includes(q)) return false;
+    const dt = leadDate(l);
+    if(from && dt < from) return false;
+    if(to   && dt > to)   return false;
+    return true;
+  });
+  rows.sort((a,b)=>{
+    if(sort==="oldest") return (a.timestamp||"").localeCompare(b.timestamp||"");
+    if(sort==="az")     return (a.name||"").localeCompare(b.name||"", undefined, {sensitivity:"base"});
+    if(sort==="za")     return (b.name||"").localeCompare(a.name||"", undefined, {sensitivity:"base"});
+    return (b.timestamp||"").localeCompare(a.timestamp||"");   // newest first
+  });
+  if(!rows.length){ body.innerHTML='<div class="empty">No leads match your filters.</div>'; return; }
   body.innerHTML = `<table><thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Question</th></tr></thead><tbody>`+
-    rows.reverse().map(l=>`<tr><td>${esc(l.timestamp)}</td><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.phone)}</td><td>${esc(l.question)}</td></tr>`).join("")+
+    rows.map(l=>`<tr><td>${esc(l.timestamp)}</td><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.phone)}</td><td>${esc(l.question)}</td></tr>`).join("")+
     `</tbody></table>`;
+}
+function clearLeadFilters(){
+  document.getElementById("lf-search").value="";
+  document.getElementById("lf-sort").value="newest";
+  document.getElementById("lf-from").value="";
+  document.getElementById("lf-to").value="";
+  renderLeads();
 }
 
 /* ── Conversations ── */
 async function loadConversations(){
+  const body    = document.getElementById("convos-body");
+  const filters = document.getElementById("convos-filters");
+  let d;
+  try{ d = await api("/owner/conversations/"+BIZ); }
+  catch(e){ CONVOS_DATA=[]; filters.style.display="none"; body.innerHTML='<div class="empty">Could not load.</div>'; return; }
+  CONVOS_DATA = d.conversations || [];
+  if(!CONVOS_DATA.length){ filters.style.display="none"; body.innerHTML='<div class="empty">No conversations yet.</div>'; return; }
+  filters.style.display = "flex";
+  renderConversations();
+}
+function convoKey(c){ return c.last_active||c.started_at||""; }
+function convoText(c){ return (c.history||[]).map(h=>(h.customer||"")+" "+(h.atlyz||"")).join(" ").toLowerCase(); }
+function renderConversations(){
   const body = document.getElementById("convos-body");
-  let d; try{ d = await api("/owner/conversations/"+BIZ); }catch(e){ body.innerHTML='<div class="empty">Could not load.</div>'; return; }
-  const items = d.conversations||[];
-  if(!items.length){ body.innerHTML = '<div class="empty">No conversations yet.</div>'; return; }
-  body.innerHTML = items.map((c,i)=>{
+  if(!CONVOS_DATA.length){ body.innerHTML='<div class="empty">No conversations yet.</div>'; return; }
+  const q    = (document.getElementById("cf-search").value||"").trim().toLowerCase();
+  const sort = document.getElementById("cf-sort").value;
+  const from = document.getElementById("cf-from").value;
+  const to   = document.getElementById("cf-to").value;
+  let items = CONVOS_DATA.filter(c=>{
+    if(q && !convoText(c).includes(q)) return false;
+    const dt = convoKey(c).slice(0,10);
+    if(from && dt < from) return false;
+    if(to   && dt > to)   return false;
+    return true;
+  });
+  items.sort((a,b)=> sort==="oldest"
+    ? convoKey(a).localeCompare(convoKey(b))
+    : convoKey(b).localeCompare(convoKey(a)));
+  if(!items.length){ body.innerHTML='<div class="empty">No conversations match your filters.</div>'; return; }
+  body.innerHTML = items.map(c=>{
     const msgs = (c.history||[]).map(h=>
       `<div class="bub u">${esc(h.customer)}</div><div class="bub b">${esc(h.atlyz)}</div>`).join("");
     return `<div class="conv">
@@ -1081,6 +1210,13 @@ async function loadConversations(){
       <div class="conv-body">${msgs || '<div class="empty">Empty</div>'}</div>
     </div>`;
   }).join("");
+}
+function clearConvoFilters(){
+  document.getElementById("cf-search").value="";
+  document.getElementById("cf-sort").value="newest";
+  document.getElementById("cf-from").value="";
+  document.getElementById("cf-to").value="";
+  renderConversations();
 }
 
 /* ── Analytics ── */
