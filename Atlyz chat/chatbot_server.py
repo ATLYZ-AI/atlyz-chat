@@ -1,6 +1,7 @@
 # chatbot_server.py — Atlyz Chat Server
 
 import os
+import io
 import json
 import re
 import uuid
@@ -15,6 +16,7 @@ import requests
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 import plans
@@ -28,6 +30,13 @@ load_dotenv(os.path.join(REPO_ROOT, ".env"))
 LOGO_EXTS    = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg",
                 "gif": "image/gif", "svg": "image/svg+xml", "webp": "image/webp"}
 MAX_LOGO_BYTES = 512 * 1024  # 512 KB
+
+# Knowledge file uploads (PDF/txt → searchable sections). Per-plan TOTAL size caps
+# live in plans.py (upload_bytes_limit); ALWAYS_ACTIVE_BIDS bypass them. This is a
+# per-file hard ceiling so one upload can't be read unboundedly into memory — it
+# also bounds whitelisted (unlimited-total) bids.
+KNOWLEDGE_FILE_EXTS  = {"pdf", "txt"}
+MAX_UPLOAD_FILE_BYTES = 25 * 1024 * 1024  # 25 MB single-file ceiling
 # DATA_DIR: on Railway set to /data (mounted volume) so data survives deploys.
 DATA_DIR    = os.getenv("DATA_DIR", BASE_DIR)
 CLIENTS_DIR = os.path.join(DATA_DIR, "clients")
@@ -386,6 +395,270 @@ def load_sections(bid: str) -> list:
                 flat = []
     sections_cache[bid] = flat
     return flat
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# KNOWLEDGE FILE UPLOADS  (PDF/txt → sections in the SAME layer as scraped pages)
+#
+# Owner-uploaded documents are chunked into knowledge_sections.json — the exact
+# format the scraper writes — so the existing keyword-narrow retrieval picks them
+# up with zero changes. They are NOT owner_info (that is a separate, always-on
+# priority layer). Raw files live under clients/<bid>/uploads/ on the data volume
+# so the per-plan TOTAL size cap can be recomputed from disk at any time. Each
+# upload becomes one "page" tagged with {"upload": <stored_name>} so delete can
+# surgically remove just that file's sections.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+UPLOADS_MANIFEST_NAME = "_manifest.json"   # lives inside uploads/, never counted as a file
+
+
+def uploads_dir(bid: str, create: bool = False):
+    base = client_dir(bid)
+    if not base:
+        return None
+    d = os.path.join(base, "uploads")
+    if create:
+        os.makedirs(d, exist_ok=True)
+    return d
+
+
+def _uploads_manifest_path(bid: str):
+    d = uploads_dir(bid)
+    return os.path.join(d, UPLOADS_MANIFEST_NAME) if d else None
+
+
+def load_uploads_manifest(bid: str) -> list:
+    p = _uploads_manifest_path(bid)
+    if p and os.path.exists(p):
+        try:
+            with open(p, encoding="utf-8") as f:
+                data = json.load(f)
+            return data if isinstance(data, list) else []
+        except Exception:
+            return []
+    return []
+
+
+def save_uploads_manifest(bid: str, items: list):
+    d = uploads_dir(bid, create=True)
+    with _disk_lock:
+        with open(os.path.join(d, UPLOADS_MANIFEST_NAME), "w", encoding="utf-8") as f:
+            json.dump(items, f, indent=2, ensure_ascii=False)
+
+
+def uploaded_files(bid: str) -> list:
+    """Files actually on disk (authoritative), backfilled with original name +
+    upload time from the manifest. Sizes are read from disk so the quota can never
+    drift from reality."""
+    d = uploads_dir(bid)
+    if not d or not os.path.isdir(d):
+        return []
+    by_stored = {m.get("stored"): m for m in load_uploads_manifest(bid)}
+    out = []
+    for name in sorted(os.listdir(d)):
+        if name == UPLOADS_MANIFEST_NAME:
+            continue
+        path = os.path.join(d, name)
+        if not os.path.isfile(path):
+            continue
+        m = by_stored.get(name, {})
+        out.append({
+            "stored":      name,
+            "original":    m.get("original", name),
+            "bytes":       os.path.getsize(path),
+            "uploaded_at": m.get("uploaded_at", ""),
+        })
+    return out
+
+
+def uploaded_total_bytes(bid: str) -> int:
+    return sum(f["bytes"] for f in uploaded_files(bid))
+
+
+def upload_bytes_limit(bid: str):
+    """Total knowledge-file upload allowance for this bid. None = unlimited
+    (whitelisted first-party/demo bots bypass the cap, mirroring rescrape_limit)."""
+    if bid in ALWAYS_ACTIVE_BIDS:
+        return None
+    return plan_features(bid).get("upload_bytes_limit")
+
+
+def upload_quota(bid: str) -> dict:
+    used  = uploaded_total_bytes(bid)
+    limit = upload_bytes_limit(bid)
+    return {"used": used, "limit": limit,
+            "remaining": None if limit is None else max(limit - used, 0)}
+
+
+def _fmt_mb(n: int) -> str:
+    s = f"{n / (1024 * 1024):.1f}".rstrip("0").rstrip(".")
+    return f"{s} MB"
+
+
+def _unique_stored_name(updir: str, original: str, ext: str) -> str:
+    base = (secure_filename(original.rsplit(".", 1)[0]) or "file")[:60]
+    name = f"{base}.{ext}"
+    i = 1
+    while os.path.exists(os.path.join(updir, name)) or name == UPLOADS_MANIFEST_NAME:
+        name = f"{base}-{i}.{ext}"
+        i += 1
+    return name
+
+
+def _extract_upload_text(blob: bytes, ext: str) -> str:
+    """Extract plain text from an uploaded file. Raises ValueError with a clear,
+    user-facing message on anything unreadable (never crashes the request)."""
+    if ext == "txt":
+        for enc in ("utf-8", "utf-8-sig", "latin-1"):
+            try:
+                return blob.decode(enc)
+            except UnicodeDecodeError:
+                continue
+        raise ValueError("Could not read this text file — unsupported encoding.")
+    # pdf
+    try:
+        import pdfplumber
+        with pdfplumber.open(io.BytesIO(blob)) as pdf:
+            return "\n\n".join((p.extract_text() or "") for p in pdf.pages)
+    except Exception as e:
+        print(f"[UPLOAD PDF ERROR] {e}")
+        raise ValueError("Could not read this PDF — it may be scanned, image-only, or corrupt.")
+
+
+_HEADING_RE = re.compile(r"#{1,6}\s+\S")
+
+
+def _looks_like_heading(line: str) -> bool:
+    line = line.strip()
+    if not (2 <= len(line) <= 80) or "\n" in line:
+        return False
+    if _HEADING_RE.match(line):                       # markdown ## Heading
+        return True
+    core  = line.lstrip("#").strip().rstrip(":").strip()
+    words = core.split()
+    if len(words) > 12:
+        return False
+    letters = [c for c in core if c.isalpha()]
+    if len(letters) >= 3 and all(c.isupper() for c in letters):   # ALL-CAPS TITLE
+        return True
+    if line.endswith(":") and len(words) <= 8:                    # "Opening hours:"
+        return True
+    return False
+
+
+def _clean_heading(line: str) -> str:
+    return line.lstrip("#").strip().rstrip(":").strip()
+
+
+def _chunk_text_to_sections(text: str, title: str) -> list:
+    """Chunk extracted text into the scraper's section shape: split on detected
+    heading LINES (markdown / ALL-CAPS / 'Label:'); when there are none, group
+    paragraph blocks into ~1500-char sections. Heading detection is line-based
+    (not block-based) because documents normally put a heading on its own line
+    with the body on the next line — a single newline, not a blank one.
+
+    All sections are level 1 (real content). select_sections drops level:0 sections
+    to filter scraped nav/lead boilerplate, but an uploaded document is pure
+    content, so its sections must stay eligible even alongside scraped pages."""
+    text = (text or "").replace("\r\n", "\n").replace("\r", "\n").strip()
+    if not text:
+        return []
+    lines = text.split("\n")
+
+    if any(_looks_like_heading(ln) for ln in lines if ln.strip()):
+        sections, lead, buf, current = [], [], [], None
+        for ln in lines:
+            if ln.strip() and _looks_like_heading(ln):
+                if current is not None:
+                    current["text"] = "\n".join(buf).strip()
+                    sections.append(current)
+                elif buf:
+                    lead.extend(buf)
+                buf = []
+                current = {"heading": _clean_heading(ln), "level": 1, "subheadings": [], "text": ""}
+            else:
+                buf.append(ln)
+        if current is not None:
+            current["text"] = "\n".join(buf).strip()
+            sections.append(current)
+        elif buf:
+            lead.extend(buf)
+        lead_text = "\n".join(lead).strip()
+        if lead_text:
+            sections.insert(0, {"heading": "", "level": 1, "subheadings": [], "text": lead_text})
+    else:
+        sections = []
+        chunk, size = [], 0
+        for b in (b.strip() for b in re.split(r"\n\s*\n", text) if b.strip()):
+            if size and size + len(b) > 1500:
+                sections.append({"heading": "", "level": 1, "subheadings": [], "text": "\n\n".join(chunk)})
+                chunk, size = [], 0
+            chunk.append(b)
+            size += len(b) + 2
+        if chunk:
+            sections.append({"heading": "", "level": 1, "subheadings": [], "text": "\n\n".join(chunk)})
+
+    sections = [s for s in sections if s["text"].strip() or s["heading"].strip()]
+    if not sections:
+        sections = [{"heading": title, "level": 1, "subheadings": [], "text": text}]
+    return sections
+
+
+def _read_sections_file(bid: str) -> list:
+    base = client_dir(bid)
+    if not base:
+        return []
+    path = os.path.join(base, "config", "knowledge_sections.json")
+    if not os.path.exists(path):
+        return []
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, list) else []
+    except Exception as e:
+        print(f"[SECTIONS READ ERROR] {bid}: {e}")
+        return []
+
+
+def _write_sections_file(bid: str, pages: list):
+    config_dir = os.path.join(client_dir(bid), "config")
+    os.makedirs(config_dir, exist_ok=True)
+    path = os.path.join(config_dir, "knowledge_sections.json")
+    with _disk_lock:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(pages, f, indent=2, ensure_ascii=False)
+    sections_cache.pop(bid, None)
+
+
+def _append_upload_page(bid: str, stored: str, original: str, sections: list):
+    """Append one uploaded file as a page to knowledge_sections.json (keeping all
+    scraped pages intact) and invalidate the sections cache."""
+    pages = _read_sections_file(bid)
+    pages.append({
+        "page_url":   original,    # spec: filename stands in for the page URL
+        "page_title": original,
+        "upload":     stored,      # delete key — ignored by retrieval / scraped view
+        "sections":   sections,
+    })
+    _write_sections_file(bid, pages)
+
+
+def _remove_upload_page(bid: str, stored: str) -> int:
+    """Drop the page(s) belonging to one uploaded file. Returns how many were
+    removed; deletes the file entirely when nothing is left (mirrors the scraper)."""
+    pages = _read_sections_file(bid)
+    kept  = [p for p in pages if p.get("upload") != stored]
+    removed = len(pages) - len(kept)
+    if not removed:
+        return 0
+    if kept:
+        _write_sections_file(bid, kept)
+    else:
+        path = os.path.join(client_dir(bid), "config", "knowledge_sections.json")
+        if os.path.exists(path):
+            os.remove(path)
+        sections_cache.pop(bid, None)
+    return removed
 
 
 # Small, dependency-free keyword scorer. Generous by design — the goal is to never
@@ -1769,6 +2042,101 @@ def owner_scraped_route(bid):
 
     # 3. Nothing scraped yet
     return jsonify({"business_id": bid, "text": "", "source": "none", "pages": 0, **quota})
+
+
+@app.route("/owner/knowledge/files/<bid>", methods=["GET", "POST", "DELETE"])
+def owner_knowledge_files_route(bid):
+    """Owner-managed knowledge file uploads (PDF/txt → searchable sections).
+
+    Auth mirrors owner_info_route. Extracted text is chunked into the same
+    knowledge_sections.json layer the scraper writes (NOT owner_info), so the bot
+    retrieves from it through the existing keyword-narrow section selection.
+
+      GET    → list uploaded files + quota
+      POST   → upload one PDF/.txt (multipart field 'file')
+      DELETE → remove one file (?name=<stored> or JSON {"name": ...})
+    """
+    if not business_exists(bid):
+        return jsonify({"error": "Unknown business"}), 404
+    if not is_owner_of(bid):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    # ── list ──
+    if request.method == "GET":
+        return jsonify({"business_id": bid, "files": uploaded_files(bid), **upload_quota(bid)})
+
+    # ── delete ──
+    if request.method == "DELETE":
+        stored = (request.args.get("name", "") or
+                  (request.get_json(silent=True) or {}).get("name", "")).strip()
+        # bare filename inside uploads/ only — no path traversal, never the manifest
+        if not stored or stored != os.path.basename(stored) or stored == UPLOADS_MANIFEST_NAME:
+            return jsonify({"error": "Invalid file name"}), 400
+        d    = uploads_dir(bid)
+        path = os.path.join(d, stored) if d else None
+        if not path or not os.path.isfile(path):
+            return jsonify({"error": "File not found"}), 404
+        os.remove(path)
+        _remove_upload_page(bid, stored)
+        save_uploads_manifest(bid, [m for m in load_uploads_manifest(bid) if m.get("stored") != stored])
+        return jsonify({"success": True, "deleted": stored,
+                        "files": uploaded_files(bid), **upload_quota(bid)})
+
+    # ── upload (POST) ──
+    file = request.files.get("file")
+    if not file or not file.filename:
+        return jsonify({"error": "No file uploaded (field name: file)"}), 400
+    ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
+    if ext not in KNOWLEDGE_FILE_EXTS:
+        return jsonify({"error": "Only PDF or .txt files are allowed."}), 400
+
+    limit = upload_bytes_limit(bid)            # None = unlimited (whitelisted)
+    used  = uploaded_total_bytes(bid)
+    # Bound the read so a huge file is never loaded whole into memory: capped plans
+    # are bounded by their remaining quota, whitelisted bids by the per-file ceiling.
+    read_cap = MAX_UPLOAD_FILE_BYTES if limit is None else min(limit, MAX_UPLOAD_FILE_BYTES)
+    blob = file.read(read_cap + 1)
+    size = len(blob)
+    truncated = size > read_cap        # file is larger than we read → exact size unknown
+
+    if size == 0:
+        return jsonify({"error": "That file is empty."}), 400
+    if size > MAX_UPLOAD_FILE_BYTES:
+        return jsonify({"error": f"File too large (max {MAX_UPLOAD_FILE_BYTES // (1024*1024)} MB per file)."}), 400
+    # TOTAL size cap — enforced on the raw upload size BEFORE extraction
+    if limit is not None and used + size > limit:
+        this_file = f"over {_fmt_mb(read_cap)}" if truncated else _fmt_mb(size)
+        return jsonify({
+            "error": (f"Upload would exceed your plan's {_fmt_mb(limit)} knowledge-file limit. "
+                      f"You've used {_fmt_mb(used)} ({_fmt_mb(max(limit - used, 0))} free); "
+                      f"this file is {this_file}."),
+            **upload_quota(bid),
+        }), 400
+
+    # Extract BEFORE persisting so a corrupt/empty file never consumes quota.
+    try:
+        text = _extract_upload_text(blob, ext)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    original = os.path.basename(file.filename)
+    sections = _chunk_text_to_sections(text, original)
+    if not sections:
+        return jsonify({"error": "No readable text found in that file."}), 400
+
+    updir  = uploads_dir(bid, create=True)
+    stored = _unique_stored_name(updir, original, ext)
+    with open(os.path.join(updir, stored), "wb") as f:
+        f.write(blob)
+    manifest = load_uploads_manifest(bid)
+    manifest.append({"stored": stored, "original": original,
+                     "bytes": size, "uploaded_at": datetime.now().isoformat()})
+    save_uploads_manifest(bid, manifest)
+    _append_upload_page(bid, stored, original, sections)   # invalidates sections_cache
+
+    return jsonify({"success": True, "business_id": bid,
+                    "added": {"stored": stored, "original": original, "bytes": size},
+                    "sections_added": len(sections),
+                    "files": uploaded_files(bid), **upload_quota(bid)})
 
 
 @app.route("/owner/logo/<bid>", methods=["POST", "DELETE"])
